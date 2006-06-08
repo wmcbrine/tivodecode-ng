@@ -5,10 +5,20 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#ifndef BUFFERSIZE
+#define BUFFERSIZE 4096
+#endif
+
 typedef struct
 {
 	FILE * fh;
 	off_t  pos;
+
+	/* buffer stuff */
+	off_t  buffer_start;
+	off_t  buffer_fill;
+
+	char buffer[BUFFERSIZE];
 } happy_file;
 
 happy_file * hopen (char * filename, char * mode);
