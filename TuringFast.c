@@ -291,3 +291,8 @@ void * TuringAlloc()
 {
 	return calloc(1, sizeof(struct turing_internal));
 }
+
+void TuringFree(void * internal)
+{
+	free(internal);
+}

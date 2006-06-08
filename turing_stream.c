@@ -86,6 +86,8 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
     sha1_update(&context, xml.data, xml.size);
     sha1_final(turing->turingkey, &context);
 
+    free (xml.data);
+
     turing->state_e0.internal = TuringAlloc();
     turing->state_c0.internal = TuringAlloc();
 
@@ -164,6 +166,12 @@ void decrypt_buffer(turing_state * turing, char * buffer, size_t buffer_length)
 
         buffer[i] ^= turing->active->cipher_data[turing->active->cipher_pos++];
     }
+}
+
+void destruct_turing(turing_state * turing)
+{
+    TuringFree(turing->state_e0.internal);
+    TuringFree(turing->state_c0.internal);
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

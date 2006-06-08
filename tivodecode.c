@@ -202,7 +202,7 @@ int process_frame(uint8_t code, turing_state * turing, FILE * ofh)
                     //              copy       addtl copy
 
                     if ((bytes[2]>>6) != 0x2) {
-                        printf("PES (0x%02X) header mark != 0x2: 0x%x (is this an MPEG2-PS file?)\n",code,(bytes[2]>>6));
+                        fprintf(stderr, "PES (0x%02X) header mark != 0x2: 0x%x (is this an MPEG2-PS file?)\n",code,(bytes[2]>>6));
                     }
 
                     scramble=((bytes[2]>>4)&0x3);
@@ -244,7 +244,7 @@ int process_frame(uint8_t code, turing_state * turing, FILE * ofh)
                                     }
 
                                     if (o_verbose)
-                                        printf("%10" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
+                                        fprintf(stderr, "%10" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
 
                                     prepare_frame(turing, code, block_no);
                                     decrypt_buffer(turing, (char *)&crypted, 4);
@@ -335,12 +335,14 @@ static struct option long_options[] = {
 
 static void do_help(char * arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] {--mak|-m} mak {--out|-o} outfile <tivofile>\n\n", arg0);
+    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] {--mak|-m} mak [{--out|-o} outfile] <tivofile>\n\n", arg0);
 #define ERROUT(s) fprintf(stderr, s)
-    ERROUT ("  --mak, -m        media access key\n");
-    ERROUT ("  --out, -o        output file\n");
+    ERROUT ("  --mak, -m        media access key (required)\n");
+    ERROUT ("  --out, -o        output file (default stdout)\n");
     ERROUT ("  --verbose, -v    verbose\n");
     ERROUT ("  --help           print this help and exit\n\n");
+    ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
+    ERROUT ("means stdout or stdin respectively\n\n");
 #undef ERROUT
 
     exit (exitval);
@@ -367,7 +369,7 @@ int main(int argc, char *argv[])
 
     memset(&turing, 0, sizeof(turing));
 
-    printf("Encryption by QUALCOMM ;)\n\n");
+    fprintf(stderr, "Encryption by QUALCOMM ;)\n\n");
 
     while (1)
     {
@@ -408,21 +410,35 @@ int main(int argc, char *argv[])
             do_help(argv[0], 4);
     }
 
-    if (!makgiven || !tivofile || !outfile)
+    if (!makgiven || !tivofile)
     {
         do_help(argv[0], 5);
     }
 
-    if (!(hfh=hopen(tivofile, "r")))
+    if (!strcmp(tivofile, "-"))
     {
-        perror(tivofile);
-        return 6;
+        hfh=hattach(stdin);
+    }
+    else
+    {
+        if (!(hfh=hopen(tivofile, "r")))
+        {
+            perror(tivofile);
+            return 6;
+        }
     }
 
-    if (!(ofh = fopen(outfile, "w")))
+    if (!outfile || !strcmp(outfile, "-"))
     {
-        perror("opening output file");
-        return 7;
+        ofh = stdout;
+    }
+    else
+    {
+        if (!(ofh = fopen(outfile, "w")))
+        {
+            perror("opening output file");
+            return 7;
+        }
     }
 
     if ((begin_at = setup_turing_key (&turing, hfh, mak)) < 0)
@@ -463,13 +479,23 @@ int main(int argc, char *argv[])
         marker <<= 8;
         if (hread(&byte, 1, hfh) == 0)
         {
-            printf("End of File\n");
+            fprintf(stderr, "End of File\n");
             running = 0;
         }
         else
             marker |= byte;
         first = 0;
     }
+
+    destruct_turing (&turing);
+
+    if (hfh->fh == stdin)
+        hdetach(hfh);
+    else
+        hclose(hfh);
+
+    if (ofh != stdout)
+        fclose(ofh);
 
     return 0;
 }

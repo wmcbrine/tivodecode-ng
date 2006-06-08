@@ -31,6 +31,7 @@ typedef struct
 off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak);
 void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id);
 void decrypt_buffer(turing_state * turing, char * buffer, size_t buffer_length);
+void destruct_turing(turing_state * turing);
 
 #endif // TURING_STREAM_H_
 

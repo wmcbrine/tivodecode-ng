@@ -25,6 +25,7 @@ happy_file * hopen (char * filename, char * mode);
 happy_file * hattach (FILE * fh);
 
 int hclose(happy_file * fh);
+int hdetach(happy_file * fh);
 
 size_t hread (void * ptr, size_t size, happy_file * fh);
 size_t hwrite (const void * ptr, size_t size, happy_file * fh);

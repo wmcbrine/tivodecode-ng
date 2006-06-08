@@ -30,6 +30,12 @@ int hclose(happy_file * fh)
 	return x;
 }
 
+int hdetach(happy_file * fh)
+{
+	free(fh);
+	return 0;
+}
+
 size_t hread (void * ptr, size_t size, happy_file * fh)
 {
 	size_t nbytes = 0;

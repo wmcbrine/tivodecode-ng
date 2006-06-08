@@ -73,6 +73,7 @@ typedef unsigned long	WORD;
 #define POLY	    0x4D	/* x^8 + x^6 + x^3 + x^2 + 1 */
 
 void * TuringAlloc();
+void TuringFree(void * internal);
 void TuringKey(void * internal, const BYTE key[], const int keylength);
 void TuringIV(void * internal, const BYTE iv[], const int ivlength);
 int  TuringGen(void * internal, BYTE *buf);  /* returns number of bytes of mask generated */
