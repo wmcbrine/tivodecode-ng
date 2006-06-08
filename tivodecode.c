@@ -306,7 +306,7 @@ int process_frame(uint8_t code, turing_state * turing, FILE * ofh)
                         // don't know why, but tivo dll does this.
                         // I can find no good docs on the format of the program_stream_map
                         // but I think this clears a reserved bit.  No idea why
-                        packet_buffer[1+2] &= ~0x20; 
+                        packet_buffer[1+2] &= ~0x20;
                     }
 
                     if (fwrite(packet_buffer, 1, length + 3, ofh) != length + 3)

@@ -93,7 +93,7 @@ static void sha1_transform (unsigned long state[5], unsigned char buffer[64])
 	R4(c,d,e,a,b,68); R4(b,c,d,e,a,69); R4(a,b,c,d,e,70); R4(e,a,b,c,d,71);
 	R4(d,e,a,b,c,72); R4(c,d,e,a,b,73); R4(b,c,d,e,a,74); R4(a,b,c,d,e,75);
 	R4(e,a,b,c,d,76); R4(d,e,a,b,c,77); R4(c,d,e,a,b,78); R4(b,c,d,e,a,79);
-	
+
 	/* Add the working vars back into context.state[] */
 	state[0] += a;
 	state[1] += b;
@@ -137,7 +137,7 @@ void sha1_update(SHA1_CTX * context, unsigned char * data, unsigned int len)
 	{
 		memcpy (&context->buffer[j], data, (i = 64 - j));
 		sha1_transform (context->state, context->buffer);
-		
+
 		for ( ; i + 63 < len; i += 64)
 		{
 			sha1_transform (context->state, &data[i]);
