@@ -3,6 +3,7 @@
  *
  * Copyright C 2002, Qualcomm Inc. Written by Greg Rose
  * Hacked into use for TiVoToGo decoding by FDM, 2005.
+ * Majorly re-hacked into use for TiVoToGo decoding by jeremyd, 2005.
  */
 
 /*
@@ -71,7 +72,7 @@ product or in the associated documentation.
 #include "tivo-parse.h"
 #include "turing_stream.h"
 
-off_t setup_turing_key(turing_state * turing, char * tivofile, char * mak)
+off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
 {
     blob xml;
     SHA1_CTX context;
@@ -119,11 +120,9 @@ void prepare_frame_helper(turing_state * turing, char stream_id, int block_id)
 
         turing->active->cipher_pos = 0;
 
-        /* basic test */
         TuringKey(turing->active->internal, turkey, 20);
         TuringIV(turing->active->internal, turiv, 20);
 
-        /* start stream */
         memset(turing->active->cipher_data, 0, MAXSTREAM);
 
         turing->active->cipher_len = TuringGen(turing->active->internal, turing->active->cipher_data);

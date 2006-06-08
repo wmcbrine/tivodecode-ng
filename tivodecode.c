@@ -4,13 +4,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
-#include "file_buffer.h"
+#include "happyfile.h"
 #include "tivo-parse.h"
 #include "turing_stream.h"
 
+#if _FILE_OFFSET_BITS==64 || defined(__NetBSD__)
+# define OFF_T_FORMAT  "llu"
+# define ATOL(arg)     atoll(arg)
+#else
+# warning "Not compiling for large file (>2G) support!"
+# define OFF_T_FORMAT  "lu"
+# define ATOL(arg)     atol(arg)
+#endif
+
 int o_verbose = 0;
 
-file_buf * fb=NULL;
+happy_file * hfh=NULL;
 // file position options
 off_t begin_at = 0;
 
@@ -147,17 +156,28 @@ int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, int * ar
 	return var_4;
 }
 
+#define LOOK_AHEAD(fh, bytes, n) do {\
+    if (hread((bytes) + looked_ahead, (n) - looked_ahead, fh) != (n) - looked_ahead) { \
+        perror ("read"); \
+        return -1; \
+    } else { \
+        looked_ahead = (n); \
+    } \
+} while (0)
+
 /*
  * called for each frame
  */
-void process_frame(uint8_t code, off_t * position, turing_state * turing, FILE * ofh)
+int process_frame(uint8_t code, turing_state * turing, FILE * ofh)
 {
     static char packet_buffer[65536 + 3];
     uint8_t bytes[32];
+    int looked_ahead = 0;
     int i;
     int scramble=0;
     unsigned int header_len = 0;
     unsigned int length;
+    off_t packet_start = htell(hfh);
 
     for (i = 0; packet_tags[i].packet != PACK_NONE; i++)
     {
@@ -167,143 +187,142 @@ void process_frame(uint8_t code, off_t * position, turing_state * turing, FILE *
             if (packet_tags[i].packet == PACK_PES_SIMPLE
                     || packet_tags[i].packet == PACK_PES_COMPLEX)
             {
-                    if (packet_tags[i].packet == PACK_PES_COMPLEX)
+                if (packet_tags[i].packet == PACK_PES_COMPLEX)
+                {
+                    LOOK_AHEAD (hfh, bytes, 5);
+
+                    // packet_length is 0 and 1
+                    // PES header variables
+                    // |    2        |    3         |   4   |
+                    //  76 54 3 2 1 0 76 5 4 3 2 1 0 76543210
+                    //  10 scramble   pts/dts    pes_crc
+                    //        priority   escr      extension
+                    //          alignment  es_rate   header_data_length
+                    //            copyright  dsm_trick
+                    //              copy       addtl copy
+
+                    if ((bytes[2]>>6) != 0x2) {
+                        printf("PES (0x%02X) header mark != 0x2: 0x%x (is this an MPEG2-PS file?)\n",code,(bytes[2]>>6));
+                    }
+
+                    scramble=((bytes[2]>>4)&0x3);
+
+                    header_len = 5 + bytes[4];
+
+                    if ((code == 0xe0 || code == 0xc0) && scramble == 3)
                     {
-
-                        if (buffer_look_ahead(fb, bytes, 5) != FILE_BUF_OKAY)
-                            return ;
-
-                        // packet_length is 0 and 1
-                        // PES header variables
-                        // |    2        |    3         |   4   |
-                        //  76 54 3 2 1 0 76 5 4 3 2 1 0 76543210
-                        //  10 scramble   pts/dts    pes_crc
-                        //        priority   escr      extension
-                        //          alignment  es_rate   header_data_length
-                        //            copyright  dsm_trick
-                        //              copy       addtl copy
-
-                        if ((bytes[2]>>6) != 0x2) {
-                            printf("PES (0x%02X) header mark != 0x2: 0x%x (is this an MPEG2-PS file?)\n",code,(bytes[2]>>6));
-                        }
-
-                        scramble=((bytes[2]>>4)&0x3);
-
-                        header_len = 5 + bytes[4];
-
-                        if ((code == 0xe0 || code == 0xc0) && scramble == 3)
+                        if (bytes[3] & 0x1)
                         {
-                            if (bytes[3] & 0x1)
+                            int off = 6;
+                            int ext_byte = 5;
+                            int goagain = 0;
+                            // extension
+                            if (header_len > 32)
+                                return -1;
+
+                            LOOK_AHEAD (hfh, bytes, header_len);
+
+                            do
                             {
-                                int off = 6;
-                                int ext_byte = 5;
-                                int goagain = 0;
-                                // extension
-                                if (header_len > 32 || buffer_look_ahead(fb, bytes, header_len) != FILE_BUF_OKAY)
-                                    return ;
+                                goagain = 0;
 
-                                do
+                                //packet seq counter flag
+                                if (bytes[ext_byte] & 0x20)
                                 {
-                                    goagain = 0;
+                                    off += 4;
+                                }
 
-                                    //packet seq counter flag
-                                    if (bytes[ext_byte] & 0x20)
+
+                                //private data flag
+                                if (bytes[ext_byte] & 0x80)
+                                {
+                                    int block_no, crypted;
+
+                                    if (do_header (&bytes[off], &block_no, NULL, &crypted, NULL, NULL))
                                     {
-                                        off += 4;
+                                        fprintf(stderr, "do_header not returned 0!\n");
                                     }
 
+                                    if (o_verbose)
+                                        printf("%10" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
 
-                                    //private data flag
-                                    if (bytes[ext_byte] & 0x80)
-                                    {
-                                        int block_no, crypted;
+                                    prepare_frame(turing, code, block_no);
+                                    decrypt_buffer(turing, (char *)&crypted, 4);
+                                }
 
-                                        if (do_header (&bytes[off], &block_no, NULL, &crypted, NULL, NULL))
-                                        {
-                                            fprintf(stderr, "do_header not returned 0!\n");
-                                        }
+                                // STD buffer flag
+                                if (bytes[ext_byte] & 0x10)
+                                {
+                                    off += 2;
+                                }
 
-                                        if (o_verbose)
-                                            printf("%10" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", buffer_tell(fb), code, block_no);
-
-                                        prepare_frame(turing, code, block_no);
-                                        decrypt_buffer(turing, (char *)&crypted, 4);
-                                    }
-
-                                    // STD buffer flag
-                                    if (bytes[ext_byte] & 0x10)
-                                    {
-                                        off += 2;
-                                    }
-
-                                    // extension flag 2
-                                    if (bytes[ext_byte] & 0x1)
-                                    {
-                                        ext_byte = off;
-                                        off++;
-                                        goagain = 1;
-                                        continue;
-                                    }
-                                } while (goagain);
-                            }
+                                // extension flag 2
+                                if (bytes[ext_byte] & 0x1)
+                                {
+                                    ext_byte = off;
+                                    off++;
+                                    goagain = 1;
+                                    continue;
+                                }
+                            } while (goagain);
                         }
+                    }
+                }
+                else
+                {
+                    LOOK_AHEAD (hfh, bytes, 2);
+                }
+
+                length = bytes[1] | (bytes[0] << 8);
+
+                memcpy (packet_buffer + 1, bytes, looked_ahead);
+
+                LOOK_AHEAD (hfh, packet_buffer + 1, length + 2);
+                {
+                    char * packet_ptr = packet_buffer + 1;
+                    size_t packet_size;
+
+                    packet_buffer[0] = code;
+
+                    if (header_len)
+                    {
+                        packet_ptr += header_len;
+                        packet_size = length - header_len + 2;
                     }
                     else
                     {
-                        if (buffer_look_ahead(fb, bytes, 2) != FILE_BUF_OKAY)
-                            return ;
+                        packet_ptr += 2;
+                        packet_size = length;
                     }
 
-                    length = bytes[1] | (bytes[0] << 8);
-
-                    if (buffer_look_ahead(fb, packet_buffer + 1, length + 2) == FILE_BUF_OKAY)
+                    if ((code == 0xe0 || code == 0xc0) && scramble == 3)
                     {
-                        char * packet_ptr = packet_buffer + 1;
-                        size_t packet_size;
-
-                        packet_buffer[0] = code;
-
-                        if (header_len)
-                        {
-                            packet_ptr += header_len;
-                            packet_size = length - header_len + 2;
-                        }
-                        else
-                        {
-                            packet_ptr += 2;
-                            packet_size = length;
-                        }
-
-                        if ((code == 0xe0 || code == 0xc0) && scramble == 3)
-                        {
-                            decrypt_buffer (turing, packet_ptr, packet_size);
-                            // turn off scramble bits
-                            packet_buffer[1+2] &= ~0x30;
-                        }
-                        else if (code == 0xbc)
-                        {
-                            // don't know why, but tivo dll does this.
-                            // I can find no good docs on the format of the program_stream_map
-                            // but I think this clears a reserved bit.  No idea why
-                            packet_buffer[1+2] &= ~0x20; 
-                        }
-
-                        if (fwrite(packet_buffer, 1, length + 3, ofh) != length + 3)
-                        {
-                            perror ("writing buffer");
-                        }
+                        decrypt_buffer (turing, packet_ptr, packet_size);
+                        // turn off scramble bits
+                        packet_buffer[1+2] &= ~0x30;
                     }
-
-                    // get position updated for next packet location
-                    if (position)
+                    else if (code == 0xbc)
                     {
-                        *position = buffer_tell(fb) + length + 2;
+                        // don't know why, but tivo dll does this.
+                        // I can find no good docs on the format of the program_stream_map
+                        // but I think this clears a reserved bit.  No idea why
+                        packet_buffer[1+2] &= ~0x20; 
                     }
+
+                    if (fwrite(packet_buffer, 1, length + 3, ofh) != length + 3)
+                    {
+                        perror ("writing buffer");
+                    }
+
+                    return 1;
+                }
             }
 
-            break;
+            return 0;
         }
     }
+
+    return -1;
 }
 
 static struct option long_options[] = {
@@ -394,40 +413,47 @@ int main(int argc, char *argv[])
         do_help(argv[0], 5);
     }
 
-    begin_at = setup_turing_key (&turing, tivofile, mak);
-
-    if (!(ofh = fopen(outfile, "w")))
+    if (!(hfh=hopen(tivofile, "r")))
     {
-        perror("opening output file");
-    }
-
-    if (!(fb=buffer_start(fb,tivofile,DEFAULT_FILE_BUFFER_SIZE))) {
         perror(tivofile);
         return 6;
     }
 
-    buffer_seek(fb,begin_at);
+    if (!(ofh = fopen(outfile, "w")))
+    {
+        perror("opening output file");
+        return 7;
+    }
+
+    if ((begin_at = setup_turing_key (&turing, hfh, mak)) < 0)
+    {
+        return 8;
+    }
+
+    if (hseek(hfh, begin_at, SEEK_SET) < 0)
+    {
+        perror ("seek");
+        return 9;
+    }
 
     marker = 0xFFFFFFFF;
     while (running)
     {
-        off_t newpos;
-
-        //fprintf(stderr,"%08X\n",marker);
         if ((marker & 0xFFFFFF00) == 0x100)
         {
-            newpos = 0;
-            process_frame(byte, &newpos, &turing, ofh);
-            // we skipped to a new location?
-            if (newpos != 0)
+            int ret = process_frame(byte, &turing, ofh);
+            if (ret == 1)
             {
-                //fprintf(stdout,"skipping to %" OFF_T_FORMAT "\n",newpos);
                 marker = 0xFFFFFFFF;
-                buffer_seek(fb,newpos);
             }
-            else
+            else if (ret == 0)
             {
                 fwrite(&byte, 1, 1, ofh);
+            }
+            else if (ret < 0)
+            {
+                perror ("processing frame");
+                return 10;
             }
         }
         else if (!first)
@@ -435,7 +461,7 @@ int main(int argc, char *argv[])
             fwrite(&byte, 1, 1, ofh);
         }
         marker <<= 8;
-        if (buffer_get_byte(fb,&byte) < 0)
+        if (hread(&byte, 1, hfh) == 0)
         {
             printf("End of File\n");
             running = 0;

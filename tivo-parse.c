@@ -5,22 +5,14 @@
 #include "hexlib.h"
 #include "tivo-parse.h"
 
-uint32_t parse_tivo(char * filename, blob * xml)
+uint32_t parse_tivo(happy_file * file, blob * xml)
 {
 	tivo_stream_header head;
 	tivo_stream_chunk  chunk;
-	FILE * tivo;
 
-       	if (!(tivo = fopen (filename, "r")))
-	{
-		perror("open");
-		return -1;
-	}
-
-	if (fread (&head, sizeof(head), 1, tivo) != 1)
+	if (hread (&head, sizeof(head), file) != sizeof(head))
 	{
 		perror ("read head");
-		fclose (tivo);
 		return -1;
 	}
 	// network byte order conversion
@@ -32,10 +24,9 @@ uint32_t parse_tivo(char * filename, blob * xml)
 	head.mpeg_offset = ntohl (head.mpeg_offset);
 	head.chunks = ntohs (head.chunks);
 
-	if (fread (&chunk, sizeof(chunk), 1, tivo) != 1)
+	if (hread (&chunk, sizeof(chunk), file) != sizeof(chunk))
 	{
 		perror("read chunk head");
-		fclose(tivo);
 		return -1;
 	}
 
@@ -53,16 +44,14 @@ uint32_t parse_tivo(char * filename, blob * xml)
 			perror("malloc");
 			exit(1);
 		}
-		if (fread (xml->data, xml->size, 1, tivo) != 1)
+		if (hread (xml->data, xml->size, file) != xml->size)
 		{
 			perror("read chunk data");
 			free(xml->data);
-			fclose(tivo);
 			return -1;
 		}
 	}
 
-	fclose(tivo);
 	return head.mpeg_offset;
 }
 

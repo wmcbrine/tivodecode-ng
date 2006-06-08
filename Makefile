@@ -2,7 +2,7 @@ CFLAGS=-Wall -D_FILE_OFFSET_BITS=64 -O3
 
 TURING=TuringFast.o
 
-OBJS=hexlib.o $(TURING) sha1.o tivo-parse.o file_buffer.o turing_stream.o
+OBJS=hexlib.o $(TURING) sha1.o tivo-parse.o happyfile.o turing_stream.o
 
 all: tivodecode
 

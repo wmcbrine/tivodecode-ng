@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stddef.h>
+#include "happyfile.h"
 
 #ifndef TIVO_PARSE_H_
 #define TIVO_PARSE_H_
@@ -35,6 +36,6 @@ typedef struct {
 	char * data;
 } blob;
 
-uint32_t parse_tivo(char * filename, blob * xml);
+uint32_t parse_tivo(happy_file * file, blob * xml);
 
 #endif

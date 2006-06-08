@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "Turing.h"
+#include "happyfile.h"
 
 typedef struct
 {
@@ -27,7 +28,7 @@ typedef struct
 	turing_state_stream state_c0;
 } turing_state;
 
-off_t setup_turing_key(turing_state * turing, char * tivofile, char * mak);
+off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak);
 void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id);
 void decrypt_buffer(turing_state * turing, char * buffer, size_t buffer_length);
 
