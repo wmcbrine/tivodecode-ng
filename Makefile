@@ -1,13 +1,24 @@
 CFLAGS=-Wall -D_FILE_OFFSET_BITS=64 -O3
 
-TURING=TuringFast.o
+OBJDIR=objects.dir
+OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o
 
-OBJS=hexlib.o $(TURING) sha1.o tivo-parse.o happyfile.o turing_stream.o
+REALOBJS=$(patsubst %.o,$(OBJDIR)/%.o,$(OBJS))
 
 all: tivodecode
 
+.PHONY: clean
 clean:
-	rm -f *.o $(OBJS) tivodecode.o tivodecode
+	rm -rf $(OBJDIR)
 
-tivodecode: tivodecode.o turing_stream.o $(OBJS)
+.PHONY: tivodecode
+tivodecode: $(OBJDIR) $(OBJDIR)/tivodecode
+
+$(OBJDIR)/tivodecode: $(REALOBJS)
 	$(CC) -o $@ $^
+
+$(OBJDIR)/%.o: %.c $(OBJDIR)
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJDIR):
+	mkdir $(OBJDIR)
