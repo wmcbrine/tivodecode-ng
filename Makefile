@@ -11,13 +11,17 @@ all: tivodecode
 clean:
 	rm -rf $(OBJDIR)
 
+.PHONY: prep
+prep:
+	mkdir -p $(OBJDIR)
+
 .PHONY: tivodecode
-tivodecode: $(OBJDIR) $(OBJDIR)/tivodecode
+tivodecode: prep $(OBJDIR)/tivodecode
 
 $(OBJDIR)/tivodecode: $(REALOBJS)
 	$(CC) -o $@ $^
 
-$(OBJDIR)/%.o: %.c $(OBJDIR)
+$(OBJDIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJDIR):
