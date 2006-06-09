@@ -1,7 +1,7 @@
 CFLAGS=-Wall -D_FILE_OFFSET_BITS=64 -O3
 
 OBJDIR=objects.dir
-OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o
+OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o getopt.o getopt_long.o
 
 REALOBJS=$(patsubst %.o,$(OBJDIR)/%.o,$(OBJS))
 
