@@ -1,9 +1,8 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include <getopt.h>
+#include "getopt_long.h"
 #include "happyfile.h"
 #include "tivo-parse.h"
 #include "turing_stream.h"
@@ -37,8 +36,8 @@ packet_type;
 typedef struct
 {
     // the byte value match for the packet tags
-    uint8_t code_match_lo;      // low end of the range of matches
-    uint8_t code_match_hi;      // high end of the range of matches
+    unsigned char code_match_lo;      // low end of the range of matches
+    unsigned char code_match_hi;      // high end of the range of matches
 
     // what kind of PES is it?
     packet_type packet;
@@ -168,10 +167,10 @@ int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, int * ar
 /*
  * called for each frame
  */
-int process_frame(uint8_t code, turing_state * turing, FILE * ofh)
+int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
 {
     static char packet_buffer[65536 + 3];
-    uint8_t bytes[32];
+    unsigned char bytes[32];
     int looked_ahead = 0;
     int i;
     int scramble=0;
@@ -351,8 +350,8 @@ static void do_help(char * arg0, int exitval)
 
 int main(int argc, char *argv[])
 {
-    uint32_t marker;
-    uint8_t byte;
+    unsigned int marker;
+    unsigned char byte;
     char first = 1;
 
     int running = 1;
@@ -421,7 +420,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if (!(hfh=hopen(tivofile, "r")))
+        if (!(hfh=hopen(tivofile, "rb")))
         {
             perror(tivofile);
             return 6;
@@ -434,7 +433,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if (!(ofh = fopen(outfile, "w")))
+        if (!(ofh = fopen(outfile, "wb")))
         {
             perror("opening output file");
             return 7;

@@ -1,16 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <netinet/in.h>
+#ifdef WIN32
+#	include <windows.h>
+#else
+#	include <netinet/in.h>
+#endif
 #include "sha1.h"
 #include "hexlib.h"
 #include "tivo-parse.h"
 
-uint32_t parse_tivo(happy_file * file, blob * xml)
+unsigned int parse_tivo(happy_file * file, blob * xml)
 {
+	char buf[16];
 	tivo_stream_header head;
 	tivo_stream_chunk  chunk;
 
-	if (hread (&head, sizeof(head), file) != sizeof(head))
+	if (hread (buf, SIZEOF_STREAM_HEADER, file) != SIZEOF_STREAM_HEADER)
 	{
 		perror ("read head");
 		return -1;
@@ -21,20 +26,20 @@ uint32_t parse_tivo(happy_file * file, blob * xml)
 	head.dummy_0006=ntohs(head.dummy_0006);
 	head.dummy_0008=ntohs(head.dummy_0008);
 #endif
-	head.mpeg_offset = ntohl (head.mpeg_offset);
-	head.chunks = ntohs (head.chunks);
+	head.mpeg_offset = ntohl (*(unsigned int *)(buf + 10));
+	head.chunks = ntohs (*(unsigned short *)(buf + 14));
 
-	if (hread (&chunk, sizeof(chunk), file) != sizeof(chunk))
+	if (hread (buf, SIZEOF_STREAM_CHUNK, file) != SIZEOF_STREAM_CHUNK)
 	{
 		perror("read chunk head");
 		return -1;
 	}
 
 	// network byte order conversion
-	chunk.chunk_size=ntohl(chunk.chunk_size);
-	chunk.data_size=ntohl(chunk.data_size);
-	chunk.id=ntohs(chunk.id);
-	chunk.type=ntohs(chunk.type);
+	chunk.chunk_size=ntohl(*(int *)buf);
+	chunk.data_size=ntohl(*(int *)(buf + 4));
+	chunk.id=ntohs(*(short *)(buf + 8));
+	chunk.type=ntohs(*(short *)(buf + 10));
 
 	if (chunk.data_size && chunk.type == TIVO_CHUNK_XML)
 	{

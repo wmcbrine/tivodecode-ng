@@ -16,8 +16,10 @@
 /* #define SHA1HANDSOFF * Copies data before messing with it. */
 
 #include <string.h>
-#include <endian.h>
 #include "sha1.h"
+#ifndef WIN32
+#	include <endian.h>
+#endif
 
 static void sha1_transform (unsigned long state[5], unsigned char buffer[64]);
 
@@ -122,16 +124,16 @@ void sha1_init(SHA1_CTX * context)
 
 /* Run your data through this. */
 
-void sha1_update(SHA1_CTX * context, unsigned char * data, unsigned int len)
+void sha1_update(SHA1_CTX * context, unsigned char * data, size_t len)
 {
 	unsigned int i, j;
 
 	j = (context->count[0] >> 3) & 63;
 
-	if ((context->count[0] += len << 3) < (len << 3))
+	if ((context->count[0] += (unsigned long)len << 3) < (len << 3))
 		context->count[1]++;
 
-	context->count[1] += (len >> 29);
+	context->count[1] += (unsigned long)(len >> 29);
 
 	if ((j + len) > 63)
 	{

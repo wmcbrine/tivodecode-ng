@@ -43,10 +43,10 @@ size_t hread (void * ptr, size_t size, happy_file * fh)
 	if (size == 0)
 		return 0;
 
-	if ((fh->pos + size) - fh->buffer_start <= fh->buffer_fill)
+	if ((fh->pos + (off_t)size) - fh->buffer_start <= fh->buffer_fill)
 	{
 		memcpy (ptr, fh->buffer + (fh->pos - fh->buffer_start), size);
-		fh->pos += size;
+		fh->pos += (off_t)size;
 		return size;
 	}
 	else if (fh->pos < fh->buffer_start + fh->buffer_fill)
@@ -58,16 +58,16 @@ size_t hread (void * ptr, size_t size, happy_file * fh)
 	do
 	{
 		fh->buffer_start += fh->buffer_fill;
-		fh->buffer_fill = fread (fh->buffer, 1, BUFFERSIZE, fh->fh);
+		fh->buffer_fill = (off_t)fread (fh->buffer, 1, BUFFERSIZE, fh->fh);
 
 		if (fh->buffer_fill == 0)
 			break;
 
-		memcpy(ptr + nbytes, fh->buffer, ((size - nbytes) < fh->buffer_fill ? (size - nbytes) : fh->buffer_fill));
-		nbytes += ((size - nbytes) < fh->buffer_fill ? (size - nbytes) : fh->buffer_fill);
+		memcpy((char *)ptr + nbytes, fh->buffer, ((off_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : fh->buffer_fill));
+		nbytes += ((off_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : fh->buffer_fill);
 	} while (nbytes < size);
 
-	fh->pos += nbytes;
+	fh->pos += (off_t)nbytes;
 	return nbytes;
 }
 

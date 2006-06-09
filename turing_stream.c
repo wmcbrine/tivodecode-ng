@@ -81,7 +81,7 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
     sha1_init(&context);
     sha1_update(&context, mak, strlen(mak));
 
-    mpeg_off = parse_tivo(tivofile, &xml);
+    mpeg_off = (off_t)parse_tivo(tivofile, &xml);
 
     sha1_update(&context, xml.data, xml.size);
     sha1_final(turing->turingkey, &context);
@@ -154,7 +154,7 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
 
 void decrypt_buffer(turing_state * turing, char * buffer, size_t buffer_length)
 {
-    int i;
+    unsigned int i;
 
     for (i = 0; i < buffer_length; ++i)
     {

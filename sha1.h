@@ -8,7 +8,7 @@ typedef struct {
 } SHA1_CTX;
 
 void sha1_init (SHA1_CTX * context);
-void sha1_update (SHA1_CTX * context, unsigned char * data, unsigned int len);
+void sha1_update (SHA1_CTX * context, unsigned char * data, size_t len);
 void sha1_final (unsigned char digest[20], SHA1_CTX * context);
 
 #endif
