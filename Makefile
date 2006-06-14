@@ -1,4 +1,6 @@
+CC=gcc
 CFLAGS=-Wall -D_FILE_OFFSET_BITS=64 -O3
+LDFLAGS=
 
 OBJDIR=objects.dir
 OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o getopt.o getopt_long.o
@@ -19,7 +21,7 @@ prep:
 tivodecode: prep $(OBJDIR)/tivodecode
 
 $(OBJDIR)/tivodecode: $(REALOBJS)
-	$(CC) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^
 
 $(OBJDIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
