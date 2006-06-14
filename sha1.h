@@ -2,8 +2,8 @@
 #define SHA1_H_
 
 typedef struct {
-    unsigned long state[5];
-    unsigned long count[2];
+    unsigned int state[5];
+    unsigned int count[2];
     unsigned char buffer[64];
 } SHA1_CTX;
 

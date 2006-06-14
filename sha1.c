@@ -12,28 +12,24 @@
    34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
 */
 
-/* #define LITTLE_ENDIAN * This should be #define'd if true. */
 /* #define SHA1HANDSOFF * Copies data before messing with it. */
 
 #include <string.h>
 #include "sha1.h"
-#ifndef WIN32
-#	include <endian.h>
+#ifdef WIN32
+#	include <windows.h>
+#else
+#	include <netinet/in.h>
 #endif
 
-static void sha1_transform (unsigned long state[5], unsigned char buffer[64]);
+static void sha1_transform (unsigned int state[5], unsigned char buffer[64]);
 
 #define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
 
 /* blk0() and blk() perform the initial expand. */
 /* I got the idea of expanding during the round function from SSLeay */
 
-#if BYTE_ORDER == LITTLE_ENDIAN
-# define blk0(i) (block->l[i] = (rol (block->l[i], 24) & 0xFF00FF00) \
-    | (rol (block->l[i], 8) & 0x00FF00FF))
-#else
-# define blk0(i) block->l[i]
-#endif
+# define blk0(i) (block->l[i] = htonl (block->l[i]))
 
 #define blk(i) (block->l[i & 15] = rol (block->l[(i + 13) & 15] ^ block->l[(i + 8) & 15] \
     ^ block->l[(i + 2) & 15] ^ block->l[i & 15], 1))
@@ -48,13 +44,13 @@ static void sha1_transform (unsigned long state[5], unsigned char buffer[64]);
 
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
-static void sha1_transform (unsigned long state[5], unsigned char buffer[64])
+static void sha1_transform (unsigned int state[5], unsigned char buffer[64])
 {
-	unsigned long a, b, c, d, e;
+	unsigned int a, b, c, d, e;
 
 	typedef union {
 		unsigned char c[64];
-		unsigned long l[16];
+		unsigned int l[16];
 	} CHAR64LONG16;
 
 	CHAR64LONG16 * block;
@@ -130,10 +126,10 @@ void sha1_update(SHA1_CTX * context, unsigned char * data, size_t len)
 
 	j = (context->count[0] >> 3) & 63;
 
-	if ((context->count[0] += (unsigned long)len << 3) < (len << 3))
+	if ((context->count[0] += (unsigned int)len << 3) < (len << 3))
 		context->count[1]++;
 
-	context->count[1] += (unsigned long)(len >> 29);
+	context->count[1] += (unsigned int)(len >> 29);
 
 	if ((j + len) > 63)
 	{
@@ -142,7 +138,8 @@ void sha1_update(SHA1_CTX * context, unsigned char * data, size_t len)
 
 		for ( ; i + 63 < len; i += 64)
 		{
-			sha1_transform (context->state, &data[i]);
+			memcpy (context->buffer, &data[i], 64);
+			sha1_transform (context->state, context->buffer);
 		}
 
 		j = 0;
@@ -160,7 +157,7 @@ void sha1_update(SHA1_CTX * context, unsigned char * data, size_t len)
 
 void sha1_final(unsigned char digest[20], SHA1_CTX * context)
 {
-	unsigned long i, j;
+	unsigned int i, j;
 	unsigned char finalcount[8];
 
 	for (i = 0; i < 8; i++)
