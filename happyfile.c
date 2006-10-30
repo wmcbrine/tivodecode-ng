@@ -7,6 +7,11 @@ happy_file * hopen (char * filename, char * mode)
 {
 	happy_file * fh = malloc (sizeof (happy_file));
 	fh->fh = fopen (filename, mode);
+	if (!fh->fh)
+	{
+		free (fh);
+		return NULL;
+	}
 	fh->pos = 0;
 	fh->buffer_start = 0;
 	fh->buffer_fill = 0;
