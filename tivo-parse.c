@@ -54,7 +54,7 @@ size_t parse_tivo(happy_file * file, blob * xml)
 	if (chunk.data_size && chunk.type == TIVO_CHUNK_XML)
 	{
 		xml->size = chunk.data_size;
-		if (!(xml->data = (char *)malloc(chunk. data_size + 1)))
+		if (!(xml->data = (unsigned char *)malloc(chunk. data_size + 1)))
 		{
 			perror("malloc");
 			exit(1);

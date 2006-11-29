@@ -35,7 +35,7 @@ typedef struct tivo_stream_chunk_s {
 
 typedef struct {
 	size_t size;
-	char * data;
+	unsigned char * data;
 } blob;
 
 size_t parse_tivo(happy_file * file, blob * xml);

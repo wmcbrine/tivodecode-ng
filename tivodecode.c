@@ -1,3 +1,6 @@
+/*
+ * derived from mpegcat, copyright 2006 Kees Cook, used with permission
+ */
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -17,6 +20,7 @@
 #endif
 
 int o_verbose = 0;
+int o_no_verify = 0;
 
 happy_file * hfh=NULL;
 // file position options
@@ -169,7 +173,7 @@ int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, int * ar
  */
 int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
 {
-    static char packet_buffer[65536 + 3];
+    static unsigned char packet_buffer[65536 + 3];
     unsigned char bytes[32];
     int looked_ahead = 0;
     int i;
@@ -246,7 +250,7 @@ int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
                                         fprintf(stderr, "%10" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
 
                                     prepare_frame(turing, code, block_no);
-                                    decrypt_buffer(turing, (char *)&crypted, 4);
+                                    decrypt_buffer(turing, (unsigned char *)&crypted, 4);
                                 }
 
                                 // STD buffer flag
@@ -278,7 +282,7 @@ int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
 
                 LOOK_AHEAD (hfh, packet_buffer + 1, length + 2);
                 {
-                    char * packet_ptr = packet_buffer + 1;
+                    unsigned char * packet_ptr = packet_buffer + 1;
                     size_t packet_size;
 
                     packet_buffer[0] = code;
@@ -299,6 +303,37 @@ int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
                         decrypt_buffer (turing, packet_ptr, packet_size);
                         // turn off scramble bits
                         packet_buffer[1+2] &= ~0x30;
+
+                        // scan video buffer for Slices.  If no slices are
+                        // found, the MAK is wrong.
+                        if (!o_no_verify && code == 0xe0) {
+                            int slice_count=0;
+                            int offset;
+
+                            for (offset=0;offset+4<packet_size;offset++)
+                            {
+                                if (packet_buffer[offset] == 0x00 &&
+                                    packet_buffer[offset+1] == 0x00 &&
+                                    packet_buffer[offset+2] == 0x01 &&
+                                    packet_buffer[offset+3] >= 0x01 &&
+                                    packet_buffer[offset+3] <= 0xAF)
+                                {
+                                    slice_count++;
+                                }
+                                // choose 8 as a good test that if 8 slices
+                                // are seen, it's probably not random noise
+                                if (slice_count>8)
+                                {
+                                    // disable future verification
+                                    o_no_verify = 1;
+                                }
+                            }
+                            if (!o_no_verify)
+                            {
+                                fprintf(stderr, "Invalid MAK -- aborting\n");
+                                exit(20);
+                            }
+                        }
                     }
                     else if (code == 0xbc)
                     {
@@ -329,16 +364,18 @@ static struct option long_options[] = {
     {"out", 1, 0, 'o'},
     {"help", 0, 0, 'h'},
     {"verbose", 0, 0, 'v'},
+    {"no-verify", 0, 0, 'n'},
     {0, 0, 0, 0}
 };
 
 static void do_help(char * arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] {--mak|-m} mak [{--out|-o} outfile] <tivofile>\n\n", arg0);
+    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] {--mak|-m} mak [{--out|-o} outfile] <tivofile>\n\n", arg0);
 #define ERROUT(s) fprintf(stderr, s)
     ERROUT ("  --mak, -m        media access key (required)\n");
     ERROUT ("  --out, -o        output file (default stdout)\n");
     ERROUT ("  --verbose, -v    verbose\n");
+    ERROUT ("  --no-verify, -n  do not verify MAK while decoding\n");
     ERROUT ("  --help           print this help and exit\n\n");
     ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
     ERROUT ("means stdout or stdin respectively\n\n");
@@ -392,6 +429,9 @@ int main(int argc, char *argv[])
                 break;
             case 'v':
                 o_verbose = 1;
+                break;
+            case 'n':
+                o_no_verify = 1;
                 break;
             case '?':
                 do_help(argv[0], 2);

@@ -79,7 +79,7 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
     off_t mpeg_off;
 
     sha1_init(&context);
-    sha1_update(&context, mak, strlen(mak));
+    sha1_update(&context, (unsigned char *)mak, strlen(mak));
 
     mpeg_off = (off_t)parse_tivo(tivofile, &xml);
 
@@ -97,8 +97,8 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
 void prepare_frame_helper(turing_state * turing, char stream_id, int block_id)
 {
     SHA1_CTX context;
-    char turkey[20];
-    char turiv [20];
+    unsigned char turkey[20];
+    unsigned char turiv [20];
 
     if (stream_id != turing->active->stream_id || block_id != turing->active->block_id)
     {
@@ -152,7 +152,7 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
     }
 }
 
-void decrypt_buffer(turing_state * turing, char * buffer, size_t buffer_length)
+void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer_length)
 {
     unsigned int i;
 
