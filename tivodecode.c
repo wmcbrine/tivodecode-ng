@@ -22,6 +22,8 @@
 # define ATOL(arg)     atol(arg)
 #endif
 
+static const char * VERSION_STR = "CVS Head";
+
 int o_verbose = 0;
 int o_no_verify = 0;
 
@@ -367,6 +369,7 @@ static struct option long_options[] = {
     {"out", 1, 0, 'o'},
     {"help", 0, 0, 'h'},
     {"verbose", 0, 0, 'v'},
+    {"version", 0, 0, 'V'},
     {"no-verify", 0, 0, 'n'},
     {0, 0, 0, 0}
 };
@@ -379,10 +382,20 @@ static void do_help(char * arg0, int exitval)
     ERROUT ("  --out, -o        output file (default stdout)\n");
     ERROUT ("  --verbose, -v    verbose\n");
     ERROUT ("  --no-verify, -n  do not verify MAK while decoding\n");
-    ERROUT ("  --help           print this help and exit\n\n");
+    ERROUT ("  --version, -V    print the version information and exit\n\n");
+    ERROUT ("  --help, -h       print this help and exit\n\n");
     ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
     ERROUT ("means stdout or stdin respectively\n\n");
 #undef ERROUT
+
+    exit (exitval);
+}
+
+static void do_version(int exitval)
+{
+    fprintf (stderr, "tivodecode version %s\n", VERSION_STR);
+    fprintf (stderr, "Copyright (c) 2006, Jeremy Drake\n");
+    fprintf (stderr, "See COPYING file in distribution for details\n");
 
     exit (exitval);
 }
@@ -412,7 +425,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long (argc, argv, "m:o:hv", long_options, 0);
+        int c = getopt_long (argc, argv, "m:o:hnvV", long_options, 0);
 
         if (c == -1)
             break;
@@ -438,6 +451,9 @@ int main(int argc, char *argv[])
                 break;
             case '?':
                 do_help(argv[0], 2);
+                break;
+            case 'V':
+                do_version(10);
                 break;
             default:
                 do_help(argv[0], 3);
