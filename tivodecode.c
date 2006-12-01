@@ -1,4 +1,7 @@
 /*
+ * tivodecode, (c) 2006, Jeremy Drake
+ * See COPYING file for license terms
+ *
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
 #include <stdio.h>

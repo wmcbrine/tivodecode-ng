@@ -1,3 +1,8 @@
+/*
+ * tivodecode, (c) 2006, Jeremy Drake
+ * See COPYING file for license terms
+ */
+
 #ifndef TURING_STREAM_H_
 #define TURING_STREAM_H_
 

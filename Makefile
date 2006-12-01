@@ -1,3 +1,5 @@
+# Makefile for tivodecode, (c) 2006, Jeremy Drake
+# See COPYING file for license terms
 CC=gcc
 CFLAGS=-Wall -O3
 DEFINES=-D_FILE_OFFSET_BITS=64

@@ -1,3 +1,7 @@
+/*
+ * tivodecode, (c) 2006, Jeremy Drake
+ * See COPYING file for license terms
+ */
 #ifndef SHA1_H_
 #define SHA1_H_
 

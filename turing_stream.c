@@ -1,9 +1,14 @@
 /*
+ * tivodecode, (c) 2006, Jeremy Drake
+ * See COPYING file for license terms
+ */
+
+/*
  * Decoder for Turing
  *
  * Copyright C 2002, Qualcomm Inc. Written by Greg Rose
  * Hacked into use for TiVoToGo decoding by FDM, 2005.
- * Majorly re-hacked into use for TiVoToGo decoding by jeremyd, 2005.
+ * Majorly re-hacked into use for TiVoToGo decoding by Jeremy Drake, 2005.
  */
 
 /*

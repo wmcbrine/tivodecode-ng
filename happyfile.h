@@ -1,3 +1,8 @@
+/*
+ * tivodecode, (c) 2006, Jeremy Drake
+ * See COPYING file for license terms
+ */
+
 #ifndef HAPPY_FILE_H_
 #define HAPPY_FILE_H_
 

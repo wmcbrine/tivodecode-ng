@@ -1,3 +1,7 @@
+/*
+ * tivodecode, (c) 2006, Jeremy Drake
+ * See COPYING file for license terms
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
