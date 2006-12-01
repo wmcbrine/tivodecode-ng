@@ -19,7 +19,7 @@
 #ifdef WIN32
 #	include <windows.h>
 #else
-#	include <netinet/in.h>
+#	include <arpa/inet.h>
 #endif
 
 static void sha1_transform (unsigned int state[5], unsigned char buffer[64]);
