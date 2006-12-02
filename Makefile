@@ -32,3 +32,30 @@ $(OBJDIR)/%.o: %.c
 
 $(OBJDIR):
 	mkdir $(OBJDIR)
+
+
+#############################################################################
+# Do not use targets below here.  They are for releasing new versions.
+# Users should not use these.  These are not the targets you are looking for...
+
+CREL=$(if $(REL),$(strip $(subst .,_, $(REL))),YOU_NEED_A_RELEASE)
+CVSROOT=:ext:jeremyd2019@tivodecode.cvs.sourceforge.net:/cvsroot/tivodecode
+RELDIR=tivodecode-$(strip $(REL))
+
+.PHONY: tag
+tag:
+	@echo TAG = REL_$(CREL)
+	$(if $(filter YOU_NEED_A_RELEASE, $(CREL)), false SET A RELEASE, )
+	sed -i -e 's/^\(Version \)\([0-9.]\+\)$$/\1$(strip $(REL))/' README
+	sed -i -e 's/^\(static const char \* VERSION_STR = "\)\([0-9.]\+\)\(";\)$$/\1$(strip $(REL))\3/' tivodecode.c
+	cvs commit -m"Flag release $(strip $(REL))" README tivodecode.c
+	cvs tag REL_$(CREL)
+
+.PHONY: release
+release:
+	@echo TAG = REL_$(CREL)
+	@echo VER = $(strip $(REL))
+	$(if $(filter YOU_NEED_A_RELEASE, $(CREL)), false SET A RELEASE, )
+	cvs -d$(CVSROOT) export -rREL_$(CREL) -d$(RELDIR) tivodecode
+	tar -zcvf $(RELDIR).tar.gz $(RELDIR)/
+	rm -rf $(RELDIR)/
