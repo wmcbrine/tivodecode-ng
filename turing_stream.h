@@ -31,6 +31,7 @@ typedef struct
 
 	turing_state_stream state_e0;
 	turing_state_stream state_c0;
+	turing_state_stream state_bd;
 } turing_state;
 
 off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak);

@@ -95,6 +95,7 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
 
     turing->state_e0.internal = TuringAlloc();
     turing->state_c0.internal = TuringAlloc();
+    turing->state_bd.internal = TuringAlloc();
 
     return mpeg_off;
 }
@@ -150,6 +151,11 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
         turing->active = &turing->state_c0;
         prepare_frame_helper(turing, stream_id, block_id);
     }
+    else if (stream_id == 0xbd)
+    {
+        turing->active = &turing->state_bd;
+        prepare_frame_helper(turing, stream_id, block_id);
+    }
     else
     {
         fprintf(stderr, "Unexpected crypted frame type: %02x\n", stream_id);
@@ -177,6 +183,7 @@ void destruct_turing(turing_state * turing)
 {
     TuringFree(turing->state_e0.internal);
     TuringFree(turing->state_c0.internal);
+    TuringFree(turing->state_bd.internal);
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */
