@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "getopt_long.h"
 #include "happyfile.h"
 #include "tivo-parse.h"
@@ -21,6 +22,8 @@
 # define OFF_T_FORMAT  "lu"
 # define ATOL(arg)     atol(arg)
 #endif
+
+static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 
 static const char * VERSION_STR = "CVS Head";
 
@@ -420,6 +423,7 @@ int main(int argc, char *argv[])
     FILE * ofh;
 
     memset(&turing, 0, sizeof(turing));
+    memset(mak, 0, sizeof(mak));
 
     fprintf(stderr, "Encryption by QUALCOMM ;)\n\n");
 
@@ -466,6 +470,52 @@ int main(int argc, char *argv[])
         tivofile=argv[optind++];
         if (optind < argc)
             do_help(argv[0], 4);
+    }
+
+    if (!makgiven)
+    {
+        char * mak_fname;
+        FILE * mak_file;
+        const char * home_dir = getenv("HOME");
+        size_t home_dir_len = strlen(home_dir);
+
+        mak_fname = malloc (home_dir_len + sizeof(MAK_DOTFILE_NAME));
+        if (!mak_fname)
+        {
+            fprintf(stderr, "error allocing string for mak config file name\n");
+            exit(11);
+        }
+
+        memcpy (mak_fname, home_dir, home_dir_len);
+        memcpy (mak_fname + home_dir_len, MAK_DOTFILE_NAME, sizeof(MAK_DOTFILE_NAME));
+
+        if ((mak_file = fopen(mak_fname, "r")))
+        {
+            if (fread(mak, 1, 11, mak_file) >= 10)
+            {
+                int i;
+                for (i = 11; i >= 10 && (mak[i] == '\0' || isspace(mak[i])); --i)
+                {
+                    mak[i] = '\0';
+                }
+
+                makgiven = 1;
+            }
+            else if (ferror(mak_file))
+            {
+                perror ("reading mak config file");
+                exit(12);
+            }
+            else
+            {
+                fprintf(stderr, "mak too short in mak config file\n");
+                exit(13);
+            }
+
+            fclose (mak_file);
+        }
+
+        free(mak_fname);
     }
 
     if (!makgiven || !tivofile)
