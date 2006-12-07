@@ -483,7 +483,12 @@ int main(int argc, char *argv[])
         char * mak_fname;
         FILE * mak_file;
         const char * home_dir = getenv(HOME_ENV_NAME);
-        size_t home_dir_len = strlen(home_dir);
+        size_t home_dir_len;
+        
+        if (!home_dir)
+            home_dir = "";
+        
+        home_dir_len = strlen(home_dir);
 
         mak_fname = malloc (home_dir_len + sizeof(MAK_DOTFILE_NAME));
         if (!mak_fname)
