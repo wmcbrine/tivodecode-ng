@@ -5,7 +5,18 @@
 #include <errno.h>
 #include <stdio.h>
 #include <memory.h>
+#if !defined(WIN32)
+#	include <unistd.h>
+#endif
 #include "happyfile.h"
+
+#if defined (_POSIX_VERSION) && _POSIX_VERSION >= 200112L
+#	define hftell ftello
+#	define hfseek fseeko
+#else
+#	define hftell ftell
+#	define hfseek fseek
+#endif
 
 happy_file * hopen (char * filename, char * mode)
 {
@@ -96,7 +107,7 @@ int hseek (happy_file * fh, off_t offset, int whence)
 		case SEEK_SET:
 			if (offset < fh->pos)
 			{
-				r = fseek (fh->fh, offset, SEEK_SET);
+				r = hfseek (fh->fh, offset, SEEK_SET);
 				if (r < 0)
 					return r;
 				fh->pos = offset;
@@ -125,7 +136,7 @@ int hseek (happy_file * fh, off_t offset, int whence)
 		case SEEK_CUR:
 			if (offset < 0)
 			{
-				r = fseek (fh->fh, offset, SEEK_CUR);
+				r = hfseek (fh->fh, offset, SEEK_CUR);
 				if (r < 0)
 					return r;
 				fh->pos += offset;
@@ -153,8 +164,8 @@ int hseek (happy_file * fh, off_t offset, int whence)
 
 			break;
 		case SEEK_END:
-			r = fseek (fh->fh, offset,whence);
-			fh->pos = ftell(fh->fh);
+			r = hfseek (fh->fh, offset,whence);
+			fh->pos = hftell(fh->fh);
 			fh->buffer_start = fh->pos;
 			fh->buffer_fill = 0;
 			return r;

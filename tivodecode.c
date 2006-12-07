@@ -14,7 +14,7 @@
 #include "tivo-parse.h"
 #include "turing_stream.h"
 
-#if _FILE_OFFSET_BITS==64 || defined(__NetBSD__)
+#if _FILE_OFFSET_BITS==64 || defined(__NetBSD__) || defined(__APPLE__)
 # define OFF_T_FORMAT  "llu"
 # define ATOL(arg)     atoll(arg)
 #else
