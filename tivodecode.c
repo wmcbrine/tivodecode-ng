@@ -322,7 +322,7 @@ int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
                         // found, the MAK is wrong.
                         if (!o_no_verify && code == 0xe0) {
                             int slice_count=0;
-                            int offset;
+                            size_t offset;
 
                             for (offset=0;offset+4<packet_size;offset++)
                             {
