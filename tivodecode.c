@@ -23,6 +23,12 @@
 # define ATOL(arg)     atol(arg)
 #endif
 
+#ifdef WIN32
+#   define HOME_ENV_NAME "USERPROFILE"
+#else
+#   define HOME_ENV_NAME "HOME"
+#endif
+
 static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 
 static const char * VERSION_STR = "CVS Head";
@@ -476,7 +482,7 @@ int main(int argc, char *argv[])
     {
         char * mak_fname;
         FILE * mak_file;
-        const char * home_dir = getenv("HOME");
+        const char * home_dir = getenv(HOME_ENV_NAME);
         size_t home_dir_len = strlen(home_dir);
 
         mak_fname = malloc (home_dir_len + sizeof(MAK_DOTFILE_NAME));
