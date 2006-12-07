@@ -25,8 +25,10 @@
 
 #ifdef WIN32
 #   define HOME_ENV_NAME "USERPROFILE"
+#   define DEFAULT_EMPTY_HOME "C:"
 #else
 #   define HOME_ENV_NAME "HOME"
+#   define DEFAULT_EMPTY_HOME ""
 #endif
 
 static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
@@ -486,7 +488,7 @@ int main(int argc, char *argv[])
         size_t home_dir_len;
         
         if (!home_dir)
-            home_dir = "";
+            home_dir = DEFAULT_EMPTY_HOME;
         
         home_dir_len = strlen(home_dir);
 
