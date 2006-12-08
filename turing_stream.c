@@ -99,7 +99,7 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
     return mpeg_off;
 }
 
-void prepare_frame_helper(turing_state * turing, unsigned char stream_id, int block_id)
+static void prepare_frame_helper(turing_state * turing, unsigned char stream_id, int block_id)
 {
     SHA1_CTX context;
     unsigned char turkey[20];
