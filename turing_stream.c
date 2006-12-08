@@ -77,6 +77,9 @@ product or in the associated documentation.
 #include "tivo-parse.h"
 #include "turing_stream.h"
 
+// from tivodecode.c, verbose option
+extern int o_verbose;
+
 off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
 {
     blob xml;
@@ -92,10 +95,6 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
     sha1_final(turing->turingkey, &context);
 
     free (xml.data);
-
-    turing->state_e0.internal = TuringAlloc();
-    turing->state_c0.internal = TuringAlloc();
-    turing->state_bd.internal = TuringAlloc();
 
     return mpeg_off;
 }
@@ -141,26 +140,39 @@ void prepare_frame_helper(turing_state * turing, unsigned char stream_id, int bl
 
 void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
 {
-    if (stream_id == 0xe0)
+    if (turing->active)
     {
-        turing->active = &turing->state_e0;
-        prepare_frame_helper(turing, stream_id, block_id);
-    }
-    else if (stream_id == 0xc0)
-    {
-        turing->active = &turing->state_c0;
-        prepare_frame_helper(turing, stream_id, block_id);
-    }
-    else if (stream_id == 0xbd)
-    {
-        turing->active = &turing->state_bd;
-        prepare_frame_helper(turing, stream_id, block_id);
+        if (turing->active->stream_id != stream_id)
+        {
+            turing_state_stream * start = turing->active;
+            do
+            {
+                turing->active = turing->active->next;
+            }
+            while (turing->active->stream_id != stream_id && turing->active != start);
+
+            if (turing->active->stream_id != stream_id)
+            {
+                // did not find a state for this stream type
+                turing->active = calloc (1, sizeof (turing_state_stream));
+                turing->active->next = start->next;
+                start->next = turing->active;
+                turing->active->internal = TuringAlloc();
+                if (o_verbose)
+                    fprintf(stderr, "Creating turing stream for packet type %02x\n", stream_id);
+            }
+        }
     }
     else
     {
-        fprintf(stderr, "Unexpected crypted frame type: %02x\n", stream_id);
-        exit(42);
+        turing->active = calloc (1, sizeof (turing_state_stream));
+        turing->active->next = turing->active;
+        turing->active->internal = TuringAlloc();
+        if (o_verbose)
+            fprintf(stderr, "Creating turing stream for packet type %02x\n", stream_id);
     }
+
+    prepare_frame_helper(turing, stream_id, block_id);
 }
 
 void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer_length)
@@ -181,9 +193,20 @@ void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer
 
 void destruct_turing(turing_state * turing)
 {
-    TuringFree(turing->state_e0.internal);
-    TuringFree(turing->state_c0.internal);
-    TuringFree(turing->state_bd.internal);
+    if (turing->active)
+    {
+        turing_state_stream * start = turing->active;
+        do
+        {
+            turing_state_stream * prev = turing->active;
+            TuringFree(turing->active->internal);
+            turing->active = turing->active->next;
+            free (prev);
+        }
+        while (turing->active != start);
+    }
+
+    turing->active = NULL;
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

@@ -10,7 +10,7 @@
 #include "Turing.h"
 #include "happyfile.h"
 
-typedef struct
+typedef struct turing_state_stream
 {
     int cipher_pos;
     int cipher_len;
@@ -18,6 +18,7 @@ typedef struct
     int block_id;
     unsigned char stream_id;
 
+    struct turing_state_stream * next;
 
     void * internal;
     unsigned char cipher_data[MAXSTREAM];
@@ -28,10 +29,6 @@ typedef struct
 	unsigned char turingkey[20];
 
 	turing_state_stream * active;
-
-	turing_state_stream state_e0;
-	turing_state_stream state_c0;
-	turing_state_stream state_bd;
 } turing_state;
 
 off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak);

@@ -228,7 +228,7 @@ int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
 
                     header_len = 5 + bytes[4];
 
-                    if ((code == 0xe0 || code == 0xc0 || code == 0xbd) && scramble == 3)
+                    if (scramble == 3)
                     {
                         if (bytes[3] & 0x1)
                         {
@@ -314,7 +314,7 @@ int process_frame(unsigned char code, turing_state * turing, FILE * ofh)
                         packet_size = length;
                     }
 
-                    if ((code == 0xe0 || code == 0xc0 || code == 0xbd) && scramble == 3)
+                    if (scramble == 3)
                     {
                         decrypt_buffer (turing, packet_ptr, packet_size);
                         // turn off scramble bits
