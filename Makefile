@@ -5,11 +5,15 @@ CFLAGS=-Wall -O3
 DEFINES=-D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64
 override CFLAGS+=$(DEFINES)
 LDFLAGS=
+CTAGS=ctags
+CTFLAGS=--c-types=+dfmstuv
 
 OBJDIR=objects.dir
 OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o getopt.o getopt_long.o
 
 REALOBJS=$(patsubst %.o,$(OBJDIR)/%.o,$(OBJS))
+SRCS=$(patsubst %.o,%.c,$(OBJS))
+HEADERS=QUTsbox.h Turing.h TuringMultab.h TuringSbox.h getopt_long.h happyfile.h hexlib.h sha1.h tivo-parse.h turing_stream.h
 
 all: tivodecode
 
@@ -24,10 +28,13 @@ prep:
 .PHONY: tivodecode
 tivodecode: prep $(OBJDIR)/tivodecode
 
+tags: $(SRCS) $(HEADERS)
+	$(CTAGS) $(CTFLAGS) $^
+
 $(OBJDIR)/tivodecode: $(REALOBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-$(OBJDIR)/%.o: %.c
+$(OBJDIR)/%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 $(OBJDIR):
