@@ -11,7 +11,6 @@
 #	include <netinet/in.h>
 #endif
 #include "sha1.h"
-#include "hexlib.h"
 #include "tivo-parse.h"
 
 #define FILL_NETGNRC(var, buf, offset, size, sz) do { \
@@ -23,13 +22,13 @@
 
 #define FILL_NETSHRT(var, buf, offset) FILL_NETGNRC(var, buf, offset, sizeof(unsigned short), s)
 
-size_t parse_tivo(happy_file * file, blob * xml)
+size_t parse_tivo(void * file, blob * xml, read_func_t read_handler)
 {
 	char buf[16];
 	tivo_stream_header head;
 	tivo_stream_chunk  chunk;
 
-	if (hread (buf, SIZEOF_STREAM_HEADER, file) != SIZEOF_STREAM_HEADER)
+	if (read_handler (buf, SIZEOF_STREAM_HEADER, file) != SIZEOF_STREAM_HEADER)
 	{
 		perror ("read head");
 		return -1;
@@ -43,7 +42,7 @@ size_t parse_tivo(happy_file * file, blob * xml)
 	FILL_NETLONG(head.mpeg_offset, buf, 10);
 	FILL_NETSHRT(head.chunks, buf, 14);
 
-	if (hread (buf, SIZEOF_STREAM_CHUNK, file) != SIZEOF_STREAM_CHUNK)
+	if (read_handler (buf, SIZEOF_STREAM_CHUNK, file) != SIZEOF_STREAM_CHUNK)
 	{
 		perror("read chunk head");
 		return -1;
@@ -63,7 +62,7 @@ size_t parse_tivo(happy_file * file, blob * xml)
 			perror("malloc");
 			exit(1);
 		}
-		if (hread (xml->data, xml->size, file) != xml->size)
+		if (read_handler (xml->data, xml->size, file) != xml->size)
 		{
 			perror("read chunk data");
 			free(xml->data);

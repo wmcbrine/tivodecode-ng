@@ -3,7 +3,6 @@
  * See COPYING file for license terms
  */
 #include <stddef.h>
-#include "happyfile.h"
 
 #ifndef TIVO_PARSE_H_
 #define TIVO_PARSE_H_
@@ -42,6 +41,11 @@ typedef struct {
 	unsigned char * data;
 } blob;
 
-size_t parse_tivo(happy_file * file, blob * xml);
+/* genericized read function so that different underlying implementations can
+ * be swapped out for more of a library setup
+ */
+typedef int (*read_func_t) (void * mem, int size, void * fh);
+
+size_t parse_tivo(void * file, blob * xml, read_func_t read_handler);
 
 #endif

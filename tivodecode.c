@@ -87,6 +87,10 @@ packet_tag_info packet_tags[] = {
     {0, 0, PACK_NONE}       // end of list
 };
 
+static int hread_wrapper (void * mem, int size, void * fh)
+{
+    return (int)hread (mem, size, (happy_file *)fh);
+}
 
 /**
  * This is from analyzing the TiVo directshow dll.  Most of the parameters I have no idea what they are for.
@@ -562,7 +566,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    if ((begin_at = setup_turing_key (&turing, hfh, mak)) < 0)
+    if ((begin_at = setup_turing_key (&turing, hfh, &hread_wrapper, mak)) < 0)
     {
         return 8;
     }

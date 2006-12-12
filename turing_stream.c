@@ -80,7 +80,7 @@ product or in the associated documentation.
 // from tivodecode.c, verbose option
 extern int o_verbose;
 
-off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
+off_t setup_turing_key(turing_state * turing, void * tivofile, read_func_t read_handler, char * mak)
 {
     blob xml;
     SHA1_CTX context;
@@ -89,7 +89,7 @@ off_t setup_turing_key(turing_state * turing, happy_file * tivofile, char * mak)
     sha1_init(&context);
     sha1_update(&context, (unsigned char *)mak, strlen(mak));
 
-    mpeg_off = (off_t)parse_tivo(tivofile, &xml);
+    mpeg_off = (off_t)parse_tivo(tivofile, &xml, read_handler);
 
     sha1_update(&context, xml.data, xml.size);
     sha1_final(turing->turingkey, &context);
