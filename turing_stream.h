@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include "Turing.h"
+#include "tivo-parse.h"
 
 typedef struct turing_state_stream
 {

@@ -9,11 +9,11 @@ CTAGS=ctags
 CTFLAGS=--c-types=+dfmstuv
 
 OBJDIR=objects.dir
-OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o getopt.o getopt_long.o
+OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o tivodecoder.o getopt.o getopt_long.o
 
 REALOBJS=$(patsubst %.o,$(OBJDIR)/%.o,$(OBJS))
 SRCS=$(patsubst %.o,%.c,$(OBJS))
-HEADERS=QUTsbox.h Turing.h TuringMultab.h TuringSbox.h getopt_long.h happyfile.h hexlib.h sha1.h tivo-parse.h turing_stream.h
+HEADERS=QUTsbox.h Turing.h TuringMultab.h TuringSbox.h getopt_long.h happyfile.h hexlib.h sha1.h tivo-parse.h tivodecoder.h turing_stream.h
 
 all: tivodecode
 
