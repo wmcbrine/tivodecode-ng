@@ -9,13 +9,16 @@ CTAGS=ctags
 CTFLAGS=--c-types=+dfmstuv
 
 OBJDIR=objects.dir
-OBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o happyfile.o turing_stream.o tivodecode.o tivodecoder.o getopt.o getopt_long.o
+COMMONOBJS=hexlib.o TuringFast.o sha1.o tivo-parse.o turing_stream.o tivodecoder.o
+PROGOBJS=tivodecode.o happyfile.o getopt.o getopt_long.o
 
-REALOBJS=$(patsubst %.o,$(OBJDIR)/%.o,$(OBJS))
+
+REALCOMMONOBJS=$(patsubst %.o,$(OBJDIR)/%.o,$(COMMONOBJS))
+REALPROGOBJS=$(patsubst %.o,$(OBJDIR)/%.o,$(PROGOBJS))
 SRCS=$(patsubst %.o,%.c,$(OBJS))
 HEADERS=QUTsbox.h Turing.h TuringMultab.h TuringSbox.h getopt_long.h happyfile.h hexlib.h sha1.h tivo-parse.h tivodecoder.h turing_stream.h
 
-all: tivodecode
+all: tivodecode libtivodecode.a
 
 .PHONY: clean
 clean:
@@ -28,11 +31,17 @@ prep:
 .PHONY: tivodecode
 tivodecode: prep $(OBJDIR)/tivodecode
 
+.PHONY: libtivodecode.a
+libtivodecode.a: prep $(OBJDIR)/libtivodecode.a
+
 tags: $(SRCS) $(HEADERS)
 	$(CTAGS) $(CTFLAGS) $^
 
-$(OBJDIR)/tivodecode: $(REALOBJS)
+$(OBJDIR)/tivodecode: $(REALCOMMONOBJS) $(REALPROGOBJS)
 	$(CC) $(LDFLAGS) -o $@ $^
+
+$(OBJDIR)/libtivodecode.a: $(REALCOMMONOBJS)
+	$(AR) r $@ $^
 
 $(OBJDIR)/%.o: %.c $(HEADERS)
 	$(CC) $(CFLAGS) -c -o $@ $<

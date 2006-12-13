@@ -17,9 +17,11 @@
 # define ATOL(arg)     atol(arg)
 #endif
 
+typedef int (*write_func_t) (void * mem, int size, void * fh);
+
 /*
  * called for each frame
  */
-int process_frame(unsigned char code, turing_state * turing, off_t packet_start, void * packet_stream, read_func_t read_handler, FILE * ofh);
+int process_frame(unsigned char code, turing_state * turing, off_t packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler);
 
 #endif

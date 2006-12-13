@@ -40,6 +40,11 @@ static int hread_wrapper (void * mem, int size, void * fh)
     return (int)hread (mem, size, (happy_file *)fh);
 }
 
+static int fwrite_wrapper (void * mem, int size, void * fh)
+{
+    return (int)fwrite (mem, 1, size, (FILE *)fh);
+}
+
 static struct option long_options[] = {
     {"mak", 1, 0, 'm'},
     {"out", 1, 0, 'o'},
@@ -243,7 +248,7 @@ int main(int argc, char *argv[])
     {
         if ((marker & 0xFFFFFF00) == 0x100)
         {
-            int ret = process_frame(byte, &turing, htell(hfh), hfh, &hread_wrapper, ofh);
+            int ret = process_frame(byte, &turing, htell(hfh), hfh, &hread_wrapper, ofh, &fwrite_wrapper);
             if (ret == 1)
             {
                 marker = 0xFFFFFFFF;

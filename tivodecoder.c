@@ -156,7 +156,7 @@ static int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, i
 /*
  * called for each frame
  */
-int process_frame(unsigned char code, turing_state * turing, off_t packet_start, void * packet_stream, read_func_t read_handler, FILE * ofh)
+int process_frame(unsigned char code, turing_state * turing, off_t packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler)
 {
     static unsigned char packet_buffer[65536 + 3];
     unsigned char bytes[32];
@@ -327,7 +327,7 @@ int process_frame(unsigned char code, turing_state * turing, off_t packet_start,
                         packet_buffer[1+2] &= ~0x20;
                     }
 
-                    if (fwrite(packet_buffer, 1, length + 3, ofh) != length + 3)
+                    if (write_handler(packet_buffer, length + 3, ofh) != length + 3)
                     {
                         perror ("writing buffer");
                     }
