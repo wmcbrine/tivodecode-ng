@@ -156,7 +156,7 @@ static int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, i
 /*
  * called for each frame
  */
-int process_frame(unsigned char code, turing_state * turing, off_t packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler)
+int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler)
 {
     static unsigned char packet_buffer[65536 + 3];
     unsigned char bytes[32];

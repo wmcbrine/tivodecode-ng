@@ -9,10 +9,16 @@
 #define TIVO_DECODER_H_
 
 #if _FILE_OFFSET_BITS==64 || defined(__NetBSD__) || defined(__APPLE__)
+# define OFF_T_TYPE off_t
+# define OFF_T_FORMAT  "llu"
+# define ATOL(arg)     atoll(arg)
+#elif defined(WIN32)
+# define OFF_T_TYPE __int64
 # define OFF_T_FORMAT  "llu"
 # define ATOL(arg)     atoll(arg)
 #else
 # warning "Not compiling for large file (>2G) support!"
+# define OFF_T_TYPE off_t
 # define OFF_T_FORMAT  "lu"
 # define ATOL(arg)     atol(arg)
 #endif
@@ -22,6 +28,6 @@ typedef int (*write_func_t) (void * mem, int size, void * fh);
 /*
  * called for each frame
  */
-int process_frame(unsigned char code, turing_state * turing, off_t packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler);
+int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler);
 
 #endif

@@ -36,7 +36,7 @@ static int hfseek (FILE *fp, __int64 offset, int whence)
 		pos += (fpos_t) offset;
 	}
 	else if (whence == SEEK_END)
-		pos = (fpos_t) (_filelengthi64(fileno(fp)) + offset);
+		pos = (fpos_t) (_filelengthi64(_fileno(fp)) + offset);
 	else if (whence == SEEK_SET)
 		pos = (fpos_t) offset;
 
@@ -100,8 +100,8 @@ size_t hread (void * ptr, size_t size, happy_file * fh)
 	}
 	else if (fh->pos < fh->buffer_start + fh->buffer_fill)
 	{
-		memcpy (ptr, fh->buffer + (fh->pos - fh->buffer_start), fh->buffer_fill - (fh->pos - fh->buffer_start));
-		nbytes += fh->buffer_fill - (fh->pos - fh->buffer_start);
+		memcpy (ptr, fh->buffer + (fh->pos - fh->buffer_start), (size_t)(fh->buffer_fill - (fh->pos - fh->buffer_start)));
+		nbytes += (size_t)(fh->buffer_fill - (fh->pos - fh->buffer_start));
 	}
 
 	do
@@ -112,8 +112,8 @@ size_t hread (void * ptr, size_t size, happy_file * fh)
 		if (fh->buffer_fill == 0)
 			break;
 
-		memcpy((char *)ptr + nbytes, fh->buffer, ((hoff_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : fh->buffer_fill));
-		nbytes += ((hoff_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : fh->buffer_fill);
+		memcpy((char *)ptr + nbytes, fh->buffer, ((hoff_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : (size_t)fh->buffer_fill));
+		nbytes += ((hoff_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : (size_t)fh->buffer_fill);
 	} while (nbytes < size);
 
 	fh->pos += (hoff_t)nbytes;
@@ -146,9 +146,10 @@ int hseek (happy_file * fh, hoff_t offset, int whence)
 			}
 			else
 			{
-				register int t = (offset - fh->pos) & 0xfff;
-				register int u = (offset - fh->pos) >> 12;
-				for (r=0; r < u; r++)
+				int t = (int)((offset - fh->pos) & 0xfff);
+				hoff_t u = (offset - fh->pos) >> 12;
+				hoff_t s;
+				for (s=0; s < u; s++)
 				{
 					if (hread(junk_buf, 4096, fh) != 4096)
 						return -1;
@@ -175,9 +176,10 @@ int hseek (happy_file * fh, hoff_t offset, int whence)
 			}
 			else
 			{
-				register int t = offset & 0xfff;
-				register int u = offset >> 12;
-				for (r=0; r < u; r++)
+				int t = (int)(offset & 0xfff);
+				hoff_t u = offset >> 12;
+				hoff_t s;
+				for (s=0; s < u; s++)
 				{
 					if (hread(junk_buf, 4096, fh) != 4096)
 						return -1;

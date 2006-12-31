@@ -46,6 +46,6 @@ typedef struct {
  */
 typedef int (*read_func_t) (void * mem, int size, void * fh);
 
-size_t parse_tivo(void * file, blob * xml, read_func_t read_handler);
+unsigned int parse_tivo(void * file, blob * xml, read_func_t read_handler);
 
 #endif

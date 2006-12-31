@@ -32,7 +32,7 @@ int o_no_verify = 0;
 
 happy_file * hfh=NULL;
 // file position options
-off_t begin_at = 0;
+hoff_t begin_at = 0;
 
 
 static int hread_wrapper (void * mem, int size, void * fh)

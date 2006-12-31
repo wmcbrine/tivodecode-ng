@@ -22,7 +22,7 @@
 
 #define FILL_NETSHRT(var, buf, offset) FILL_NETGNRC(var, buf, offset, sizeof(unsigned short), s)
 
-size_t parse_tivo(void * file, blob * xml, read_func_t read_handler)
+unsigned int parse_tivo(void * file, blob * xml, read_func_t read_handler)
 {
 	char buf[16];
 	tivo_stream_header head;
@@ -57,12 +57,12 @@ size_t parse_tivo(void * file, blob * xml, read_func_t read_handler)
 	if (chunk.data_size && chunk.type == TIVO_CHUNK_XML)
 	{
 		xml->size = chunk.data_size;
-		if (!(xml->data = (unsigned char *)malloc(chunk. data_size + 1)))
+		if (!(xml->data = (unsigned char *)malloc(chunk.data_size + 1)))
 		{
 			perror("malloc");
 			exit(1);
 		}
-		if (read_handler (xml->data, xml->size, file) != xml->size)
+		if (read_handler (xml->data, (int)xml->size, file) != xml->size)
 		{
 			perror("read chunk data");
 			free(xml->data);
