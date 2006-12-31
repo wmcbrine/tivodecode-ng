@@ -11,18 +11,33 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
+#if !defined(WIN32)
+#	include <unistd.h>
+#else
+#	include <io.h>
+#endif
+
 #ifndef BUFFERSIZE
 #define BUFFERSIZE 4096
+#endif
+
+#if defined (_POSIX_VERSION) && _POSIX_VERSION >= 200112L
+typedef off_t hoff_t;
+#elif defined (WIN32)
+typedef __int64 hoff_t;
+#else
+#warning Large file support is questionable on this platform
+typedef off_t hoff_t;
 #endif
 
 typedef struct
 {
 	FILE * fh;
-	off_t  pos;
+	hoff_t  pos;
 
 	/* buffer stuff */
-	off_t  buffer_start;
-	off_t  buffer_fill;
+	hoff_t  buffer_start;
+	hoff_t  buffer_fill;
 
 	char buffer[BUFFERSIZE];
 } happy_file;
@@ -36,7 +51,7 @@ int hdetach(happy_file * fh);
 size_t hread (void * ptr, size_t size, happy_file * fh);
 size_t hwrite (const void * ptr, size_t size, happy_file * fh);
 
-off_t htell (happy_file * fh);
-int hseek (happy_file * fh, off_t offset, int whence);
+hoff_t htell (happy_file * fh);
+int hseek (happy_file * fh, hoff_t offset, int whence);
 
 #endif
