@@ -6,10 +6,8 @@
 #ifndef TIVO_DECODER_H_
 #define TIVO_DECODER_H_
 #include <stddef.h>
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#ifdef HAVE_UNISTD_H
+#include <sys/types.h>
+#ifndef WIN32
 # include <unistd.h>
 #endif
 #include "turing_stream.h"
