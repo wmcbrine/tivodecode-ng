@@ -1,4 +1,4 @@
-AC_INIT(tivodecode, 0.2devel)
+AC_INIT(tivodecode, 0.2pre1)
 AC_CONFIG_SRCDIR(tivodecode.c)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
@@ -21,7 +21,7 @@ choke me
 @%:@endif], [ICC=[yes]], [ICC=[no]])
 
   if test "$ICC" = no; then
-    CFLAGS="$CFLAGS -Wall -Wmissing-prototypes -Wpointer-arith -Winline"
+    CFLAGS="$CFLAGS -Wall -Wpointer-arith -Winline"
 
     PGAC_PROG_CC_CFLAGS_OPT([-Wdeclaration-after-statement])
     PGAC_PROG_CC_CFLAGS_OPT([-Wendif-labels])

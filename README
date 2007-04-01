@@ -1,11 +1,12 @@
-tivodecode (c) 2006, Jeremy Drake
-CVS Head version
+tivodecode (c) 2006-2007, Jeremy Drake
+Version 0.2pre1
 See COPYING for license terms.
 
-To build on a *NIX platform, first check the Makefile, setting CC, CFLAGS and
-LDFLAGS as appropriate for your platform.  If your platform has a different way
-of building with large file support, correct the DEFINES variable for your
-platform.  Then run 'make'.
+This project now uses autoconf for its build system.  See the INSTALL file for
+generic autoconf instructions, or just run:
+./configure
+make
+make install
 
 To build on Windows, a Visual C++ Express 2005 solution file is included.  If
 you have a working installation of this compiler, building should be as simple
@@ -23,14 +24,16 @@ in your %USERPROFILE% directory, or in c:\ if there is no %USERPROFILE% set.
 
 The parameters (from --help) are documented below.
 
-Usage: ./objects.dir/tivodecode [--help] [--verbose|-v] [--no-verify|-n] {--mak|-m} mak [{--out|-o} outfile] <tivofile>
+
+Usage: ./tivodecode [--help] [--verbose|-v] [--no-verify|-n] {--mak|-m} mak [{--out|-o} outfile] <tivofile>
 
   --mak, -m        media access key (required)
   --out, -o        output file (default stdout)
   --verbose, -v    verbose
   --no-verify, -n  do not verify MAK while decoding
-  --help           print this help and exit
+  --version, -V    print the version information and exit
+
+  --help, -h       print this help and exit
 
 The file names specified for the output file or the tivo file may be -, which
 means stdout or stdin respectively
-

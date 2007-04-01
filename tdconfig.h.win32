@@ -75,13 +75,13 @@
 #define PACKAGE_NAME "tivodecode"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "tivodecode 0.2devel"
+#define PACKAGE_STRING "tivodecode 0.2pre1"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "tivodecode"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.2devel"
+#define PACKAGE_VERSION "0.2pre1"
 
 /* The size of `off_t', as computed by sizeof. */
 #define SIZEOF_OFF_T 4
@@ -90,7 +90,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.2devel"
+#define VERSION "0.2pre1"
 
 /* Define to 1 if on AIX 3.
    System headers sometimes define this.
