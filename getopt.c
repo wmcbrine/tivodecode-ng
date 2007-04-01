@@ -28,7 +28,12 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  */
 
-#include <string.h>
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
 #include <stdio.h>
 
 

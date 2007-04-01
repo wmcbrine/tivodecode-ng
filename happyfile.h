@@ -8,20 +8,26 @@
 
 #include <stdio.h>
 #include <stddef.h>
-#include <stdlib.h>
-#include <sys/types.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
 
-#if !defined(WIN32)
-#	include <unistd.h>
-#else
-#	include <io.h>
+#ifdef HAVE_UNISTD_H 
+# include <unistd.h>
+#endif
+
+#if defined(WIN32)
+# include <io.h>
 #endif
 
 #ifndef BUFFERSIZE
 #define BUFFERSIZE 4096
 #endif
 
-#if defined (_POSIX_VERSION) && _POSIX_VERSION >= 200112L
+#if SIZEOF_OFF_T == 8
 typedef off_t hoff_t;
 #elif defined (WIN32)
 typedef __int64 hoff_t;

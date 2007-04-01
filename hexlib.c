@@ -2,9 +2,14 @@
 /* Copyright C Qualcomm Inc 1997 */
 /* @(#)hexlib.c	1.1 (AHAG) 02/08/23 */
 
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
 #include "hexlib.h"
 
 int	nerrors;

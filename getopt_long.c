@@ -34,9 +34,14 @@
  * $PostgreSQL: pgsql/src/port/getopt_long.c,v 1.5 2005/10/15 02:49:51 momjian Exp $
  */
 
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
 #include "getopt_long.h"
-#include "string.h"
-#include "stdio.h"
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+#include <stdio.h>
 
 #ifndef HAVE_INT_OPTRESET
 int			optreset;

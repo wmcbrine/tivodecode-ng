@@ -2,13 +2,24 @@
  * tivodecode, (c) 2006, Jeremy Drake
  * See COPYING file for license terms
  */
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
 #ifdef WIN32
-#	include <windows.h>
-#else
-#	include <netinet/in.h>
+# include <windows.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
 #endif
 #include "sha1.h"
 #include "tivo-parse.h"
@@ -35,6 +46,7 @@ unsigned int parse_tivo(void * file, blob * xml, read_func_t read_handler)
 	}
 	// network byte order conversion
 #if 0
+	// these are unused, don't bother filling them in
 	head.dummy_0004=ntohs(head.dummy_0004);
 	head.dummy_0006=ntohs(head.dummy_0006);
 	head.dummy_0008=ntohs(head.dummy_0008);

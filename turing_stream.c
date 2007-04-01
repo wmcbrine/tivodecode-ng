@@ -65,13 +65,20 @@ algorithms should show the words "Encryption by QUALCOMM" either on the
 product or in the associated documentation.
 */
 
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
 #include "Turing.h"		/* interface definitions */
 
 /* testing and timing harness */
-#include <stdlib.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 #include <stdio.h>
-#include <string.h>
-#include <time.h>
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+//#include <time.h>
 #include "hexlib.h"
 #include "sha1.h"
 #include "tivo-parse.h"

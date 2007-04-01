@@ -2,49 +2,30 @@
  * tivodecode, (c) 2006, Jeremy Drake
  * See COPYING file for license terms
  */
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
 #include <errno.h>
 #include <stdio.h>
-#include <memory.h>
-#if !defined(WIN32)
-#	include <unistd.h>
-#else
-#	include <io.h>
+#ifdef HAVE_MEMORY_H
+# include <memory.h>
 #endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#ifdef WIN32
+# include <io.h>
+#endif
+#include "fseeko.h"
 #include "happyfile.h"
 
-#if defined (_POSIX_VERSION) && _POSIX_VERSION >= 200112L
-#	define hftell ftello
-#	define hfseek fseeko
-#elif defined (WIN32)
-static __int64 hftell (FILE *fp)
-{
-	fpos_t pos;
-	if (fgetpos(fp, &pos))
-		return (__int64)-1LL;
-	else
-		return (__int64)pos;
-}
-
-static int hfseek (FILE *fp, __int64 offset, int whence)
-{
-	fpos_t pos;
-	if (whence == SEEK_CUR)
-	{
-		int rt=fgetpos(fp, &pos);
-		if(rt)
-			return rt;
-		pos += (fpos_t) offset;
-	}
-	else if (whence == SEEK_END)
-		pos = (fpos_t) (_filelengthi64(_fileno(fp)) + offset);
-	else if (whence == SEEK_SET)
-		pos = (fpos_t) offset;
-
-	return fsetpos(fp, &pos);
-}
+#if defined HAVE_FSEEKO
+#	define hftell(a) ftello(a)
+#	define hfseek(a, b, c) fseeko(a, b, c)
 #else
-#	define hftell ftell
-#	define hfseek fseek
+#	define hftell(a) ftell(a)
+#	define hfseek(a, b, c) fseek(a, b, c)
+#	warning Large file support is questionable on this platform
 #endif
 
 happy_file * hopen (char * filename, char * mode)

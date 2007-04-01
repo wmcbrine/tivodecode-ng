@@ -12,7 +12,17 @@
 #endif
 #include "turing_stream.h"
 
-#if _FILE_OFFSET_BITS==64 || defined(__NetBSD__) || defined(__APPLE__)
+#include "tdconfig.h"
+#include <stddef.h>
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#include "turing_stream.h"
+
+#if SIZEOF_OFF_T == 8
 # define OFF_T_TYPE off_t
 # define OFF_T_FORMAT  "llu"
 #elif defined(WIN32)

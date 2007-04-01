@@ -4,11 +4,11 @@
  *
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
-#include <stdio.h>
-#include <memory.h>
-#include "happyfile.h"
-#include "turing_stream.h"
 #include "tivodecoder.h"
+#include <stdio.h>
+#ifdef HAVE_MEMORY_H
+# include <memory.h>
+#endif
 
 /* TODO: clean this up */
 extern int o_verbose;
@@ -315,7 +315,7 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
                             if (!o_no_verify)
                             {
                                 fprintf(stderr, "Invalid MAK -- aborting\n");
-                                exit(20);
+                                return -2;
                             }
                         }
                     }

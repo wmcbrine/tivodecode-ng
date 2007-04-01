@@ -11,16 +11,18 @@
 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#endif
-
+#else
 /* These are picked up from the system's getopt() facility. */
 extern int	opterr;
 extern int	optind;
 extern int	optopt;
 extern char *optarg;
+#endif
 
+#if !defined(HAVE_GETOPT) || !defined(HAVE_INT_OPTRESET)
 /* Some systems have this, otherwise you need to define it somewhere. */
 extern int	optreset;
+#endif
 
 #ifndef HAVE_STRUCT_OPTION
 

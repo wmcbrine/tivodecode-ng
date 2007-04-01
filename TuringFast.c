@@ -59,7 +59,12 @@ algorithms should show the words "Encryption by QUALCOMM" either on the
 product or in the associated documentation.
 */
 
-#include <stdlib.h>
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
 #include "Turing.h"		/* interface definitions */
 #include "TuringSbox.h"
 #include "QUTsbox.h"

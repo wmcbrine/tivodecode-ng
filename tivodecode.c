@@ -4,16 +4,20 @@
  *
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
+#include "tivodecoder.h"
 #include <stdio.h>
 #include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
+#ifdef HAVE_STDLIB_H
+# include <stdlib.h>
+#endif
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
+#ifdef HAVE_CTYPE_H
+# include <ctype.h>
+#endif
 #include "getopt_long.h"
 #include "happyfile.h"
-#include "tivo-parse.h"
-#include "turing_stream.h"
-#include "tivodecoder.h"
 
 #ifdef WIN32
 #   define HOME_ENV_NAME "USERPROFILE"
@@ -23,9 +27,9 @@
 #   define DEFAULT_EMPTY_HOME ""
 #endif
 
-static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
+#define PRINT_QUALCOMM_MSG() fprintf (stderr, "Encryption by QUALCOMM ;)\n\n")
 
-static const char * VERSION_STR = "CVS Head";
+static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 
 int o_verbose = 0;
 int o_no_verify = 0;
@@ -74,9 +78,10 @@ static void do_help(char * arg0, int exitval)
 
 static void do_version(int exitval)
 {
-    fprintf (stderr, "tivodecode version %s\n", VERSION_STR);
+    fprintf (stderr, "%s\n", PACKAGE_STRING);
     fprintf (stderr, "Copyright (c) 2006, Jeremy Drake\n");
-    fprintf (stderr, "See COPYING file in distribution for details\n");
+    fprintf (stderr, "See COPYING file in distribution for details\n\n");
+    PRINT_QUALCOMM_MSG();
 
     exit (exitval);
 }
@@ -102,8 +107,6 @@ int main(int argc, char *argv[])
 
     memset(&turing, 0, sizeof(turing));
     memset(mak, 0, sizeof(mak));
-
-    fprintf(stderr, "Encryption by QUALCOMM ;)\n\n");
 
     while (1)
     {
@@ -231,6 +234,8 @@ int main(int argc, char *argv[])
             return 7;
         }
     }
+
+    PRINT_QUALCOMM_MSG();
 
     if ((begin_at = setup_turing_key (&turing, hfh, &hread_wrapper, mak)) < 0)
     {

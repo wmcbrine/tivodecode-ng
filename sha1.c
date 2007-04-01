@@ -14,12 +14,21 @@
 
 /* #define SHA1HANDSOFF * Copies data before messing with it. */
 
-#include <string.h>
+#ifdef HAVE_CONFIG_H
+# include "tdconfig.h"
+#endif
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
 #include "sha1.h"
 #ifdef WIN32
-#	include <windows.h>
-#else
-#	include <arpa/inet.h>
+# include <windows.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+# include <sys/types.h>
+#endif
+#ifdef HAVE_NETINET_IN_H
+# include <netinet/in.h>
 #endif
 
 static void sha1_transform (unsigned int state[5], unsigned char buffer[64]);
