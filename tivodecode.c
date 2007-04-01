@@ -67,7 +67,7 @@ static void do_help(char * arg0, int exitval)
     ERROUT ("  --out, -o        output file (default stdout)\n");
     ERROUT ("  --verbose, -v    verbose\n");
     ERROUT ("  --no-verify, -n  do not verify MAK while decoding\n");
-    ERROUT ("  --version, -V    print the version information and exit\n\n");
+    ERROUT ("  --version, -V    print the version information and exit\n");
     ERROUT ("  --help, -h       print this help and exit\n\n");
     ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
     ERROUT ("means stdout or stdin respectively\n\n");
@@ -79,7 +79,7 @@ static void do_help(char * arg0, int exitval)
 static void do_version(int exitval)
 {
     fprintf (stderr, "%s\n", PACKAGE_STRING);
-    fprintf (stderr, "Copyright (c) 2006, Jeremy Drake\n");
+    fprintf (stderr, "Copyright (c) 2006-2007, Jeremy Drake\n");
     fprintf (stderr, "See COPYING file in distribution for details\n\n");
     PRINT_QUALCOMM_MSG();
 
