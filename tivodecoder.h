@@ -5,12 +5,6 @@
 
 #ifndef TIVO_DECODER_H_
 #define TIVO_DECODER_H_
-#include <stddef.h>
-#include <sys/types.h>
-#ifndef WIN32
-# include <unistd.h>
-#endif
-#include "turing_stream.h"
 
 #include "tdconfig.h"
 #include <stddef.h>
