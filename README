@@ -1,5 +1,5 @@
 tivodecode (c) 2006-2007, Jeremy Drake
-Version 0.2pre1
+Version 0.2pre2
 See COPYING for license terms.
 
 This project now uses autoconf for its build system.  See the INSTALL file for
@@ -32,7 +32,6 @@ Usage: ./tivodecode [--help] [--verbose|-v] [--no-verify|-n] {--mak|-m} mak [{--
   --verbose, -v    verbose
   --no-verify, -n  do not verify MAK while decoding
   --version, -V    print the version information and exit
-
   --help, -h       print this help and exit
 
 The file names specified for the output file or the tivo file may be -, which

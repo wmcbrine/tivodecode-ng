@@ -1,4 +1,4 @@
-AC_INIT(tivodecode, 0.2pre1)
+AC_INIT(tivodecode, 0.2pre2)
 AC_CONFIG_SRCDIR(tivodecode.c)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
