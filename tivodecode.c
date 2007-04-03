@@ -33,6 +33,7 @@ static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 
 int o_verbose = 0;
 int o_no_verify = 0;
+int o_dump_chunks = 0;
 
 happy_file * hfh=NULL;
 // file position options
@@ -56,6 +57,7 @@ static struct option long_options[] = {
     {"verbose", 0, 0, 'v'},
     {"version", 0, 0, 'V'},
     {"no-verify", 0, 0, 'n'},
+    {"dump-chunks", 0, 0, 'D'},
     {0, 0, 0, 0}
 };
 
@@ -67,6 +69,7 @@ static void do_help(char * arg0, int exitval)
     ERROUT ("  --out, -o        output file (default stdout)\n");
     ERROUT ("  --verbose, -v    verbose\n");
     ERROUT ("  --no-verify, -n  do not verify MAK while decoding\n");
+    ERROUT ("  --dump-chunks,-D dump data chunks from TiVo file to files (development)\n");
     ERROUT ("  --version, -V    print the version information and exit\n");
     ERROUT ("  --help, -h       print this help and exit\n\n");
     ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
@@ -110,7 +113,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long (argc, argv, "m:o:hnvV", long_options, 0);
+        int c = getopt_long (argc, argv, "m:o:hnDvV", long_options, 0);
 
         if (c == -1)
             break;
@@ -133,6 +136,9 @@ int main(int argc, char *argv[])
                 break;
             case 'n':
                 o_no_verify = 1;
+                break;
+            case 'D':
+                o_dump_chunks = 1;
                 break;
             case '?':
                 do_help(argv[0], 2);
@@ -237,9 +243,71 @@ int main(int argc, char *argv[])
 
     PRINT_QUALCOMM_MSG();
 
-    if ((begin_at = setup_turing_key (&turing, hfh, &hread_wrapper, mak)) < 0)
+    if (o_dump_chunks)
     {
-        return 8;
+        /* parse the tivo headers manually here, since we care about more
+         * than the init_turing_from_file function will get
+         */
+        tivo_stream_header head;
+        tivo_stream_chunk *chunk;
+        int i;
+
+        if (read_tivo_header (hfh, &head, &hread_wrapper))
+            return 8;
+
+        begin_at = head.mpeg_offset;
+
+        for (i = 0; i < head.chunks; i++)
+        {
+            /* TODO: find a better way to present the chunks */
+            /* maybe a simple tar format writer */
+            char buf[4096];
+            const char * chunk_type_name;
+            FILE * chunkfh;
+
+            if ((chunk = read_tivo_chunk (hfh, &hread_wrapper)) == NULL)
+                return 8;
+
+            if (chunk->data_size && chunk->type == TIVO_CHUNK_XML)
+                setup_turing_key (&turing, chunk, mak);
+
+            switch (chunk->type)
+            {
+                case TIVO_CHUNK_XML:
+                    chunk_type_name = "xml";
+                    break;
+                case TIVO_CHUNK_BLOB:
+                    chunk_type_name = "blob";
+                    break;
+                default:
+                    chunk_type_name = "unknown";
+                    break;
+            }
+
+            sprintf(buf, "%s-%02d-%04x.%s", "chunk", i, chunk->id, chunk_type_name);
+
+            chunkfh = fopen(buf, "wb");
+            if (!chunkfh)
+            {
+                perror("create chunk file");
+                return 8;
+            }
+
+            if (fwrite (chunk->data, 1, chunk->data_size, chunkfh) != chunk->data_size)
+            {
+                perror("write chunk");
+                return 8;
+            }
+
+            fclose(chunkfh);
+
+            free(chunk);
+        }
+    }
+    else
+    {
+        if ((begin_at = init_turing_from_file (&turing, hfh, &hread_wrapper, mak)) < 0)
+            return 8;
     }
 
     if (hseek(hfh, begin_at, SEEK_SET) < 0)

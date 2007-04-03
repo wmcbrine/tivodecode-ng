@@ -87,23 +87,41 @@ product or in the associated documentation.
 // from tivodecode.c, verbose option
 extern int o_verbose;
 
-unsigned int setup_turing_key(turing_state * turing, void * tivofile, read_func_t read_handler, char * mak)
+unsigned int init_turing_from_file(turing_state * turing, void * tivofile, read_func_t read_handler, char * mak)
 {
-    blob xml;
+    tivo_stream_header head;
+    tivo_stream_chunk *xml;
+    int i;
+
+    if (read_tivo_header (tivofile, &head, read_handler))
+        return -1;
+
+    for (i = 0; i < head.chunks; i++)
+    {
+        if ((xml = read_tivo_chunk (tivofile, read_handler)) == NULL)
+            return -1;
+
+        if (xml->data_size && xml->type == TIVO_CHUNK_XML)
+        {
+            setup_turing_key (turing, xml, mak);
+            free(xml);
+            return head.mpeg_offset;
+        }
+        else
+            free(xml);
+    }
+
+    return -1;
+}
+
+void setup_turing_key(turing_state * turing, tivo_stream_chunk * xml, char * mak)
+{
     SHA1_CTX context;
-    unsigned int mpeg_off;
 
     sha1_init(&context);
     sha1_update(&context, (unsigned char *)mak, strlen(mak));
-
-    mpeg_off = parse_tivo(tivofile, &xml, read_handler);
-
-    sha1_update(&context, xml.data, xml.size);
+    sha1_update(&context, xml->data, xml->data_size);
     sha1_final(turing->turingkey, &context);
-
-    free (xml.data);
-
-    return mpeg_off;
 }
 
 static void prepare_frame_helper(turing_state * turing, unsigned char stream_id, int block_id)

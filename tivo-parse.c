@@ -24,64 +24,82 @@
 #include "sha1.h"
 #include "tivo-parse.h"
 
-#define FILL_NETGNRC(var, buf, offset, size, sz) do { \
-	memcpy (&var, buf + offset, size); \
-	var = ntoh ## sz (var); \
-} while(0)
+#define LOAD_NET_UNALIGNED_HELP(ptr, offset, len) ((unsigned int)ptr[offset] << (((len - 1) << 3) - (offset << 3)))
 
-#define FILL_NETLONG(var, buf, offset) FILL_NETGNRC(var, buf, offset, sizeof(unsigned int), l)
+#define NETLONG_UNALIGNED(ptr) ( \
+		LOAD_NET_UNALIGNED_HELP(ptr, 0, 4) | \
+		LOAD_NET_UNALIGNED_HELP(ptr, 1, 4) | \
+		LOAD_NET_UNALIGNED_HELP(ptr, 2, 4) | \
+		LOAD_NET_UNALIGNED_HELP(ptr, 3, 4) \
+	)
 
-#define FILL_NETSHRT(var, buf, offset) FILL_NETGNRC(var, buf, offset, sizeof(unsigned short), s)
-
-unsigned int parse_tivo(void * file, blob * xml, read_func_t read_handler)
+int read_tivo_header(void * file, tivo_stream_header * head, read_func_t read_handler)
 {
-	char buf[16];
-	tivo_stream_header head;
-	tivo_stream_chunk  chunk;
+	struct {
+		char           filetype[4];
+		/* all fields are in network byte order */
+		unsigned short dummy_0004;
+		unsigned short dummy_0006;
+		unsigned short dummy_0008;
+		unsigned char  mpeg_offset[4]; /* unsigned int */
+		unsigned short chunks;
+	} raw_tivo_header;
 
-	if (read_handler (buf, SIZEOF_STREAM_HEADER, file) != SIZEOF_STREAM_HEADER)
+
+	if (read_handler (&raw_tivo_header, SIZEOF_STREAM_HEADER, file) != SIZEOF_STREAM_HEADER)
 	{
 		perror ("read head");
 		return -1;
 	}
-	// network byte order conversion
-#if 0
-	// these are unused, don't bother filling them in
-	head.dummy_0004=ntohs(head.dummy_0004);
-	head.dummy_0006=ntohs(head.dummy_0006);
-	head.dummy_0008=ntohs(head.dummy_0008);
+#if 1
+	// these are unused
+	memcpy(head->filetype, raw_tivo_header.filetype, 4);
+	head->dummy_0004 = ntohs(raw_tivo_header.dummy_0004);
+	head->dummy_0006 = ntohs(raw_tivo_header.dummy_0006);
+	head->dummy_0008 = ntohs(raw_tivo_header.dummy_0008);
 #endif
-	FILL_NETLONG(head.mpeg_offset, buf, 10);
-	FILL_NETSHRT(head.chunks, buf, 14);
+	head->mpeg_offset = NETLONG_UNALIGNED(raw_tivo_header.mpeg_offset);
+	head->chunks = ntohs(raw_tivo_header.chunks);
 
-	if (read_handler (buf, SIZEOF_STREAM_CHUNK, file) != SIZEOF_STREAM_CHUNK)
+	return 0;
+}
+
+tivo_stream_chunk * read_tivo_chunk(void * file, read_func_t read_handler)
+{
+	tivo_stream_chunk * chunk;
+	unsigned int        chunk_sz;
+	tivo_stream_chunk   raw_chunk_header;
+
+	if (read_handler (&raw_chunk_header, SIZEOF_STREAM_CHUNK, file) != SIZEOF_STREAM_CHUNK)
 	{
 		perror("read chunk head");
-		return -1;
+		return NULL;
+	}
+
+	chunk_sz = ntohl(raw_chunk_header.chunk_size);
+
+	/* allocate the memory for the chunk */
+	if (!(chunk = (tivo_stream_chunk *)malloc(chunk_sz)))
+	{
+		perror("malloc");
+		exit(1);
 	}
 
 	// network byte order conversion
-	FILL_NETLONG (chunk.chunk_size, buf, 0);
-	FILL_NETLONG (chunk.data_size, buf, 4);
-	FILL_NETSHRT (chunk.id, buf, 8);
-	FILL_NETSHRT (chunk.type, buf, 10);
+	chunk->chunk_size = chunk_sz;
+	chunk->data_size  = ntohl(raw_chunk_header.data_size);
+	chunk->id         = ntohs(raw_chunk_header.id       );
+	chunk->type       = ntohs(raw_chunk_header.type     );
 
-	if (chunk.data_size && chunk.type == TIVO_CHUNK_XML)
+	/* read the rest of the chunk */
+	if (read_handler(chunk->data, (int)chunk_sz - SIZEOF_STREAM_CHUNK, file)
+			!= chunk_sz - SIZEOF_STREAM_CHUNK)
 	{
-		xml->size = chunk.data_size;
-		if (!(xml->data = (unsigned char *)malloc(chunk.data_size + 1)))
-		{
-			perror("malloc");
-			exit(1);
-		}
-		if (read_handler (xml->data, (int)xml->size, file) != xml->size)
-		{
-			perror("read chunk data");
-			free(xml->data);
-			return -1;
-		}
+		perror("read chunk data");
+		free(chunk);
+		return NULL;
 	}
 
-	return head.mpeg_offset;
+	return chunk;
 }
 

@@ -31,7 +31,8 @@ typedef struct
 	turing_state_stream * active;
 } turing_state;
 
-unsigned int setup_turing_key(turing_state * turing, void * tivofile, read_func_t read_handler, char * mak);
+unsigned int init_turing_from_file(turing_state * turing, void * tivofile, read_func_t read_handler, char * mak);
+void setup_turing_key(turing_state * turing, tivo_stream_chunk * xml, char * mak);
 void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id);
 void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer_length);
 void destruct_turing(turing_state * turing);

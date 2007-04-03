@@ -33,19 +33,15 @@ typedef struct tivo_stream_chunk_s {
 	unsigned int   data_size;     /* Length of the payload */
 	unsigned short id;            /* Chunk ID */
 	unsigned short type;          /* Subtype */
+	unsigned char  data[1];       /* Variable length data */
 } tivo_stream_chunk;
-
-
-typedef struct {
-	size_t size;
-	unsigned char * data;
-} blob;
 
 /* genericized read function so that different underlying implementations can
  * be swapped out for more of a library setup
  */
 typedef int (*read_func_t) (void * mem, int size, void * fh);
 
-unsigned int parse_tivo(void * file, blob * xml, read_func_t read_handler);
+int read_tivo_header(void * file, tivo_stream_header * head, read_func_t read_handler);
+tivo_stream_chunk * read_tivo_chunk(void * file, read_func_t read_handler);
 
 #endif
