@@ -163,6 +163,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\md5.c"
+				>
+			</File>
+			<File
 				RelativePath=".\sha1.c"
 				>
 			</File>
@@ -190,6 +194,10 @@
 			>
 			<File
 				RelativePath=".\hexlib.h"
+				>
+			</File>
+			<File
+				RelativePath=".\md5.h"
 				>
 			</File>
 			<File
