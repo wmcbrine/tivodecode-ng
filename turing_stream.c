@@ -211,10 +211,11 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
                 turing->active->internal = TuringAlloc();
                 if (o_verbose)
                     fprintf(stderr, "Creating turing stream for packet type %02x\n", stream_id);
+                prepare_frame_helper(turing, stream_id, block_id);
             }
-            prepare_frame_helper(turing, stream_id, block_id);
         }
-        else if (turing->active->block_id != block_id)
+
+        if (turing->active->block_id != block_id)
         {
             prepare_frame_helper(turing, stream_id, block_id);
         }
