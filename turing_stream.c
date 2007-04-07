@@ -130,37 +130,34 @@ static void prepare_frame_helper(turing_state * turing, unsigned char stream_id,
     unsigned char turkey[20];
     unsigned char turiv [20];
 
-    if (stream_id != turing->active->stream_id || block_id != turing->active->block_id)
-    {
-        turing->active->stream_id = stream_id;
-        turing->active->block_id = block_id;
+    turing->active->stream_id = stream_id;
+    turing->active->block_id = block_id;
 
-        turing->turingkey[16] = stream_id;
-        turing->turingkey[17] = (block_id & 0xFF0000) >> 16;
-        turing->turingkey[18] = (block_id & 0x00FF00) >> 8;
-        turing->turingkey[19] = (block_id & 0x0000FF) >> 0;
+    turing->turingkey[16] = stream_id;
+    turing->turingkey[17] = (block_id & 0xFF0000) >> 16;
+    turing->turingkey[18] = (block_id & 0x00FF00) >> 8;
+    turing->turingkey[19] = (block_id & 0x0000FF) >> 0;
 
-        sha1_init(&context);
-        sha1_update(&context, turing->turingkey, 17);
-        sha1_final(turkey, &context);
-        //hexbulk(turkey, 20);
+    sha1_init(&context);
+    sha1_update(&context, turing->turingkey, 17);
+    sha1_final(turkey, &context);
+    //hexbulk(turkey, 20);
 
-        sha1_init(&context);
-        sha1_update(&context, turing->turingkey, 20);
-        sha1_final(turiv, &context);
-        //hexbulk(turiv , 20);
+    sha1_init(&context);
+    sha1_update(&context, turing->turingkey, 20);
+    sha1_final(turiv, &context);
+    //hexbulk(turiv, 20);
 
-        turing->active->cipher_pos = 0;
+    turing->active->cipher_pos = 0;
 
-        TuringKey(turing->active->internal, turkey, 20);
-        TuringIV(turing->active->internal, turiv, 20);
+    TuringKey(turing->active->internal, turkey, 20);
+    TuringIV(turing->active->internal, turiv, 20);
 
-        memset(turing->active->cipher_data, 0, MAXSTREAM);
+    memset(turing->active->cipher_data, 0, MAXSTREAM);
 
-        turing->active->cipher_len = TuringGen(turing->active->internal, turing->active->cipher_data);
+    turing->active->cipher_len = TuringGen(turing->active->internal, turing->active->cipher_data);
 
-        //hexbulk(turing->active->cipher_data, turing->active->cipher_len);
-    }
+    //hexbulk(turing->active->cipher_data, turing->active->cipher_len);
 }
 
 void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
@@ -186,6 +183,11 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
                 if (o_verbose)
                     fprintf(stderr, "Creating turing stream for packet type %02x\n", stream_id);
             }
+            prepare_frame_helper(turing, stream_id, block_id);
+        }
+        else if (turing->active->block_id != block_id)
+        {
+            prepare_frame_helper(turing, stream_id, block_id);
         }
     }
     else
@@ -195,9 +197,8 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
         turing->active->internal = TuringAlloc();
         if (o_verbose)
             fprintf(stderr, "Creating turing stream for packet type %02x\n", stream_id);
+        prepare_frame_helper(turing, stream_id, block_id);
     }
-
-    prepare_frame_helper(turing, stream_id, block_id);
 }
 
 void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer_length)
@@ -210,6 +211,7 @@ void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer
         {
             turing->active->cipher_len = TuringGen(turing->active->internal, turing->active->cipher_data);
             turing->active->cipher_pos = 0;
+            //hexbulk(turing->active->cipher_data, turing->active->cipher_len);
         }
 
         buffer[i] ^= turing->active->cipher_data[turing->active->cipher_pos++];
