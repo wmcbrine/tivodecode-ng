@@ -252,8 +252,8 @@ void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer
 
 void skip_turing_data(turing_state * turing, size_t bytes_to_skip)
 {
-    if (turing->active->cipher_pos + bytes_to_skip < turing->active->cipher_len)
-        turing->active->cipher_pos += bytes_to_skip;
+    if (turing->active->cipher_pos + bytes_to_skip < (size_t)turing->active->cipher_len)
+        turing->active->cipher_pos += (int)bytes_to_skip;
     else
     {
         do
@@ -261,9 +261,9 @@ void skip_turing_data(turing_state * turing, size_t bytes_to_skip)
             bytes_to_skip -= turing->active->cipher_len - turing->active->cipher_pos;
             turing->active->cipher_len = TuringGen(turing->active->internal, turing->active->cipher_data);
             turing->active->cipher_pos = 0;
-        } while (bytes_to_skip >= turing->active->cipher_len);
+        } while (bytes_to_skip >= (size_t)turing->active->cipher_len);
 
-        turing->active->cipher_pos = bytes_to_skip;
+        turing->active->cipher_pos = (int)bytes_to_skip;
     }
 }
 

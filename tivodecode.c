@@ -290,7 +290,7 @@ int main(int argc, char *argv[])
             }
 
             prepare_frame(&metaturing, 0, 0);
-            skip_turing_data(&metaturing, chunk_start - current_meta_stream_pos);
+            skip_turing_data(&metaturing, (size_t)(chunk_start - current_meta_stream_pos));
             decrypt_buffer(&metaturing, chunk->data, chunk->data_size);
             current_meta_stream_pos = chunk_start + chunk->data_size;
 
