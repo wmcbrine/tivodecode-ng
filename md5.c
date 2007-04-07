@@ -153,14 +153,14 @@ md5_init(md5_ctxt * ctxt)
 }
 
 void
-md5_loop(md5_ctxt * ctxt, const unsigned char *input, unsigned len)
+md5_loop(md5_ctxt * ctxt, const unsigned char *input, size_t len)
 {
 	unsigned int gap,
 				i;
 
 	if (ctxt->md5_nl + len * 8 < ctxt->md5_nl)
 		ctxt->md5_nh++;
-	ctxt->md5_nl += len * 8;		/* byte to bit */
+	ctxt->md5_nl += (unsigned int)len * 8;		/* byte to bit */
 	gap = MD5_BUFLEN - ctxt->md5_i;
 
 	if (len >= gap)
@@ -171,13 +171,13 @@ md5_loop(md5_ctxt * ctxt, const unsigned char *input, unsigned len)
 		for (i = gap; i + MD5_BUFLEN <= len; i += MD5_BUFLEN)
 			md5_calc((unsigned char *) (input + i), ctxt);
 
-		ctxt->md5_i = len - i;
+		ctxt->md5_i = (unsigned int)len - i;
 		memmove(ctxt->md5_buf, input + i, ctxt->md5_i);
 	}
 	else
 	{
 		memmove(ctxt->md5_buf + ctxt->md5_i, input, len);
-		ctxt->md5_i += len;
+		ctxt->md5_i += (unsigned int)len;
 	}
 }
 
