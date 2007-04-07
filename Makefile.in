@@ -64,8 +64,8 @@ ARFLAGS = cru
 libtivodecode_a_AR = $(AR) $(ARFLAGS)
 libtivodecode_a_LIBADD =
 am_libtivodecode_a_OBJECTS = hexlib.$(OBJEXT) TuringFast.$(OBJEXT) \
-	sha1.$(OBJEXT) tivo-parse.$(OBJEXT) turing_stream.$(OBJEXT) \
-	tivodecoder.$(OBJEXT)
+	sha1.$(OBJEXT) md5.$(OBJEXT) tivo-parse.$(OBJEXT) \
+	turing_stream.$(OBJEXT) tivodecoder.$(OBJEXT)
 libtivodecode_a_OBJECTS = $(am_libtivodecode_a_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
@@ -185,7 +185,7 @@ top_srcdir = @top_srcdir@
 lib_LIBRARIES = libtivodecode.a
 pkginclude_HEADERS = tivodecoder.h tivo-parse.h turing_stream.h Turing.h
 nodist_pkginclude_HEADERS = tdconfig.h
-libtivodecode_a_SOURCES = hexlib.c TuringFast.c sha1.c tivo-parse.c turing_stream.c tivodecoder.c QUTsbox.h TuringMultab.h TuringSbox.h hexlib.h sha1.h
+libtivodecode_a_SOURCES = hexlib.c TuringFast.c sha1.c md5.c tivo-parse.c turing_stream.c tivodecoder.c QUTsbox.h TuringMultab.h TuringSbox.h hexlib.h sha1.h md5.h
 tivodecode_SOURCES = happyfile.c tivodecode.c happyfile.h getopt_long.h fseeko.h
 tivodecode_LDADD = $(LIBOBJS) -L. -ltivodecode
 tivodecode_DEPENDENCIES = $(LIBOBJS) libtivodecode.a
@@ -317,6 +317,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TuringFast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/happyfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hexlib.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo-parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivodecode.Po@am__quote@

@@ -57,7 +57,7 @@ static struct option long_options[] = {
     {"verbose", 0, 0, 'v'},
     {"version", 0, 0, 'V'},
     {"no-verify", 0, 0, 'n'},
-    {"dump-chunks", 0, 0, 'D'},
+    {"dump-metadata", 0, 0, 'D'},
     {0, 0, 0, 0}
 };
 
@@ -65,13 +65,13 @@ static void do_help(char * arg0, int exitval)
 {
     fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] {--mak|-m} mak [{--out|-o} outfile] <tivofile>\n\n", arg0);
 #define ERROUT(s) fprintf(stderr, s)
-    ERROUT ("  --mak, -m        media access key (required)\n");
-    ERROUT ("  --out, -o        output file (default stdout)\n");
-    ERROUT ("  --verbose, -v    verbose\n");
-    ERROUT ("  --no-verify, -n  do not verify MAK while decoding\n");
-    ERROUT ("  --dump-chunks,-D dump data chunks from TiVo file to files (development)\n");
-    ERROUT ("  --version, -V    print the version information and exit\n");
-    ERROUT ("  --help, -h       print this help and exit\n\n");
+    ERROUT ("  --mak, -m          media access key (required)\n");
+    ERROUT ("  --out, -o          output file (default stdout)\n");
+    ERROUT ("  --verbose, -v      verbose\n");
+    ERROUT ("  --no-verify, -n    do not verify MAK while decoding\n");
+    ERROUT ("  --dump-metadata,-D dump metadata from TiVo file to xml files (development)\n");
+    ERROUT ("  --version, -V      print the version information and exit\n");
+    ERROUT ("  --help, -h         print this help and exit\n\n");
     ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
     ERROUT ("means stdout or stdin respectively\n\n");
 #undef ERROUT
@@ -250,7 +250,11 @@ int main(int argc, char *argv[])
          */
         tivo_stream_header head;
         tivo_stream_chunk *chunk;
+        turing_state metaturing;
+        hoff_t current_meta_stream_pos = 0;
         int i;
+
+        memset(&metaturing, 0, sizeof(metaturing));
 
         if (read_tivo_header (hfh, &head, &hread_wrapper))
             return 8;
@@ -262,29 +266,21 @@ int main(int argc, char *argv[])
             /* TODO: find a better way to present the chunks */
             /* maybe a simple tar format writer */
             char buf[4096];
-            const char * chunk_type_name;
+            hoff_t chunk_start = htell(hfh) + SIZEOF_STREAM_CHUNK;
             FILE * chunkfh;
 
             if ((chunk = read_tivo_chunk (hfh, &hread_wrapper)) == NULL)
                 return 8;
 
             if (chunk->data_size && chunk->type == TIVO_CHUNK_XML)
-                setup_turing_key (&turing, chunk, mak);
-
-            switch (chunk->type)
             {
-                case TIVO_CHUNK_XML:
-                    chunk_type_name = "xml";
-                    break;
-                case TIVO_CHUNK_BLOB:
-                    chunk_type_name = "blob";
-                    break;
-                default:
-                    chunk_type_name = "unknown";
-                    break;
+                setup_turing_key (&turing, chunk, mak);
+                setup_metadata_key (&metaturing, chunk, mak);
+                free (chunk);
+                continue;
             }
 
-            sprintf(buf, "%s-%02d-%04x.%s", "chunk", i, chunk->id, chunk_type_name);
+            sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, chunk->id);
 
             chunkfh = fopen(buf, "wb");
             if (!chunkfh)
@@ -292,6 +288,11 @@ int main(int argc, char *argv[])
                 perror("create chunk file");
                 return 8;
             }
+
+            prepare_frame(&metaturing, 0, 0);
+            skip_turing_data(&metaturing, chunk_start - current_meta_stream_pos);
+            decrypt_buffer(&metaturing, chunk->data, chunk->data_size);
+            current_meta_stream_pos = chunk_start + chunk->data_size;
 
             if (fwrite (chunk->data, 1, chunk->data_size, chunkfh) != chunk->data_size)
             {
@@ -303,6 +304,8 @@ int main(int argc, char *argv[])
 
             free(chunk);
         }
+
+        destruct_turing(&metaturing);
     }
     else
     {

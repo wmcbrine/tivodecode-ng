@@ -80,6 +80,7 @@ product or in the associated documentation.
 #endif
 //#include <time.h>
 #include "hexlib.h"
+#include "md5.h"
 #include "sha1.h"
 #include "tivo-parse.h"
 #include "turing_stream.h"
@@ -122,6 +123,34 @@ void setup_turing_key(turing_state * turing, tivo_stream_chunk * xml, char * mak
     sha1_update(&context, (unsigned char *)mak, strlen(mak));
     sha1_update(&context, xml->data, xml->data_size);
     sha1_final(turing->turingkey, &context);
+}
+
+void setup_metadata_key(turing_state * turing, tivo_stream_chunk * xml, char * mak)
+{
+    static const char lookup[] = "0123456789abcdef";
+    static const char media_mak_prefix[] = "tivo:TiVo DVR:";
+    MD5_CTX  md5;
+    int i;
+    unsigned char md5result[16];
+    char metakey[33];
+
+    
+    MD5Init(&md5);
+    MD5Update(&md5, media_mak_prefix, strlen(media_mak_prefix));
+    MD5Update(&md5, mak, strlen(mak));
+    MD5Final(md5result, &md5);
+
+	for (i = 0; i < 16; ++i)
+	{
+		metakey[2*i + 0] = lookup[(md5result[i] >> 4) & 0xf];
+		metakey[2*i + 1] = lookup[ md5result[i]       & 0xf];
+	}
+    metakey[32] = '\0';
+
+    /* this is done the same as the normal one, only replacing the mak
+     * with the metakey
+     */
+    setup_turing_key(turing, xml, metakey);
 }
 
 static void prepare_frame_helper(turing_state * turing, unsigned char stream_id, int block_id)
@@ -215,6 +244,23 @@ void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer
         }
 
         buffer[i] ^= turing->active->cipher_data[turing->active->cipher_pos++];
+    }
+}
+
+void skip_turing_data(turing_state * turing, size_t bytes_to_skip)
+{
+    if (turing->active->cipher_pos + bytes_to_skip < turing->active->cipher_len)
+        turing->active->cipher_pos += bytes_to_skip;
+    else
+    {
+        do
+        {
+            bytes_to_skip -= turing->active->cipher_len - turing->active->cipher_pos;
+            turing->active->cipher_len = TuringGen(turing->active->internal, turing->active->cipher_data);
+            turing->active->cipher_pos = 0;
+        } while (bytes_to_skip >= turing->active->cipher_len);
+
+        turing->active->cipher_pos = bytes_to_skip;
     }
 }
 
