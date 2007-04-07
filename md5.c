@@ -33,8 +33,12 @@
 
 #include "tdconfig.h"
 
-#include <memory.h>
-#include <sys/param.h>
+#ifdef HAVE_MEMORY_H
+# include <memory.h>
+#endif
+#ifdef HAVE_STRING_H
+# include <string.h>
+#endif
 
 #include "md5.h"
 
