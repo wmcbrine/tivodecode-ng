@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
             if (fread(mak, 1, 11, mak_file) >= 10)
             {
                 int i;
-                for (i = 11; i >= 10 && (mak[i] == '\0' || isspace(mak[i])); --i)
+                for (i = 11; i >= 10 && (mak[i] == '\0' || isspace((int)mak[i])); --i)
                 {
                     mak[i] = '\0';
                 }
