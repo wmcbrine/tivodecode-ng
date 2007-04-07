@@ -189,6 +189,18 @@ static void prepare_frame_helper(turing_state * turing, unsigned char stream_id,
     //hexbulk(turing->active->cipher_data, turing->active->cipher_len);
 }
 
+#define CREATE_TURING_LISTITM(turing, nxt, stream_id, block_id) \
+    do { \
+        (turing)->active = calloc (1, sizeof (turing_state_stream)); \
+        (turing)->active->next = (nxt); \
+        (nxt) = (turing)->active; \
+        (turing)->active->internal = TuringAlloc(); \
+        if (o_verbose) \
+            fprintf(stderr, "Creating turing stream for packet type %02x\n", (stream_id)); \
+        prepare_frame_helper((turing), (stream_id), (block_id)); \
+    } while(0)
+
+
 void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
 {
     if (turing->active)
@@ -204,14 +216,8 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
 
             if (turing->active->stream_id != stream_id)
             {
-                // did not find a state for this stream type
-                turing->active = calloc (1, sizeof (turing_state_stream));
-                turing->active->next = start->next;
-                start->next = turing->active;
-                turing->active->internal = TuringAlloc();
-                if (o_verbose)
-                    fprintf(stderr, "Creating turing stream for packet type %02x\n", stream_id);
-                prepare_frame_helper(turing, stream_id, block_id);
+                /* did not find a state for this stream type */
+                CREATE_TURING_LISTITM (turing, start->next, stream_id, block_id);
             }
         }
 
@@ -222,12 +228,8 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
     }
     else
     {
-        turing->active = calloc (1, sizeof (turing_state_stream));
-        turing->active->next = turing->active;
-        turing->active->internal = TuringAlloc();
-        if (o_verbose)
-            fprintf(stderr, "Creating turing stream for packet type %02x\n", stream_id);
-        prepare_frame_helper(turing, stream_id, block_id);
+        /* first stream type seen */
+        CREATE_TURING_LISTITM (turing, turing->active, stream_id, block_id);
     }
 }
 
