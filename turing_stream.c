@@ -125,10 +125,12 @@ void setup_turing_key(turing_state * turing, tivo_stream_chunk * xml, char * mak
     sha1_final(turing->turingkey, &context);
 }
 
+#define static_strlen(str) (sizeof(str) - 1)
+
 void setup_metadata_key(turing_state * turing, tivo_stream_chunk * xml, char * mak)
 {
     static const char lookup[] = "0123456789abcdef";
-    static const char media_mak_prefix[] = "tivo:TiVo DVR:";
+    static const unsigned char media_mak_prefix[] = "tivo:TiVo DVR:";
     MD5_CTX  md5;
     int i;
     unsigned char md5result[16];
@@ -136,8 +138,8 @@ void setup_metadata_key(turing_state * turing, tivo_stream_chunk * xml, char * m
 
     
     MD5Init(&md5);
-    MD5Update(&md5, media_mak_prefix, strlen(media_mak_prefix));
-    MD5Update(&md5, mak, strlen(mak));
+    MD5Update(&md5, media_mak_prefix, static_strlen(media_mak_prefix));
+    MD5Update(&md5, (unsigned char *)mak, strlen(mak));
     MD5Final(md5result, &md5);
 
 	for (i = 0; i < 16; ++i)
