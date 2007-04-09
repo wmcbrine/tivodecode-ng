@@ -34,6 +34,7 @@ static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 int o_verbose = 0;
 int o_no_verify = 0;
 int o_dump_chunks = 0;
+int o_no_video = 0;
 
 happy_file * hfh=NULL;
 // file position options
@@ -58,6 +59,7 @@ static struct option long_options[] = {
     {"version", 0, 0, 'V'},
     {"no-verify", 0, 0, 'n'},
     {"dump-metadata", 0, 0, 'D'},
+    {"no-video", 0, 0, 'x'},
     {0, 0, 0, 0}
 };
 
@@ -70,6 +72,7 @@ static void do_help(char * arg0, int exitval)
     ERROUT ("  --verbose, -v      verbose\n");
     ERROUT ("  --no-verify, -n    do not verify MAK while decoding\n");
     ERROUT ("  --dump-metadata,-D dump metadata from TiVo file to xml files (development)\n");
+    ERROUT ("  --no-video, -x     don't decode video, exit after metadata\n");
     ERROUT ("  --version, -V      print the version information and exit\n");
     ERROUT ("  --help, -h         print this help and exit\n\n");
     ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
@@ -113,7 +116,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long (argc, argv, "m:o:hnDvV", long_options, 0);
+        int c = getopt_long (argc, argv, "m:o:hnDxvV", long_options, 0);
 
         if (c == -1)
             break;
@@ -139,6 +142,9 @@ int main(int argc, char *argv[])
                 break;
             case 'D':
                 o_dump_chunks = 1;
+                break;
+            case 'x':
+                o_no_video = 1;
                 break;
             case '?':
                 do_help(argv[0], 2);
@@ -274,7 +280,8 @@ int main(int argc, char *argv[])
 
             if (chunk->data_size && chunk->type == TIVO_CHUNK_XML)
             {
-                setup_turing_key (&turing, chunk, mak);
+                if (!o_no_video)
+                    setup_turing_key (&turing, chunk, mak);
                 setup_metadata_key (&metaturing, chunk, mak);
                 free (chunk);
                 continue;
@@ -306,9 +313,14 @@ int main(int argc, char *argv[])
         }
 
         destruct_turing(&metaturing);
+        if (o_no_video)
+            exit(0);
     }
     else
     {
+        if (o_no_video)
+            exit(0);
+
         if ((begin_at = init_turing_from_file (&turing, hfh, &hread_wrapper, mak)) < 0)
             return 8;
     }
