@@ -1,5 +1,5 @@
 tivodecode (c) 2006-2007, Jeremy Drake
-Version 0.2pre2
+Version 0.2pre3
 See COPYING for license terms.
 
 This project now uses autoconf for its build system.  See the INSTALL file for
@@ -27,12 +27,15 @@ The parameters (from --help) are documented below.
 
 Usage: ./tivodecode [--help] [--verbose|-v] [--no-verify|-n] {--mak|-m} mak [{--out|-o} outfile] <tivofile>
 
-  --mak, -m        media access key (required)
-  --out, -o        output file (default stdout)
-  --verbose, -v    verbose
-  --no-verify, -n  do not verify MAK while decoding
-  --version, -V    print the version information and exit
-  --help, -h       print this help and exit
+  --mak, -m          media access key (required)
+  --out, -o          output file (default stdout)
+  --verbose, -v      verbose
+  --no-verify, -n    do not verify MAK while decoding
+  --dump-metadata,-D dump metadata from TiVo file to xml files (development)
+  --no-video, -x     don't decode video, exit after metadata
+  --version, -V      print the version information and exit
+  --help, -h         print this help and exit
 
 The file names specified for the output file or the tivo file may be -, which
 means stdout or stdin respectively
+
