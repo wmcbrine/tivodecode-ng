@@ -6,6 +6,10 @@
 #ifndef TIVO_DECODER_H_
 #define TIVO_DECODER_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "tdconfig.h"
 #include <stddef.h>
 #ifdef HAVE_SYS_TYPES_H
@@ -35,4 +39,7 @@ typedef int (*write_func_t) (void * mem, int size, void * fh);
  */
 int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

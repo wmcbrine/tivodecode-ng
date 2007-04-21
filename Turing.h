@@ -62,6 +62,10 @@ product or in the associated documentation.
 #ifndef TURING_H
 #define TURING_H 1
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef unsigned char	BYTE;
 typedef unsigned long	WORD;
 
@@ -97,4 +101,7 @@ int  TuringGen(void * internal, BYTE *buf);  /* returns number of bytes of mask 
 
 #define ROTL(w,x) (((w) << (x))|((w) >> (32 - (x))))
 
+#ifdef __cplusplus
+}
+#endif
 #endif

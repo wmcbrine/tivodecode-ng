@@ -1,5 +1,8 @@
 #ifndef FSEEKO_H_
 # define FSEEKO_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 # if !defined(HAVE_FSEEKO) && (defined(__bsdi__) || defined(__NetBSD__) || defined(WIN32))
 
 #  ifdef WIN32
@@ -15,4 +18,7 @@ extern OFF_T_TYPE ftello(FILE *stream);
 
 # endif
 
+#ifdef __cplusplus
+}
+#endif
 #endif // FSEEKO_H_

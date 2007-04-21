@@ -5,6 +5,9 @@
 
 #ifndef HAPPY_FILE_H_
 #define HAPPY_FILE_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdio.h>
 #include <stddef.h>
@@ -60,4 +63,7 @@ size_t hwrite (const void * ptr, size_t size, happy_file * fh);
 hoff_t htell (happy_file * fh);
 int hseek (happy_file * fh, hoff_t offset, int whence);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

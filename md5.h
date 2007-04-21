@@ -32,6 +32,9 @@
 
 #ifndef _NETINET6_MD5_H_
 #define _NETINET6_MD5_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define MD5_BUFLEN	64
 
@@ -80,4 +83,7 @@ do {				\
 	md5_result((x), (y));	\
 } while (0)
 
+#ifdef __cplusplus
+}
+#endif
 #endif   /* ! _NETINET6_MD5_H_ */

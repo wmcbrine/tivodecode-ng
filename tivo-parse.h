@@ -6,6 +6,9 @@
 
 #ifndef TIVO_PARSE_H_
 #define TIVO_PARSE_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*
  * Initial header formats lifted from ezrec's posting:
@@ -44,4 +47,7 @@ typedef int (*read_func_t) (void * mem, int size, void * fh);
 int read_tivo_header(void * file, tivo_stream_header * head, read_func_t read_handler);
 tivo_stream_chunk * read_tivo_chunk(void * file, read_func_t read_handler);
 
+#ifdef __cplusplus
+}
+#endif
 #endif

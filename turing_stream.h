@@ -5,6 +5,9 @@
 
 #ifndef TURING_STREAM_H_
 #define TURING_STREAM_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdio.h>
 #include "Turing.h"
@@ -39,5 +42,8 @@ void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer
 void skip_turing_data(turing_state * turing, size_t bytes_to_skip);
 void destruct_turing(turing_state * turing);
 
+#ifdef __cplusplus
+}
+#endif
 #endif // TURING_STREAM_H_
 

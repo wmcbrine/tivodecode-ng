@@ -4,6 +4,9 @@
  */
 #ifndef SHA1_H_
 #define SHA1_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef struct {
     unsigned int state[5];
@@ -15,4 +18,7 @@ void sha1_init (SHA1_CTX * context);
 void sha1_update (SHA1_CTX * context, unsigned char * data, size_t len);
 void sha1_final (unsigned char digest[20], SHA1_CTX * context);
 
+#ifdef __cplusplus
+}
+#endif
 #endif
