@@ -35,6 +35,9 @@ AC_SYS_LARGEFILE
 AC_FUNC_FSEEKO
 AC_TYPE_OFF_T
 AC_CHECK_SIZEOF(off_t)
+AC_CHECK_TYPES([size_t], [AC_CHECK_SIZEOF([size_t])])
+AC_CHECK_TYPES([unsigned long], [AC_CHECK_SIZEOF([unsigned long])])
+AC_CHECK_TYPES([unsigned long long], [AC_CHECK_SIZEOF([unsigned long long])])
 
 AC_CHECK_HEADERS([netinet/in.h winsock2.h getopt.h ctype.h], [], [], AC_INCLUDES_DEFAULT([]))
 AC_SEARCH_LIBS(getopt_long, [getopt gnugetopt])

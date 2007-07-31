@@ -158,7 +158,10 @@ static int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, i
  */
 int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler)
 {
-    static unsigned char packet_buffer[65536 + 3];
+    static union {
+	    td_uint64_t align;
+	    unsigned char packet_buffer[65536 + sizeof(td_uint64_t) + 2];
+    } aligned_buf;
     unsigned char bytes[32];
     int looked_ahead = 0;
     int i;
@@ -262,14 +265,14 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
 
                 length = bytes[1] | (bytes[0] << 8);
 
-                memcpy (packet_buffer + 1, bytes, looked_ahead);
+                memcpy (aligned_buf.packet_buffer + sizeof(td_uint64_t), bytes, looked_ahead);
 
-                LOOK_AHEAD (packet_stream, packet_buffer + 1, length + 2);
+                LOOK_AHEAD (packet_stream, aligned_buf.packet_buffer + sizeof(td_uint64_t), length + 2);
                 {
-                    unsigned char * packet_ptr = packet_buffer + 1;
+                    unsigned char * packet_ptr = aligned_buf.packet_buffer + sizeof(td_uint64_t);
                     size_t packet_size;
 
-                    packet_buffer[0] = code;
+                    aligned_buf.packet_buffer[sizeof(td_uint64_t)-1] = code;
 
                     if (header_len)
                     {
@@ -286,7 +289,7 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
                     {
                         decrypt_buffer (turing, packet_ptr, packet_size);
                         // turn off scramble bits
-                        packet_buffer[1+2] &= ~0x30;
+                        aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x30;
 
                         // scan video buffer for Slices.  If no slices are
                         // found, the MAK is wrong.
@@ -294,13 +297,13 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
                             int slice_count=0;
                             size_t offset;
 
-                            for (offset=0;offset+4<packet_size;offset++)
+                            for (offset=sizeof(td_uint64_t);offset+4<packet_size;offset++)
                             {
-                                if (packet_buffer[offset] == 0x00 &&
-                                    packet_buffer[offset+1] == 0x00 &&
-                                    packet_buffer[offset+2] == 0x01 &&
-                                    packet_buffer[offset+3] >= 0x01 &&
-                                    packet_buffer[offset+3] <= 0xAF)
+                                if (aligned_buf.packet_buffer[offset] == 0x00 &&
+                                    aligned_buf.packet_buffer[offset+1] == 0x00 &&
+                                    aligned_buf.packet_buffer[offset+2] == 0x01 &&
+                                    aligned_buf.packet_buffer[offset+3] >= 0x01 &&
+                                    aligned_buf.packet_buffer[offset+3] <= 0xAF)
                                 {
                                     slice_count++;
                                 }
@@ -324,10 +327,10 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
                         // don't know why, but tivo dll does this.
                         // I can find no good docs on the format of the program_stream_map
                         // but I think this clears a reserved bit.  No idea why
-                        packet_buffer[1+2] &= ~0x20;
+                        aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x20;
                     }
 
-                    if (write_handler(packet_buffer, length + 3, ofh) != length + 3)
+                    if (write_handler(aligned_buf.packet_buffer + sizeof(td_uint64_t) - 1, length + 3, ofh) != length + 3)
                     {
                         perror ("writing buffer");
                     }

@@ -13,6 +13,20 @@ extern "C" {
 #include "Turing.h"
 #include "tivo-parse.h"
 
+#if defined(HAVE_SIZE_T) && SIZEOF_SIZE_T == 8
+typedef size_t td_uint64_t;
+#define HAVE_TD_UINT64_T 1
+#elif defined(HAVE_UNSIGNED_LONG) && SIZEOF_UNSIGNED_LONG == 8
+typedef unsigned long td_uint64_t;
+#define HAVE_TD_UINT64_T 1
+#elif defined(HAVE_UNSIGNED_LONG_LONG) && SIZEOF_UNSIGNED_LONG_LONG == 8
+typedef unsigned long long td_uint64_t;
+#define HAVE_TD_UINT64_T 1
+#else
+typedef unsigned long td_uint64_t;
+/* #undef HAVE_TD_UINT64_T */
+#endif
+
 typedef struct turing_state_stream
 {
     int cipher_pos;
@@ -24,7 +38,7 @@ typedef struct turing_state_stream
     struct turing_state_stream * next;
 
     void * internal;
-    unsigned char cipher_data[MAXSTREAM];
+    unsigned char cipher_data[MAXSTREAM + sizeof(td_uint64_t)];
 } turing_state_stream;
 
 typedef struct
