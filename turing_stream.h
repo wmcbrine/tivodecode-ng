@@ -29,10 +29,10 @@ typedef unsigned long td_uint64_t;
 
 typedef struct turing_state_stream
 {
-    int cipher_pos;
-    int cipher_len;
+    unsigned int cipher_pos;
+    unsigned int cipher_len;
 
-    int block_id;
+    unsigned int block_id;
     unsigned char stream_id;
 
     struct turing_state_stream * next;
