@@ -30,6 +30,7 @@ static struct option long_options[] = {
     {"out", 1, 0, 'o'},
     {"help", 0, 0, 'h'},
     {"version", 0, 0, 'V'},
+    {"chunk-1", 0, 0, '1'},
     {"chunk-2", 0, 0, '2'},
     {0, 0, 0, 0}
 };
@@ -40,7 +41,8 @@ static void do_help(char * arg0, int exitval)
 #define ERROUT(s) fprintf(stderr, s)
     ERROUT ("  --mak, -m          media access key (required)\n");
     ERROUT ("  --out, -o          output file (default stdout)\n");
-    ERROUT ("  --chunk-2, -2      output chunk 2 instead of chunk 1\n");
+    ERROUT ("  --chunk-1, -1      output chunk 1 (default if neither chunk specified)\n");
+    ERROUT ("  --chunk-2, -2      output chunk 2\n");
     ERROUT ("  --version, -V      print the version information and exit\n");
     ERROUT ("  --help, -h         print this help and exit\n\n");
     ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
@@ -52,6 +54,7 @@ static void do_help(char * arg0, int exitval)
 
 int main(int argc, char *argv[])
 {
+    int o_chunk_1 = 0;
     int o_chunk_2 = 0;
 
     char * tivofile = NULL;
@@ -88,6 +91,9 @@ int main(int argc, char *argv[])
                 break;
             case 'o':
                 outfile = optarg;
+                break;
+            case '1':
+                o_chunk_1 = 1;
                 break;
             case '2':
                 o_chunk_2 = 1;
@@ -146,6 +152,9 @@ int main(int argc, char *argv[])
         }
     }
 
+    if (!o_chunk_1 && !o_chunk_2)
+        o_chunk_1 = 1;
+
     PRINT_QUALCOMM_MSG();
 
     /* parse the tivo headers manually here, since we care about more
@@ -169,7 +178,7 @@ int main(int argc, char *argv[])
             continue;
         }
 
-        if ((!o_chunk_2 && chunk->id == 1) || (o_chunk_2 && chunk->id == 2))
+        if ((o_chunk_1 && chunk->id == 1) || (o_chunk_2 && chunk->id == 2))
         {
             prepare_frame(&metaturing, 0, 0);
             skip_turing_data(&metaturing, (size_t)(chunk_start - current_meta_stream_pos));
