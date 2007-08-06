@@ -235,89 +235,20 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
     }
 }
 
-#define CHECK_REDO_TURINGBUF(turing, bytes_needed, goto_label) do { \
-    if ((turing)->active->cipher_pos + ((bytes_needed) - 1) >= (turing)->active->cipher_len) \
-    { \
-        memmove((turing)->active->cipher_data, (turing)->active->cipher_data + (turing)->active->cipher_pos, (turing)->active->cipher_len - (turing)->active->cipher_pos); \
-        (turing)->active->cipher_len -= (turing)->active->cipher_pos; \
-        (turing)->active->cipher_len += TuringGen((turing)->active->internal, (turing)->active->cipher_data + (turing)->active->cipher_len); \
-        (turing)->active->cipher_pos = 0; \
-        goto goto_label; \
-    } \
-} while(0)
-
-#define XOR_ITER(buffer, buffer_len, i, turing, type, goto_label) do { \
-    CHECK_REDO_TURINGBUF(turing, sizeof(type), goto_label); \
-    *(type *)(buffer + i) ^= *(type *)(turing->active->cipher_data + turing->active->cipher_pos); \
-    i+=sizeof(type); turing->active->cipher_pos+=sizeof(type); \
-} while(0)
-
-#define RAMPUP(buffer, buffer_len, i, turing, type, goto_label) do { \
-    if ((((size_t)buffer + i) & sizeof(type)) != 0) \
-    { \
-        XOR_ITER(buffer, buffer_len, i, turing, type, goto_label); \
-    } \
-} while(0)
-
-#define RAMPDOWN(buffer, buffer_len, i, turing, type, goto_label) do { \
-    if (i+(sizeof(type)-1) < buffer_len) \
-    { \
-        XOR_ITER(buffer, buffer_len, i, turing, type, goto_label); \
-    } \
-} while(0)
-
-#define XOR_LOOP(buffer, buffer_len, i, turing, type, goto_label) do { \
-    while (i < (buffer_len & ~(sizeof(type)-1))) \
-    { \
-        XOR_ITER(buffer, buffer_len, i, turing, type, goto_label); \
-    } \
-} while(0)
-
-#define ALIGNMENT_MATCH(buffer, buffer_len, i, turing, type) \
-    ((sizeof(type)-1) + i + (((size_t)buffer + i) & (sizeof(type)-1)) < buffer_len && (((size_t)buffer + i) & (sizeof(type)-1)) == (((size_t)turing->active->cipher_data + turing->active->cipher_pos) & (sizeof(type)-1)))
-
 void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer_length)
 {
-    unsigned int i = 0;
+    unsigned int i;
 
-redid_turingbuf:
-#if defined(HAVE_TD_UINT64_T)
-    if (ALIGNMENT_MATCH(buffer, buffer_length, i, turing, td_uint64_t))
+    for (i = 0; i < buffer_length; ++i)
     {
-        RAMPUP(buffer, buffer_length, i, turing, unsigned char, redid_turingbuf);
-        RAMPUP(buffer, buffer_length, i, turing, unsigned short, redid_turingbuf);
-        RAMPUP(buffer, buffer_length, i, turing, unsigned int, redid_turingbuf);
+        if (turing->active->cipher_pos >= turing->active->cipher_len)
+        {
+            turing->active->cipher_len = TuringGen(turing->active->internal, turing->active->cipher_data);
+            turing->active->cipher_pos = 0;
+            //hexbulk(turing->active->cipher_data, turing->active->cipher_len);
+        }
 
-        XOR_LOOP(buffer, buffer_length, i, turing, td_uint64_t, redid_turingbuf);
-
-        RAMPDOWN(buffer, buffer_length, i, turing, unsigned int, redid_turingbuf);
-        RAMPDOWN(buffer, buffer_length, i, turing, unsigned short, redid_turingbuf);
-        RAMPDOWN(buffer, buffer_length, i, turing, unsigned char, redid_turingbuf);
-    }
-    else
-#endif
-    if (ALIGNMENT_MATCH(buffer, buffer_length, i, turing, unsigned int))
-    {
-        RAMPUP(buffer, buffer_length, i, turing, unsigned char, redid_turingbuf);
-        RAMPUP(buffer, buffer_length, i, turing, unsigned short, redid_turingbuf);
-
-        XOR_LOOP(buffer, buffer_length, i, turing, unsigned int, redid_turingbuf);
-
-        RAMPDOWN(buffer, buffer_length, i, turing, unsigned short, redid_turingbuf);
-        RAMPDOWN(buffer, buffer_length, i, turing, unsigned char, redid_turingbuf);
-    }
-    else
-    if (ALIGNMENT_MATCH(buffer, buffer_length, i, turing, unsigned short))
-    {
-        RAMPUP(buffer, buffer_length, i, turing, unsigned char, redid_turingbuf);
-
-        XOR_LOOP(buffer, buffer_length, i, turing, unsigned short, redid_turingbuf);
-
-        RAMPDOWN(buffer, buffer_length, i, turing, unsigned char, redid_turingbuf);
-    }
-    else
-    {
-        XOR_LOOP(buffer, buffer_length, i, turing, unsigned char, redid_turingbuf);
+        buffer[i] ^= turing->active->cipher_data[turing->active->cipher_pos++];
     }
 }
 
