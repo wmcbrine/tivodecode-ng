@@ -18,28 +18,7 @@
 #endif
 #include "getopt_long.h"
 #include "happyfile.h"
-
-#ifdef WIN32
-#   define HOME_ENV_NAME "USERPROFILE"
-#   define DEFAULT_EMPTY_HOME "C:"
-#else
-#   define HOME_ENV_NAME "HOME"
-#   define DEFAULT_EMPTY_HOME ""
-#endif
-
-#define PRINT_QUALCOMM_MSG() fprintf (stderr, "Encryption by QUALCOMM ;)\n\n")
-
-static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
-
-int o_verbose = 0;
-int o_no_verify = 0;
-int o_dump_chunks = 0;
-int o_no_video = 0;
-
-happy_file * hfh=NULL;
-// file position options
-hoff_t begin_at = 0;
-
+#include "cli_common.h"
 
 static int hread_wrapper (void * mem, int size, void * fh)
 {
@@ -82,19 +61,10 @@ static void do_help(char * arg0, int exitval)
     exit (exitval);
 }
 
-static void do_version(int exitval)
-{
-    fprintf (stderr, "%s\n", PACKAGE_STRING);
-    fprintf (stderr, "Copyright (c) 2006-2007, Jeremy Drake\n");
-    fprintf (stderr, "See COPYING file in distribution for details\n\n");
-    PRINT_QUALCOMM_MSG();
-
-    exit (exitval);
-}
-
-
 int main(int argc, char *argv[])
 {
+    int o_no_video = 0;
+    int o_dump_chunks = 0;
     unsigned int marker;
     unsigned char byte;
     char first = 1;
@@ -110,6 +80,9 @@ int main(int argc, char *argv[])
     turing_state turing;
 
     FILE * ofh;
+    happy_file * hfh=NULL;
+    // file position options
+    hoff_t begin_at = 0;
 
     memset(&turing, 0, sizeof(turing));
     memset(mak, 0, sizeof(mak));
@@ -166,55 +139,7 @@ int main(int argc, char *argv[])
     }
 
     if (!makgiven)
-    {
-        char * mak_fname;
-        FILE * mak_file;
-        const char * home_dir = getenv(HOME_ENV_NAME);
-        size_t home_dir_len;
-        
-        if (!home_dir)
-            home_dir = DEFAULT_EMPTY_HOME;
-        
-        home_dir_len = strlen(home_dir);
-
-        mak_fname = malloc (home_dir_len + sizeof(MAK_DOTFILE_NAME));
-        if (!mak_fname)
-        {
-            fprintf(stderr, "error allocing string for mak config file name\n");
-            exit(11);
-        }
-
-        memcpy (mak_fname, home_dir, home_dir_len);
-        memcpy (mak_fname + home_dir_len, MAK_DOTFILE_NAME, sizeof(MAK_DOTFILE_NAME));
-
-        if ((mak_file = fopen(mak_fname, "r")))
-        {
-            if (fread(mak, 1, 11, mak_file) >= 10)
-            {
-                int i;
-                for (i = 11; i >= 10 && (mak[i] == '\0' || isspace((int)mak[i])); --i)
-                {
-                    mak[i] = '\0';
-                }
-
-                makgiven = 1;
-            }
-            else if (ferror(mak_file))
-            {
-                perror ("reading mak config file");
-                exit(12);
-            }
-            else
-            {
-                fprintf(stderr, "mak too short in mak config file\n");
-                exit(13);
-            }
-
-            fclose (mak_file);
-        }
-
-        free(mak_fname);
-    }
+        makgiven = get_mak_from_conf_file(mak);
 
     if (!makgiven || !tivofile)
     {
