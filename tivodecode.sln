@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tivodecode", "tivodecode.vc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtivodecode", "libtivodecode.vcproj", "{9DDBB216-6D06-47EB-B559-B3FB02510DC3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tdcat", "tdcat.vcproj", "{66AEBB90-9BD8-497E-B546-9409110E9F21}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9DDBB216-6D06-47EB-B559-B3FB02510DC3} = {9DDBB216-6D06-47EB-B559-B3FB02510DC3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -22,6 +27,10 @@ Global
 		{9DDBB216-6D06-47EB-B559-B3FB02510DC3}.Debug|Win32.Build.0 = Debug|Win32
 		{9DDBB216-6D06-47EB-B559-B3FB02510DC3}.Release|Win32.ActiveCfg = Release|Win32
 		{9DDBB216-6D06-47EB-B559-B3FB02510DC3}.Release|Win32.Build.0 = Release|Win32
+		{66AEBB90-9BD8-497E-B546-9409110E9F21}.Debug|Win32.ActiveCfg = Debug|Win32
+		{66AEBB90-9BD8-497E-B546-9409110E9F21}.Debug|Win32.Build.0 = Debug|Win32
+		{66AEBB90-9BD8-497E-B546-9409110E9F21}.Release|Win32.ActiveCfg = Release|Win32
+		{66AEBB90-9BD8-497E-B546-9409110E9F21}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
