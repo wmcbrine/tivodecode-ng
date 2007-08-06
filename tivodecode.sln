@@ -3,12 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual C++ Express 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tivodecode", "tivodecode.vcproj", "{AB0538B4-79BB-463D-AE34-5C7ACD90D0BA}"
 	ProjectSection(ProjectDependencies) = postProject
+		{491A7F57-2E09-492E-9E44-70A34A313611} = {491A7F57-2E09-492E-9E44-70A34A313611}
 		{9DDBB216-6D06-47EB-B559-B3FB02510DC3} = {9DDBB216-6D06-47EB-B559-B3FB02510DC3}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtivodecode", "libtivodecode.vcproj", "{9DDBB216-6D06-47EB-B559-B3FB02510DC3}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tdcat", "tdcat.vcproj", "{66AEBB90-9BD8-497E-B546-9409110E9F21}"
+	ProjectSection(ProjectDependencies) = postProject
+		{491A7F57-2E09-492E-9E44-70A34A313611} = {491A7F57-2E09-492E-9E44-70A34A313611}
+		{9DDBB216-6D06-47EB-B559-B3FB02510DC3} = {9DDBB216-6D06-47EB-B559-B3FB02510DC3}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtdcommon", "libtdcommon.vcproj", "{491A7F57-2E09-492E-9E44-70A34A313611}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9DDBB216-6D06-47EB-B559-B3FB02510DC3} = {9DDBB216-6D06-47EB-B559-B3FB02510DC3}
 	EndProjectSection
@@ -31,6 +38,10 @@ Global
 		{66AEBB90-9BD8-497E-B546-9409110E9F21}.Debug|Win32.Build.0 = Debug|Win32
 		{66AEBB90-9BD8-497E-B546-9409110E9F21}.Release|Win32.ActiveCfg = Release|Win32
 		{66AEBB90-9BD8-497E-B546-9409110E9F21}.Release|Win32.Build.0 = Release|Win32
+		{491A7F57-2E09-492E-9E44-70A34A313611}.Debug|Win32.ActiveCfg = Debug|Win32
+		{491A7F57-2E09-492E-9E44-70A34A313611}.Debug|Win32.Build.0 = Debug|Win32
+		{491A7F57-2E09-492E-9E44-70A34A313611}.Release|Win32.ActiveCfg = Release|Win32
+		{491A7F57-2E09-492E-9E44-70A34A313611}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -22,6 +22,7 @@
 			ConfigurationType="1"
 			CharacterSet="0"
 			WholeProgramOptimization="0"
+			BuildLogFile="$(IntDir)\tdcat_BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -44,7 +45,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\tdcat.pdb"
 				WarningLevel="3"
@@ -99,7 +100,8 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="0"
-			WholeProgramOptimization="0"
+			WholeProgramOptimization="1"
+			BuildLogFile="$(IntDir)\tdcat_BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -119,7 +121,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
 				ProgramDataBaseFileName="$(IntDir)\tdcat.pdb"
 				WarningLevel="3"
@@ -180,26 +182,6 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\cli_common.c"
-				>
-			</File>
-			<File
-				RelativePath=".\fseeko.c"
-				>
-			</File>
-			<File
-				RelativePath=".\getopt.c"
-				>
-			</File>
-			<File
-				RelativePath=".\getopt_long.c"
-				>
-			</File>
-			<File
-				RelativePath=".\happyfile.c"
-				>
-			</File>
-			<File
 				RelativePath=".\tdcat.c"
 				>
 			</File>
@@ -209,22 +191,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\cli_common.h"
-				>
-			</File>
-			<File
-				RelativePath=".\fseeko.h"
-				>
-			</File>
-			<File
-				RelativePath=".\getopt_long.h"
-				>
-			</File>
-			<File
-				RelativePath=".\happyfile.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

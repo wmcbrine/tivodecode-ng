@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="libtivodecode"
-	ProjectGUID="{9DDBB216-6D06-47EB-B559-B3FB02510DC3}"
-	RootNamespace="libtivodecode"
+	Name="libtdcommon"
+	ProjectGUID="{491A7F57-2E09-492E-9E44-70A34A313611}"
+	RootNamespace="libtdcommon"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -13,9 +13,6 @@
 		/>
 	</Platforms>
 	<ToolFiles>
-		<ToolFile
-			RelativePath=".\tivodecode.rules"
-		/>
 	</ToolFiles>
 	<Configurations>
 		<Configuration
@@ -24,16 +21,13 @@
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="0"
-			BuildLogFile="$(IntDir)\libtivodecode_BuildLog.htm"
+			BuildLogFile="$(IntDir)\libtdcommon_BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="copy win32 file"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -52,7 +46,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="$(IntDir)\libtivodecode.pdb"
+				ProgramDataBaseFileName="$(IntDir)\libtdcommon.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -92,16 +86,13 @@
 			ConfigurationType="4"
 			CharacterSet="0"
 			WholeProgramOptimization="1"
-			BuildLogFile="$(IntDir)\libtivodecode_BuildLog.htm"
+			BuildLogFile="$(IntDir)\libtdcommon_BuildLog.htm"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="copy win32 file"
 			/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"
@@ -114,11 +105,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				WholeProgramOptimization="false"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;HAVE_CONFIG_H"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="$(IntDir)\libtivodecode.pdb"
+				ProgramDataBaseFileName="$(IntDir)\libtdcommon.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -161,31 +151,23 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\hexlib.c"
+				RelativePath=".\cli_common.c"
 				>
 			</File>
 			<File
-				RelativePath=".\md5.c"
+				RelativePath=".\fseeko.c"
 				>
 			</File>
 			<File
-				RelativePath=".\sha1.c"
+				RelativePath=".\getopt.c"
 				>
 			</File>
 			<File
-				RelativePath=".\tivo-parse.c"
+				RelativePath=".\getopt_long.c"
 				>
 			</File>
 			<File
-				RelativePath=".\tivodecoder.c"
-				>
-			</File>
-			<File
-				RelativePath=".\turing_stream.c"
-				>
-			</File>
-			<File
-				RelativePath=".\TuringFast.c"
+				RelativePath=".\happyfile.c"
 				>
 			</File>
 		</Filter>
@@ -195,47 +177,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\hexlib.h"
+				RelativePath=".\cli_common.h"
 				>
 			</File>
 			<File
-				RelativePath=".\md5.h"
+				RelativePath=".\fseeko.h"
 				>
 			</File>
 			<File
-				RelativePath=".\QUTsbox.h"
+				RelativePath=".\getopt_long.h"
 				>
 			</File>
 			<File
-				RelativePath=".\sha1.h"
-				>
-			</File>
-			<File
-				RelativePath=".\tdconfig.h.win32"
-				>
-			</File>
-			<File
-				RelativePath=".\tivo-parse.h"
-				>
-			</File>
-			<File
-				RelativePath=".\tivodecoder.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Turing.h"
-				>
-			</File>
-			<File
-				RelativePath=".\turing_stream.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TuringMultab.h"
-				>
-			</File>
-			<File
-				RelativePath=".\TuringSbox.h"
+				RelativePath=".\happyfile.h"
 				>
 			</File>
 		</Filter>
