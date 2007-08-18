@@ -5,6 +5,7 @@
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
 #include "tivodecoder.h"
+#include "Turing.h"
 #include <stdio.h>
 #ifdef HAVE_MEMORY_H
 # include <memory.h>
