@@ -9,5 +9,5 @@ tivodecode_DEPENDENCIES=$(LIBOBJS) libtivodecode.a
 tdcat_SOURCES=cli_common.c happyfile.c tdcat.c happyfile.h getopt_long.h fseeko.h cli_common.h
 tdcat_LDADD=$(LIBOBJS) -L. -ltivodecode
 tdcat_DEPENDENCIES=$(LIBOBJS) libtivodecode.a
-EXTRA_DIST=libtivodecode.vcproj tdconfig.h.win32 tivodecode.rules tivodecode.sln tivodecode.vcproj
+EXTRA_DIST=libtivodecode.vcproj libtdcommon.vcproj tdcat.vcproj tdconfig.h.win32 tivodecode.rules tivodecode.sln tivodecode.vcproj
 
