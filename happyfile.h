@@ -51,7 +51,7 @@ typedef struct
 	char buffer[BUFFERSIZE];
 } happy_file;
 
-happy_file * hopen (char * filename, char * mode);
+happy_file * hopen (const char * filename, const char * mode);
 happy_file * hattach (FILE * fh);
 
 int hclose(happy_file * fh);

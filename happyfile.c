@@ -28,7 +28,7 @@
 #	warning Large file support is questionable on this platform
 #endif
 
-happy_file * hopen (char * filename, char * mode)
+happy_file * hopen (const char * filename, const char * mode)
 {
 	happy_file * fh = malloc (sizeof (happy_file));
 	fh->fh = fopen (filename, mode);
