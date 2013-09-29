@@ -57,7 +57,7 @@ static struct option long_options[] = {
 
 static void do_help(char * arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--metadata|-M] [{--out|-o} outfile] <tivofile>\n\n", arg0);
+    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n", arg0);
 #define ERROUT(s) fprintf(stderr, s)
     ERROUT ("  --mak, -m        media access key (required)\n");
     ERROUT ("  --out, -o        output file (default stdout)\n");
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long (argc, argv, "m:o:hnxvV", long_options, 0);
+        int c = getopt_long (argc, argv, "m:o:hnDxvV", long_options, 0);
 
         if (c == -1)
             break;
@@ -170,6 +170,14 @@ int main(int argc, char *argv[])
 
     if (!strcmp(tivofile, "-"))
     {
+        // JKOZEE-Make sure stdin is set to binary on Windows
+        #ifdef WIN32
+        int result = _setmode(_fileno(stdin), _O_BINARY );
+        if( result == -1 ) {
+           perror( "Cannot set stdin to binary mode" );
+           return 10;
+        }
+        #endif
         hfh=hattach(stdin);
     }
     else
@@ -183,6 +191,14 @@ int main(int argc, char *argv[])
 
     if (!outfile || !strcmp(outfile, "-"))
     {
+        // JKOZEE-Make sure stdout is set to binary on Windows
+        #ifdef WIN32
+        int result = _setmode(_fileno(stdout), _O_BINARY );
+        if( result == -1 ) {
+           perror( "Cannot set stdout to binary mode" );
+           return 10;
+        }
+        #endif
         ofh = stdout;
     }
     else
@@ -254,7 +270,7 @@ int main(int argc, char *argv[])
 			{            
 	            FILE * chunkfh;
 
-	            sprintf(buf, "%s-%04x.xml", outfile, chunk->id);
+	            sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, chunk->id);
 	
 	            chunkfh = fopen(buf, "wb");
 	            if (!chunkfh)

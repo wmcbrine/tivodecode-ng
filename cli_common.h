@@ -1,5 +1,8 @@
 #ifndef TD_CLI_COMMON_H__
 #define TD_CLI_COMMON_H__
+#ifdef WIN32
+#   include <fcntl.h>
+#endif
 
 #define PRINT_QUALCOMM_MSG() fprintf (stderr, "Encryption by QUALCOMM ;)\n\n")
 

@@ -128,6 +128,14 @@ int main(int argc, char *argv[])
 
     if (!strcmp(tivofile, "-"))
     {
+        // JKOZEE-Make sure stdin is set to binary on Windows
+        #ifdef WIN32
+        int result = _setmode(_fileno(stdin), _O_BINARY );
+        if( result == -1 ) {
+           perror( "Cannot set stdin to binary mode" );
+           return 10;
+        }
+        #endif
         hfh=hattach(stdin);
     }
     else
@@ -141,6 +149,14 @@ int main(int argc, char *argv[])
 
     if (!outfile || !strcmp(outfile, "-"))
     {
+        // JKOZEE-Make sure stdout is set to binary on Windows
+        #ifdef WIN32
+        int result = _setmode(_fileno(stdout), _O_BINARY );
+        if( result == -1 ) {
+           perror( "Cannot set stdout to binary mode" );
+           return 10;
+        }
+        #endif
         ofh = stdout;
     }
     else
