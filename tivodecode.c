@@ -25,7 +25,7 @@ int o_ts_pkt_dump = 0;
 
 typedef enum
 {
-	TIVO_FORMAT_NONE,
+    TIVO_FORMAT_NONE,
     TIVO_FORMAT_PS,
     TIVO_FORMAT_TS,
     TIVO_FORMAT_MAX
@@ -43,6 +43,7 @@ static int fwrite_wrapper (void * mem, int size, void * fh)
 }
 
 static struct option long_options[] = {
+    {"in", 0, 0, 'i'},
     {"mak", 1, 0, 'm'},
     {"out", 1, 0, 'o'},
     {"help", 0, 0, 'h'},
@@ -50,25 +51,25 @@ static struct option long_options[] = {
     {"pkt-dump", 1, 0, 'p'},
     {"version", 0, 0, 'V'},
     {"no-verify", 0, 0, 'n'},
-    {"metadata", 0, 0, 'D'},
+    {"dump-metadata", 0, 0, 'D'},
     {"no-video", 0, 0, 'x'},
     {0, 0, 0, 0}
 };
 
 static void do_help(char * arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n", arg0);
+    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--dump-metadata|-D] [{--out|-o} {outfile|-}] {<tivofile>|-}\n\n", arg0);
 #define ERROUT(s) fprintf(stderr, s)
-    ERROUT ("  --mak, -m        media access key (required)\n");
-    ERROUT ("  --out, -o        output file (default stdout)\n");
-    ERROUT ("  --verbose, -v    verbose\n");
-    ERROUT ("  --pkt-dump, -p   verbose logging for specific TS packet number\n");
-    ERROUT ("  --metadata, -D   dump TiVo recording metadata\n");
-    ERROUT ("  --no-verify, -n  do not verify MAK while decoding\n");
-    ERROUT ("  --no-video, -x   don't decode video, exit after metadata\n");
-    ERROUT ("  --version, -V    print the version information and exit\n");
-    ERROUT ("  --help, -h       print this help and exit\n\n");
-    ERROUT ("The file names specified for the output file or the tivo file may be -, which\n");
+    ERROUT ("  --mak, -m          media access key (required)\n");
+    ERROUT ("  --out, -o          output file (default stdout)\n");
+    ERROUT ("  --verbose, -v      verbose\n");
+    ERROUT ("  --pkt-dump, -p     verbose logging for specific TS packet number\n");
+    ERROUT ("  --no-verify, -n    do not verify MAK while decoding\n");
+    ERROUT ("  --dump-metadata,-D dump metadata from TiVo file to xml files (development)\n");
+    ERROUT ("  --no-video, -x     don't decode video, exit after metadata\n");
+    ERROUT ("  --version, -V      print the version information and exit\n");
+    ERROUT ("  --help, -h         print this help and exit\n\n");
+    ERROUT ("The file names specified for the output file or the input file may be -, which\n");
     ERROUT ("means stdout or stdin respectively\n\n");
 #undef ERROUT
 
@@ -84,11 +85,11 @@ int main(int argc, char *argv[])
     unsigned int marker;
     unsigned char byte;
     char first = 1;
-    
+
     tivo_format_type format = TIVO_FORMAT_NONE;
 
     int running = 1;
-	int ret = 0;
+    int ret = 0;
 
     char * tivofile = NULL;
     char * outfile = NULL;
@@ -108,7 +109,16 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long (argc, argv, "m:o:hnDxvV", long_options, 0);
+        int c;
+
+        //if the last argument is "-" then stop checking the arguments
+        //(tivofile is stdin)
+        if (optind == argc-1 && !strcmp(argv[optind], "-"))
+        {
+            break;
+        }
+
+        c = getopt_long (argc, argv, "m:o:hnDxvV", long_options, 0);
 
         if (c == -1)
             break;
@@ -120,11 +130,19 @@ int main(int argc, char *argv[])
                 mak[11] = '\0';
                 makgiven = 1;
                 break;
-			case 'p':
+            case 'p':
                 sscanf(optarg, "%d", &o_ts_pkt_dump);
                 break;
             case 'o':
-                outfile = optarg;
+                //if the output file is to be stdout then the argv
+                //will be null and the next argc will be "-"
+                if (optarg == NULL && !strcmp(argv[optind+1], "-"))
+                {
+                    outfile = "-";
+                    optind++;
+                }
+                else
+                    outfile = optarg;
                 break;
             case 'h':
                 do_help(argv[0], 1);
@@ -136,8 +154,8 @@ int main(int argc, char *argv[])
                 o_no_verify = 1;
                 break;
             case 'D' :
-            	o_dump_metadata = 1;
-            	break;
+                o_dump_chunks = 1;
+                break;
             case 'x':
                 o_no_video = 1;
                 break;
@@ -148,6 +166,7 @@ int main(int argc, char *argv[])
                 do_version(10);
                 break;
             default:
+                fprintf(stderr, "option: %x args: %s\n", c, optarg);
                 do_help(argv[0], 3);
                 break;
         }
@@ -228,19 +247,19 @@ int main(int argc, char *argv[])
         if (read_tivo_header (hfh, &head, &hread_wrapper))
             return 8;
 
-		VVVERBOSE("TiVo Head\n");
-		if ( IS_VVVERBOSE )
-			dump_tivo_header(&head);
-		
+        VVVERBOSE("TiVo Head\n");
+        if ( IS_VVVERBOSE )
+            dump_tivo_header(&head);
+
         begin_at = head.mpeg_offset;
-        
+
         if ( head.dummy_0006 & 0x20 )
         {
-        	format = TIVO_FORMAT_TS;
+            format = TIVO_FORMAT_TS;
         }
         else
         {
-        	format = TIVO_FORMAT_PS;
+            format = TIVO_FORMAT_PS;
         }
 
         for (i=0; i<head.chunks; i++)
@@ -255,9 +274,9 @@ int main(int argc, char *argv[])
 
             if (chunk->data_size && chunk->type == TIVO_CHUNK_PLAINTEXT_XML  && chunk->id == 3)
             {
-				if ( IS_VVVERBOSE )
-					dump_tivo_chunk(chunk);
-				            	
+                if ( IS_VVVERBOSE )
+                    dump_tivo_chunk(chunk);
+
                 if (!o_no_video)
                     setup_turing_key (&turing, chunk, mak);
                 setup_metadata_key (&metaturing, chunk, mak);
@@ -266,38 +285,38 @@ int main(int argc, char *argv[])
             }
 
 
-			if ( o_dump_metadata )
-			{            
-	            FILE * chunkfh;
+            if ( o_dump_metadata )
+            {
+                FILE * chunkfh;
 
-	            sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, chunk->id);
-	
-	            chunkfh = fopen(buf, "wb");
-	            if (!chunkfh)
-	            {
-	                perror("create metadata file");
-	                return 8;
-	            }
-	
-                if (chunk->type == TIVO_CHUNK_ENCRYPTED_XML)
+                sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, chunk->id);
+
+                chunkfh = fopen(buf, "wb");
+                if (!chunkfh)
                 {
-	            prepare_frame(&metaturing, 0, 0);
-	            skip_turing_data(&metaturing, (size_t)(chunk_start - current_meta_stream_pos));
-	            decrypt_buffer(&metaturing, chunk->data, chunk->data_size);
-	            current_meta_stream_pos = chunk_start + chunk->data_size;
+                    perror("create metadata file");
+                    return 8;
                 }
 
-				if (IS_VVVERBOSE)
-					dump_tivo_chunk(chunk);
-	
-	            if (fwrite (chunk->data, 1, chunk->data_size, chunkfh) != chunk->data_size)
-	            {
-	                perror("write chunk");
-	                return 8;
-	            }
+                if (chunk->type == TIVO_CHUNK_ENCRYPTED_XML)
+                {
+                prepare_frame(&metaturing, 0, 0);
+                skip_turing_data(&metaturing, (size_t)(chunk_start - current_meta_stream_pos));
+                decrypt_buffer(&metaturing, chunk->data, chunk->data_size);
+                current_meta_stream_pos = chunk_start + chunk->data_size;
+                }
 
-	            fclose(chunkfh);
-        	}
+                if (IS_VVVERBOSE)
+                    dump_tivo_chunk(chunk);
+
+                if (fwrite (chunk->data, 1, chunk->data_size, chunkfh) != chunk->data_size)
+                {
+                    perror("write chunk");
+                    return 8;
+                }
+
+                fclose(chunkfh);
+            }
 
             free(chunk);
         }
@@ -321,67 +340,67 @@ int main(int argc, char *argv[])
         return 9;
     }
 
-	if ( format == TIVO_FORMAT_TS )
-	{
-		running = 1;
-		while ( running )
-		{
-			ret = process_ts_frame(&turing, htell(hfh), hfh, &hread_wrapper, ofh, &fwrite_wrapper);
-			if ( ret < 0 )
+    if ( format == TIVO_FORMAT_TS )
+    {
+        running = 1;
+        while ( running )
+        {
+            ret = process_ts_frame(&turing, htell(hfh), hfh, &hread_wrapper, ofh, &fwrite_wrapper);
+            if ( ret < 0 )
             {
                 perror ("processing frame");
                 return 10;
-            }			
+            }
             else if ( ret == 0 )
-           	{
-	            fprintf(stderr, "End of File\n");
-           		running = 0;
-           	}
-        }		
-	}
-	else if ( format == TIVO_FORMAT_PS )
-	{
-	    marker = 0xFFFFFFFF;
-	    while (running)
-	    {
-	        if ((marker & 0xFFFFFF00) == 0x100)
-	        {
-				ret = process_ps_frame(byte, &turing, htell(hfh), hfh, &hread_wrapper, ofh, &fwrite_wrapper);
-					
-				if (ret == 1)
-	            {
-	                marker = 0xFFFFFFFF;
-	            }
-	            else if (ret == 0)
-	            {
-	                fwrite(&byte, 1, 1, ofh);
-	            }
-	            else if (ret < 0)
-	            {
-	                perror ("processing frame");
-	                return 10;
-	            }
-	        }
-	        else if (!first)
-	        {
-	            fwrite(&byte, 1, 1, ofh);
-	        }
-	        marker <<= 8;
-	        if (hread(&byte, 1, hfh) == 0)
-	        {
-	            fprintf(stderr, "End of File\n");
-	            running = 0;
-	        }
-	        else
-	            marker |= byte;
-	        first = 0;
-	    }
+               {
+                fprintf(stderr, "End of File\n");
+                   running = 0;
+               }
+        }
+    }
+    else if ( format == TIVO_FORMAT_PS )
+    {
+        marker = 0xFFFFFFFF;
+        while (running)
+        {
+            if ((marker & 0xFFFFFF00) == 0x100)
+            {
+                ret = process_ps_frame(byte, &turing, htell(hfh), hfh, &hread_wrapper, ofh, &fwrite_wrapper);
+
+                if (ret == 1)
+                {
+                    marker = 0xFFFFFFFF;
+                }
+                else if (ret == 0)
+                {
+                    fwrite(&byte, 1, 1, ofh);
+                }
+                else if (ret < 0)
+                {
+                    perror ("processing frame");
+                    return 10;
+                }
+            }
+            else if (!first)
+            {
+                fwrite(&byte, 1, 1, ofh);
+            }
+            marker <<= 8;
+            if (hread(&byte, 1, hfh) == 0)
+            {
+                fprintf(stderr, "End of File\n");
+                running = 0;
+            }
+            else
+                marker |= byte;
+            first = 0;
+        }
     }
     else
     {
-		perror ("invalid TiVo format");
-		return 10;
-	}
+        perror ("invalid TiVo format");
+        return 10;
+    }
 
     destruct_turing (&turing);
 

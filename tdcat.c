@@ -37,7 +37,7 @@ static struct option long_options[] = {
 
 static void do_help(char * arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] {--mak|-m} mak [{--out|-o} outfile] [{-2|--chunk-2}] <tivofile>\n\n", arg0);
+    fprintf(stderr, "Usage: %s [--help] {--mak|-m} mak [{--out|-o} {outfile|-}] [{-2|--chunk-2}] {<tivofile>|-}\n\n", arg0);
 #define ERROUT(s) fprintf(stderr, s)
     ERROUT ("  --mak, -m          media access key (required)\n");
     ERROUT ("  --out, -o          output file (default stdout)\n");
@@ -77,7 +77,16 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long (argc, argv, "m:o:12hV", long_options, 0);
+        int c;
+
+        //if the last argument is "-" then stop checking the arguments
+        //(tivofile is stdin)
+        if (optind == argc-1 && !strcmp(argv[optind], "-"))
+        {
+            break;
+        }
+
+        c = getopt_long (argc, argv, "m:o:12hV", long_options, 0);
 
         if (c == -1)
             break;
@@ -90,7 +99,15 @@ int main(int argc, char *argv[])
                 makgiven = 1;
                 break;
             case 'o':
-                outfile = optarg;
+                //if the output file is to be stdout then the argv
+                //will be null and the next argc will be "-"
+                if (optarg == NULL && !strcmp(argv[optind+1], "-"))
+                {
+                    outfile = "-";
+                    optind++;
+                }
+                else
+                    outfile = optarg;
                 break;
             case '1':
                 o_chunk_1 = 1;

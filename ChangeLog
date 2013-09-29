@@ -1,12 +1,15 @@
+0.3pre6:
+    * stdin and stdout parameters "-" was not functioning (tdcat.c & tivodecode.c)
+
 0.3pre5:
-    * add support for tivo files with unencrypted metadata chunks (tdcat.c)
+    * add support for tivo files with unencrypted metadata chunks (tdcat.c & tivodecode.c)
 
 0.3pre4:
     * same as pre3 with updated config files
 
 0.3pre3:
     * reverted back to functioning '-D' command line argument (tivodecode.c)
-	
+
     * applied windows stdin/stdout patches for functioning pipes in windows
       (tivodecode.c, tdcat.c, cli_common.h)
 

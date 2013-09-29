@@ -63,7 +63,7 @@ static ts_pmt_stream_type_info ts_pmt_stream_tags[] = {
 	{ 0x1b, 0x1b, TS_STREAM_TYPE_VIDEO},		// H264Video
 	{ 0x80, 0x80, TS_STREAM_TYPE_VIDEO},		// OpenCableVideo
 	{ 0xea, 0xea, TS_STREAM_TYPE_VIDEO},		// VC1Video
- 
+
 	// audio
 	{ 0x03, 0x03, TS_STREAM_TYPE_AUDIO},		// MPEG1Audio
 	{ 0x04, 0x04, TS_STREAM_TYPE_AUDIO},		// MPEG2Audio
@@ -71,34 +71,34 @@ static ts_pmt_stream_type_info ts_pmt_stream_tags[] = {
 	{ 0x0f, 0x0f, TS_STREAM_TYPE_AUDIO},		// AACAudio
 	{ 0x81, 0x81, TS_STREAM_TYPE_AUDIO},		// AC3Audio
 	{ 0x8a, 0x8a, TS_STREAM_TYPE_AUDIO},		// DTSAudio
- 
+
 	// DSM-CC Object Carousel
-	{ 0x08, 0x08, TS_STREAM_TYPE_OTHER},		// DSMCC 
+	{ 0x08, 0x08, TS_STREAM_TYPE_OTHER},		// DSMCC
 	{ 0x0a, 0x0a, TS_STREAM_TYPE_OTHER}, 		// DSMCC_A
-	{ 0x0b, 0x0b, TS_STREAM_TYPE_OTHER}, 		// DSMCC_B 
+	{ 0x0b, 0x0b, TS_STREAM_TYPE_OTHER}, 		// DSMCC_B
 	{ 0x0c, 0x0c, TS_STREAM_TYPE_OTHER}, 		// DSMCC_C
 	{ 0x0d, 0x0d, TS_STREAM_TYPE_OTHER}, 		// DSMCC_D
 	{ 0x14, 0x14, TS_STREAM_TYPE_OTHER}, 		// DSMCC_DL
-	{ 0x15, 0x15, TS_STREAM_TYPE_OTHER}, 		// MetaDataPES    
-	{ 0x16, 0x16, TS_STREAM_TYPE_OTHER}, 		// MetaDataSec     
-	{ 0x17, 0x17, TS_STREAM_TYPE_OTHER}, 		// MetaDataDC      
-	{ 0x18, 0x18, TS_STREAM_TYPE_OTHER}, 		// MetaDataOC      
-	{ 0x19, 0x19, TS_STREAM_TYPE_OTHER}, 		// MetaDataDL      
- 
-	// other
-	{ 0x05, 0x05, TS_STREAM_TYPE_OTHER}, 		// PrivSec         
-	{ 0x06, 0x06, TS_STREAM_TYPE_OTHER},		// PrivData        
-	{ 0x07, 0x07, TS_STREAM_TYPE_OTHER}, 		// MHEG            
-	{ 0x09, 0x09, TS_STREAM_TYPE_OTHER}, 		// H222_1          
-	{ 0x0e, 0x0e, TS_STREAM_TYPE_OTHER}, 		// MPEG2Aux        
-	{ 0x12, 0x12, TS_STREAM_TYPE_OTHER}, 		// FlexMuxPES      
-	{ 0x13, 0x13, TS_STREAM_TYPE_OTHER}, 		// FlexMuxSec      
-	{ 0x1a, 0x1a, TS_STREAM_TYPE_OTHER}, 		// MPEG2IPMP       
-	{ 0x7f, 0x7f, TS_STREAM_TYPE_OTHER},		// MPEG2IPMP2     
+	{ 0x15, 0x15, TS_STREAM_TYPE_OTHER}, 		// MetaDataPES
+	{ 0x16, 0x16, TS_STREAM_TYPE_OTHER}, 		// MetaDataSec
+	{ 0x17, 0x17, TS_STREAM_TYPE_OTHER}, 		// MetaDataDC
+	{ 0x18, 0x18, TS_STREAM_TYPE_OTHER}, 		// MetaDataOC
+	{ 0x19, 0x19, TS_STREAM_TYPE_OTHER}, 		// MetaDataDL
 
-	{ 0x97, 0x97, TS_STREAM_TYPE_PRIVATE_DATA},	// TiVo Private Data     
-	
-	{ 0x00, 0x00, TS_STREAM_TYPE_NONE}	
+	// other
+	{ 0x05, 0x05, TS_STREAM_TYPE_OTHER}, 		// PrivSec
+	{ 0x06, 0x06, TS_STREAM_TYPE_OTHER},		// PrivData
+	{ 0x07, 0x07, TS_STREAM_TYPE_OTHER}, 		// MHEG
+	{ 0x09, 0x09, TS_STREAM_TYPE_OTHER}, 		// H222_1
+	{ 0x0e, 0x0e, TS_STREAM_TYPE_OTHER}, 		// MPEG2Aux
+	{ 0x12, 0x12, TS_STREAM_TYPE_OTHER}, 		// FlexMuxPES
+	{ 0x13, 0x13, TS_STREAM_TYPE_OTHER}, 		// FlexMuxSec
+	{ 0x1a, 0x1a, TS_STREAM_TYPE_OTHER}, 		// MPEG2IPMP
+	{ 0x7f, 0x7f, TS_STREAM_TYPE_OTHER},		// MPEG2IPMP2
+
+	{ 0x97, 0x97, TS_STREAM_TYPE_PRIVATE_DATA},	// TiVo Private Data
+
+	{ 0x00, 0x00, TS_STREAM_TYPE_NONE}
 };
 
 
@@ -279,9 +279,9 @@ int process_ps_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packe
                                 {
                                     int block_no	= 0;
                                     int crypted		= 0;
-                                    
+
 									VERBOSE("\n\n---Turing : Key\n");
-									if ( IS_VERBOSE ) 
+									if ( IS_VERBOSE )
 										hexbulk( (unsigned char *)&bytes[off], 16 );
 									VERBOSE("---Turing : header : block %d crypted 0x%08x\n", block_no, crypted );
 
@@ -462,18 +462,18 @@ int ts_fill_headers( TS_Stream * pStream )
         if (pStream->ts_header.pid >= ts_packet_tags[i].code_match_lo &&
                 pStream->ts_header.pid <= ts_packet_tags[i].code_match_hi)
         {
-        	pStream->ts_packet_type = ts_packet_tags[i].ts_packet;
-        	break;
+            pStream->ts_packet_type = ts_packet_tags[i].ts_packet;
+            break;
         }
     }
 
 	if ( pStream->ts_header.adaptation_field_exists )
 	{
 		memset( &pStream->ts_adapt, 0, sizeof(TS_Adaptation_Field) );
-		
+
 		ts_adapt_val											= portable_ntohs( pPtr );
 		pPtr++;
-		
+
 		pStream->ts_adapt.adaptation_field_length 				= (ts_adapt_val & 0xff00) >> 8;
 		pStream->ts_adapt.discontinuity_indicator 				= (ts_adapt_val & 0x0080) >> 7;
 		pStream->ts_adapt.random_access_indicator 				= (ts_adapt_val & 0x0040) >> 6;
@@ -483,7 +483,7 @@ int ts_fill_headers( TS_Stream * pStream )
 		pStream->ts_adapt.splicing_point_flag 					= (ts_adapt_val & 0x0004) >> 2;
 		pStream->ts_adapt.transport_private_data_flag 			= (ts_adapt_val & 0x0002) >> 1;
 		pStream->ts_adapt.adaptation_field_extension_flag 		= (ts_adapt_val & 0x0001);
-		
+
 		pPtr += pStream->ts_adapt.adaptation_field_length;
 	}
 
@@ -505,7 +505,7 @@ void ts_dump_headers( OFF_T_TYPE ts_offset, TS_Stream * pStream )
 	VERBOSE("TS   Offset 0x%zx (%Zu)\n", ts_offset,   ts_offset );
 	VERBOSE("MPEG Offset 0x%zx (%Zu)\n", ts_offset - pStream->initial_offset, ts_offset - pStream->initial_offset );
 	VERBOSE("Packet Counter 0x%08x (%d)\n", pStream->packet_counter, pStream->packet_counter );
-	
+
 	switch(pStream->ts_packet_type)
 	{
 		case TS_PID_TYPE_RESERVED 					: { sprintf(pidType,  "Reserved"); break; }
@@ -540,12 +540,12 @@ void ts_dump_headers( OFF_T_TYPE ts_offset, TS_Stream * pStream )
 	}
 
 	VERBOSE("%-15s : %s\n", "TS Pkt header", pidType );
-	
-	VERBOSE("%-15s : %-25.25s : 0x%04x\n", "TS Pkt header", 
+
+	VERBOSE("%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
 			"sync_byte", pStream->ts_header.sync_byte );
-	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header", 
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
 			"transport_error_indicator", pStream->ts_header.transport_error_indicator );
-	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header", 
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
 			"payload_unit_start_indicator", pStream->ts_header.payload_unit_start_indicator);
 	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
 			"transport_priority", pStream->ts_header.transport_priority);
@@ -564,28 +564,28 @@ void ts_dump_headers( OFF_T_TYPE ts_offset, TS_Stream * pStream )
     {
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"adaptation_field_length", pStream->ts_adapt.adaptation_field_length);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"discontinuity_indicator", pStream->ts_adapt.discontinuity_indicator);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"random_access_indicator", pStream->ts_adapt.random_access_indicator);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"elementary_stream_priority_indicator", pStream->ts_adapt.elementary_stream_priority_indicator);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"pcr_flag", pStream->ts_adapt.pcr_flag);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"opcr_flag", pStream->ts_adapt.opcr_flag);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"splicing_point_flag", pStream->ts_adapt.splicing_point_flag);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"transport_private_data_flag",	pStream->ts_adapt.transport_private_data_flag);
-		
+
 		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
 				"adaptation_field_extension_flag", pStream->ts_adapt.adaptation_field_extension_flag);
 	}
@@ -600,9 +600,9 @@ int ts_handle_tivo_private_data( TS_Stream * pStream, turing_state * turing )
 	unsigned int validator		= 0;
 	unsigned short pid			= 0;
 	unsigned char  stream_id	= 0;
-	unsigned short stream_bytes	= 0;		
+	unsigned short stream_bytes	= 0;
 	unsigned int foundit		= 0;
-		
+
 	if ( !pStream || !pStream->pPacket )
 	{
 		perror("Invalid TS header argument");
@@ -631,10 +631,10 @@ int ts_handle_tivo_private_data( TS_Stream * pStream, turing_state * turing )
 		return(-1);
 	}
 
-	VERBOSE("%-15s : %-25.25s : 0x%08x (%c%c%c%c)\n",	"TiVo Private", 
+	VERBOSE("%-15s : %-25.25s : 0x%08x (%c%c%c%c)\n",	"TiVo Private",
 			"Validator", validator, *pPtr, *(pPtr+1), *(pPtr+2), *(pPtr+3) );
 
-	VERBOSE("%-15s : %-25.25s : 0x%x 0x%x 0x%x 0x%x\n", "TiVo Private", 
+	VERBOSE("%-15s : %-25.25s : 0x%x 0x%x 0x%x 0x%x\n", "TiVo Private",
 			"Unknown", *(pPtr+4), *(pPtr+5), *(pPtr+6), *(pPtr+7) );
 
 	pPtr += 4;	// advance past "TiVo"
@@ -644,7 +644,7 @@ int ts_handle_tivo_private_data( TS_Stream * pStream, turing_state * turing )
 	stream_bytes = portable_ntohs( pPtr );
 	pPtr += 2;	// advance past stream_bytes
 
-	VERBOSE("%-15s : %-25.25s : %d\n", "TiVo Private", 
+	VERBOSE("%-15s : %-25.25s : %d\n", "TiVo Private",
 			"Stream Bytes", stream_bytes );
 
 	while ( stream_bytes > 0 )
@@ -657,7 +657,7 @@ int ts_handle_tivo_private_data( TS_Stream * pStream, turing_state * turing )
 		stream_bytes--;
 		pPtr++;		// advance past stream_id;
 
-		stream_bytes--;		
+		stream_bytes--;
 		pPtr++;		// advance past reserved???
 
 		for ( foundit = 0, stream_loop = 0; stream_loop<TS_STREAM_ELEMENT_MAX; stream_loop++ )
@@ -666,11 +666,11 @@ int ts_handle_tivo_private_data( TS_Stream * pStream, turing_state * turing )
 			{
 				foundit = 1;
 				pStream->ts_stream_elem[stream_loop].stream_id = stream_id;
-				
+
 				if ( memcmp( &pStream->ts_stream_elem[stream_loop].turing_stuff.key[0], pPtr, 16 ) )
 				{
 					VVERBOSE( "\nUpdating PID 0x%04x Type 0x%02x Turing Key\n", pid, stream_id );
-					if ( IS_VVERBOSE ) 
+					if ( IS_VVERBOSE )
 					{
 						hexbulk( &pStream->ts_stream_elem[stream_loop].turing_stuff.key[0], 16 );
 						hexbulk( pPtr, 16 );
@@ -695,17 +695,17 @@ int ts_handle_tivo_private_data( TS_Stream * pStream, turing_state * turing )
 				break;
 			}
 		}
-		
+
 		if ( !foundit )
 		{
 			perror("TiVo Private Data : Unmatched Stream ID");
-			return(-1);	
+			return(-1);
 		}
 
 		pPtr += 16;
 		stream_bytes -= 16;
 	}
-	
+
 	return(0);
 }
 
@@ -766,13 +766,13 @@ int ts_handle_pmt( TS_Stream * pStream, turing_state * turing )
 				break;
 		}
 		}
-		
+
 		if ( !foundit )
 		{
 			pStream->ts_stream_elem[i].stream_type_id = TS_STREAM_TYPE_PRIVATE_DATA;
 		}
-		
-		switch( pStream->ts_stream_elem[i].stream_type ) 
+
+		switch( pStream->ts_stream_elem[i].stream_type )
 		{
 			case TS_STREAM_TYPE_PRIVATE_DATA : sprintf(strTypeStr,"PrivateData"); break;
 			case TS_STREAM_TYPE_AUDIO 		 : sprintf(strTypeStr,"Audio"); break;
@@ -919,7 +919,7 @@ int ts_handle_audio_video( TS_Stream * pStream, turing_state * turing )
 	}
 
 	pPtr = pStream->pPacket + pStream->payload_offset;
-	
+
 	if ( !pStream->ts_header.payload_data_exists || !pStream->ts_header.transport_scrambling_control )
 	{
 		return(0);
@@ -948,7 +948,7 @@ int ts_handle_audio_video( TS_Stream * pStream, turing_state * turing )
 		VVERBOSE( "\n--- Elementary Stream : 0x%x (%d)\n",
 			pStream->ts_pes_packet.stream_id,
 			pStream->ts_pes_packet.stream_id );
-		
+
 		if ( pStream->ts_pes_packet.stream_id == EXTENSION_START_CODE )
 		{
 			unsigned int ext_hdr_len = 0;
@@ -975,14 +975,13 @@ int ts_handle_audio_video( TS_Stream * pStream, turing_state * turing )
 			}
 
 			pPtr += ext_hdr_len;
-			
+
 			while ( (*(pPtr+0)!=0x00) || (*(pPtr+1)!=0x00) || (*(pPtr+2)!=0x01) )
 			{
-				pPtr++;	
+				pPtr++;
 			}
-			
-			
-			VERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet", 
+
+			VERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet",
 					"Extension header", ext_hdr_len );
 		}
 		else if ( pStream->ts_pes_packet.stream_id == GROUP_START_CODE )
@@ -1018,7 +1017,7 @@ int ts_handle_audio_video( TS_Stream * pStream, turing_state * turing )
 		{
 		    unsigned int PES_load_intra_flag		= 0;
 		    unsigned int PES_load_non_intra_flag	= 0;
-		    
+
 			VERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Sequence header" );
 			pPtr += 7;
 
@@ -1062,58 +1061,58 @@ int ts_handle_audio_video( TS_Stream * pStream, turing_state * turing )
 			pPtr++;
 
 			pPtr += pStream->ts_pes_packet.PES_header_length;
-			
+
 			VVERBOSE("%-15s : %-25.25s : 0x%02x (%d)(%s)\n", "TS PES Packet",
 					"stream_id", pStream->ts_pes_packet.stream_id,	
 					pStream->ts_pes_packet.stream_id,
 					(pStream->ts_pes_packet.stream_id<0xe0) ? "audio" : "video" );
-			
+
 			VVERBOSE("%-15s : %-25.25s : 0x%04x (%d)\n", "TS PES Packet",
 					"pkt_length", pStream->ts_pes_packet.pkt_length, 
 					pStream->ts_pes_packet.pkt_length );
-			
+
 			VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
 					"scrambling_control",
 					pStream->ts_pes_packet.scrambling_control,
 					pStream->ts_pes_packet.scrambling_control );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"priority", pStream->ts_pes_packet.priority );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"data_alignment_indicator",	
 					pStream->ts_pes_packet.data_alignment_indicator );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"copyright", pStream->ts_pes_packet.copyright );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"original_or_copy", pStream->ts_pes_packet.original_or_copy );
-			
+
 			VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
 					"PTS_DTS_indicator",
 					pStream->ts_pes_packet.PTS_DTS_indicator,
 					pStream->ts_pes_packet.PTS_DTS_indicator );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"ESCR_flag", pStream->ts_pes_packet.ESCR_flag );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"ES_rate_flag", pStream->ts_pes_packet.ES_rate_flag );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"DSM_trick_mode_flag", pStream->ts_pes_packet.DSM_trick_mode_flag );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet", 
 					"additional_copy_info_flag",
 					pStream->ts_pes_packet.additional_copy_info_flag );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"CRC_flag", pStream->ts_pes_packet.CRC_flag );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"extension_flag", pStream->ts_pes_packet.extension_flag );
-			
+
 			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
 					"PES_header_length", pStream->ts_pes_packet.PES_header_length );
 
