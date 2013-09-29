@@ -187,7 +187,7 @@ int main(int argc, char *argv[])
         if ((chunk = read_tivo_chunk (hfh, &hread_wrapper)) == NULL)
             return 8;
 
-        if (chunk->data_size && chunk->type == TIVO_CHUNK_PLAINTEXT_XML)
+        if (chunk->data_size && chunk->type == TIVO_CHUNK_PLAINTEXT_XML && chunk->id == 3)
         {
             setup_metadata_key (&metaturing, chunk, mak);
             free (chunk);
@@ -196,11 +196,13 @@ int main(int argc, char *argv[])
 
         if ((o_chunk_1 && chunk->id == 1) || (o_chunk_2 && chunk->id == 2))
         {
+            if (chunk->type == TIVO_CHUNK_ENCRYPTED_XML)
+            {
             prepare_frame(&metaturing, 0, 0);
             skip_turing_data(&metaturing, (size_t)(chunk_start - current_meta_stream_pos));
             decrypt_buffer(&metaturing, chunk->data, chunk->data_size);
             current_meta_stream_pos = chunk_start + chunk->data_size;
-
+            }
             if (fwrite (chunk->data, 1, chunk->data_size, ofh) != chunk->data_size)
             {
                 perror("write chunk");

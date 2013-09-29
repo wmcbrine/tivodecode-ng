@@ -1,5 +1,5 @@
 tivodecode (c) 2006-2007, Jeremy Drake
-Version 0.2pre4
+Version 0.3pre5
 See COPYING for license terms.
 
 This project now uses autoconf for its build system.  See the INSTALL file for

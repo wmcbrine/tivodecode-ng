@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
             if ((chunk = read_tivo_chunk (hfh, &hread_wrapper)) == NULL)
                 return 8;
 
-            if (chunk->data_size && chunk->type == TIVO_CHUNK_PLAINTEXT_XML )
+            if (chunk->data_size && chunk->type == TIVO_CHUNK_PLAINTEXT_XML  && chunk->id == 3)
             {
 				if ( IS_VVVERBOSE )
 					dump_tivo_chunk(chunk);
@@ -279,10 +279,13 @@ int main(int argc, char *argv[])
 	                return 8;
 	            }
 	
+                if (chunk->type == TIVO_CHUNK_ENCRYPTED_XML)
+                {
 	            prepare_frame(&metaturing, 0, 0);
 	            skip_turing_data(&metaturing, (size_t)(chunk_start - current_meta_stream_pos));
 	            decrypt_buffer(&metaturing, chunk->data, chunk->data_size);
 	            current_meta_stream_pos = chunk_start + chunk->data_size;
+                }
 
 				if (IS_VVVERBOSE)
 					dump_tivo_chunk(chunk);
