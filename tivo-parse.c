@@ -24,6 +24,8 @@
 #include "sha1.h"
 #include "tivo-parse.h"
 
+#include "hexlib.h"
+
 #define LOAD_NET_UNALIGNED_HELP(ptr, offset, len) ((unsigned int)ptr[offset] << (((len - 1) << 3) - (offset << 3)))
 
 #define NETLONG_UNALIGNED(ptr) ( \
@@ -32,6 +34,47 @@
 		LOAD_NET_UNALIGNED_HELP(ptr, 2, 4) | \
 		LOAD_NET_UNALIGNED_HELP(ptr, 3, 4) \
 	)
+
+
+int isBigEndian()
+{
+  unsigned char EndianTest[2] = {1,0};
+  short x = *(short *)EndianTest;
+
+  if( x == 1 )
+    return 0;
+  else
+    return 1;
+}
+
+unsigned long portable_ntohl( unsigned char * pVal )
+{
+	unsigned long s = 0;
+	if ( isBigEndian() )
+	{
+		return *(unsigned long *)pVal;
+	}
+	else
+	{
+		s = (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
+		return s;
+	}
+}
+
+unsigned short portable_ntohs( unsigned char * pVal )
+{
+	unsigned short s = 0;
+	if ( isBigEndian() )
+	{
+		return *(unsigned short *)pVal;
+	}
+	else
+	{
+		s = (pVal[0] << 8) | pVal[1];
+		return s;
+	}	
+}
+
 
 int read_tivo_header(void * file, tivo_stream_header * head, read_func_t read_handler)
 {
@@ -51,13 +94,11 @@ int read_tivo_header(void * file, tivo_stream_header * head, read_func_t read_ha
 		perror ("read head");
 		return -1;
 	}
-#if 1
-	// these are unused
+
 	memcpy(head->filetype, raw_tivo_header.filetype, 4);
 	head->dummy_0004 = ntohs(raw_tivo_header.dummy_0004);
 	head->dummy_0006 = ntohs(raw_tivo_header.dummy_0006);
 	head->dummy_0008 = ntohs(raw_tivo_header.dummy_0008);
-#endif
 	head->mpeg_offset = NETLONG_UNALIGNED(raw_tivo_header.mpeg_offset);
 	head->chunks = ntohs(raw_tivo_header.chunks);
 
@@ -103,3 +144,33 @@ tivo_stream_chunk * read_tivo_chunk(void * file, read_func_t read_handler)
 	return chunk;
 }
 
+void dump_tivo_header(tivo_stream_header * head)
+{
+	if ( !head )
+		return;
+		
+	printf("Head File Type : %s\n",   head->filetype );
+	printf("Head Dummy4    : %04x\n", head->dummy_0004 );
+	printf("Head Dummy6    : %04x\n", head->dummy_0006 );
+	printf("Head Dummy8    : %04x\n", head->dummy_0008 );
+	printf("MPEG offset    : %d\n",   head->mpeg_offset );
+	printf("Head Chunks    : %d\n",   head->chunks );
+	printf("\n");
+	return;
+}
+
+
+void dump_tivo_chunk(tivo_stream_chunk * chunk)
+{
+	if ( !chunk )
+		return;
+		
+	printf("Chunk Size : %d\n", chunk->chunk_size );
+	printf("Data Size  : %d\n", chunk->data_size );
+	printf("Chunk ID   : %d\n", chunk->id );
+	printf("Chunk Type : %d\n", chunk->type );
+	printf("Chunk Data : \n" );
+	hexbulk( (unsigned char *)chunk->data, (int) chunk->data_size );
+	printf("\n");
+	return;
+}

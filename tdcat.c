@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
         if ((chunk = read_tivo_chunk (hfh, &hread_wrapper)) == NULL)
             return 8;
 
-        if (chunk->data_size && chunk->type == TIVO_CHUNK_XML)
+        if (chunk->data_size && chunk->type == TIVO_CHUNK_PLAINTEXT_XML)
         {
             setup_metadata_key (&metaturing, chunk, mak);
             free (chunk);

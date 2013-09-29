@@ -102,7 +102,7 @@ unsigned int init_turing_from_file(turing_state * turing, void * tivofile, read_
         if ((xml = read_tivo_chunk (tivofile, read_handler)) == NULL)
             return -1;
 
-        if (xml->data_size && xml->type == TIVO_CHUNK_XML)
+        if (xml->data_size && xml->type == TIVO_CHUNK_PLAINTEXT_XML )
         {
             setup_turing_key (turing, xml, mak);
             free(xml);
@@ -198,7 +198,7 @@ static void prepare_frame_helper(turing_state * turing, unsigned char stream_id,
         (nxt) = (turing)->active; \
         (turing)->active->internal = TuringAlloc(); \
         if (o_verbose) \
-            fprintf(stderr, "Creating turing stream for packet type %02x\n", (stream_id)); \
+            fprintf(stdout, "Creating turing stream for packet type %02x\n", (stream_id)); \
         prepare_frame_helper((turing), (stream_id), (block_id)); \
     } while(0)
 

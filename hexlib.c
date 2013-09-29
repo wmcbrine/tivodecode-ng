@@ -11,6 +11,7 @@
 # include <string.h>
 #endif
 #include "hexlib.h"
+#include <ctype.h>
 
 int	nerrors;
 
@@ -22,9 +23,9 @@ hexprint(const char *s, unsigned char *p, int n)
 {
     printf("%14s:", s);
     while (--n >= 0) {
-	if (n % 20 == 19)
-	    printf("\n%14s ", "");
-	printf(" %02x", *p++);
+		if (n % 20 == 19)
+		    printf("\n%14s ", "");
+		printf(" %02x", *p++);
     }
     printf("\n");
     return 0;
@@ -36,10 +37,10 @@ hexread(unsigned char *buf, char *p, int n)
     int		i;
 
     while (--n >= 0) {
-	while (*p == ' ') ++p;
-	i = HEX(*p++) << 4;
-	i += HEX(*p++);
-	*buf++ = i;
+		while (*p == ' ') ++p;
+			i = HEX(*p++) << 4;
+		i += HEX(*p++);
+		*buf++ = i;
     }
     return 0;
 }
@@ -50,27 +51,58 @@ hexcheck(unsigned char *buf, char *p, int n)
     int		i;
 
     while (--n >= 0) {
-	while (*p == ' ') ++p;
-	i = HEX(*p++) << 4;
-	i += HEX(*p++);
-	if (*buf++ != i) {
-	    printf("Expected %02x, got %02x.\n", i, buf[-1]);
-	    ++nerrors;
-	}
+		while (*p == ' ') ++p;
+			i = HEX(*p++) << 4;
+		i += HEX(*p++);
+		if (*buf++ != i) {
+		    printf("Expected %02x, got %02x.\n", i, buf[-1]);
+		    ++nerrors;
+		}
     }
     return nerrors;
 }
 
-#define COLS 20
+#define COLS 16
 
 int
 hexbulk(unsigned char *buf, int n)
 {
-    int		i;
+    int		i=0;
+    int		j=0;
+    char 	ch;
+    char 	hexdigit[5];
+    char 	strdigit[5];
+    char 	hexstr[100];
+    char 	strstr[100];
+    
+ 	while ( i<n )
+   	{
+		memset(hexstr, 0, 100);
+		memset(strstr, 0, 100);
+	
+   		for(j=0; (j<COLS) && (i<n); j++, i++ )
+   		{
+	   		if ( isspace(buf[i]) )
+	   			ch = ' ';
+	   		else if ( isprint( buf[i]))
+	   			ch = buf[i];
+	   		else
+	   			ch = '.';
 
-    for (i = 0; i < n; ++i)
-	printf("%02x%c", buf[i], (i%COLS == (COLS-1) ? '\n' : ' '));
-    if (i % COLS != 0)
-	putchar('\n');
+	   		sprintf( hexdigit, "%02x ", buf[i] );	   			
+	   		sprintf( strdigit, "%c",    ch);
+			strcat( hexstr, hexdigit ); 
+			strcat( strstr, strdigit );
+		}
+		
+		while(j<COLS)
+		{
+			strcat( hexstr, "   " );	
+			j++;
+		}
+		
+		printf("%s %s\n", hexstr, strstr);
+	}		
+				
     return 0;
 }

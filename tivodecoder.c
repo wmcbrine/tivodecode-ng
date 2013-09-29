@@ -5,6 +5,7 @@
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
 #include "tivodecoder.h"
+#include "hexlib.h"
 #include "Turing.h"
 #include <stdio.h>
 #ifdef HAVE_MEMORY_H
@@ -14,26 +15,7 @@
 /* TODO: clean this up */
 extern int o_verbose;
 extern int o_no_verify;
-
-typedef enum
-{
-    PACK_NONE,
-    PACK_SPECIAL,
-    PACK_PES_SIMPLE,            // packet length == data length
-    PACK_PES_COMPLEX,           // crazy headers need skipping
-}
-packet_type;
-
-typedef struct
-{
-    // the byte value match for the packet tags
-    unsigned char code_match_lo;      // low end of the range of matches
-    unsigned char code_match_hi;      // high end of the range of matches
-
-    // what kind of PES is it?
-    packet_type packet;
-}
-packet_tag_info;
+extern int o_ts_pkt_dump;
 
 static packet_tag_info packet_tags[] = {
     {0x00, 0x00, PACK_SPECIAL},     // pic start
@@ -57,6 +39,68 @@ static packet_tag_info packet_tags[] = {
     {0xFF, 0xFF, PACK_PES_SIMPLE},  // PES: prog stream dir     *
     {0, 0, PACK_NONE}       // end of list
 };
+
+static ts_packet_tag_info ts_packet_tags[] = {
+    {0x0000, 0x0000, TS_PID_TYPE_PROGRAM_ASSOCIATION_TABLE},
+    {0x0001, 0x0001, TS_PID_TYPE_CONDITIONAL_ACCESS_TABLE},
+    {0x0002, 0x000F, TS_PID_TYPE_RESERVED},
+    {0x0010, 0x0010, TS_PID_TYPE_NETWORK_INFORMATION_TABLE},
+    {0x0011, 0x0011, TS_PID_TYPE_SERVICE_DESCRIPTION_TABLE},
+    {0x0012, 0x0012, TS_PID_TYPE_EVENT_INFORMATION_TABLE},
+    {0x0013, 0x0013, TS_PID_TYPE_RUNNING_STATUS_TABLE},
+    {0x0014, 0x0014, TS_PID_TYPE_TIME_DATE_TABLE},
+    {0x0015, 0x001F, TS_PID_TYPE_RESERVED},
+    {0x0020, 0x1FFE, TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA},
+    {0xFFFF, 0xFFFF, TS_PID_TYPE_NONE}
+};
+
+
+static ts_pmt_stream_type_info ts_pmt_stream_tags[] = {
+	// video
+	{ 0x01, 0x01, TS_STREAM_TYPE_VIDEO},		// MPEG1Video
+	{ 0x02, 0x02, TS_STREAM_TYPE_VIDEO},		// MPEG2Video
+	{ 0x10, 0x10, TS_STREAM_TYPE_VIDEO},		// MPEG4Video
+	{ 0x1b, 0x1b, TS_STREAM_TYPE_VIDEO},		// H264Video
+	{ 0x80, 0x80, TS_STREAM_TYPE_VIDEO},		// OpenCableVideo
+	{ 0xea, 0xea, TS_STREAM_TYPE_VIDEO},		// VC1Video
+ 
+	// audio
+	{ 0x03, 0x03, TS_STREAM_TYPE_AUDIO},		// MPEG1Audio
+	{ 0x04, 0x04, TS_STREAM_TYPE_AUDIO},		// MPEG2Audio
+	{ 0x11, 0x11, TS_STREAM_TYPE_AUDIO},		// MPEG2AudioAmd1
+	{ 0x0f, 0x0f, TS_STREAM_TYPE_AUDIO},		// AACAudio
+	{ 0x81, 0x81, TS_STREAM_TYPE_AUDIO},		// AC3Audio
+	{ 0x8a, 0x8a, TS_STREAM_TYPE_AUDIO},		// DTSAudio
+ 
+	// DSM-CC Object Carousel
+	{ 0x08, 0x08, TS_STREAM_TYPE_OTHER},		// DSMCC 
+	{ 0x0a, 0x0a, TS_STREAM_TYPE_OTHER}, 		// DSMCC_A
+	{ 0x0b, 0x0b, TS_STREAM_TYPE_OTHER}, 		// DSMCC_B 
+	{ 0x0c, 0x0c, TS_STREAM_TYPE_OTHER}, 		// DSMCC_C
+	{ 0x0d, 0x0d, TS_STREAM_TYPE_OTHER}, 		// DSMCC_D
+	{ 0x14, 0x14, TS_STREAM_TYPE_OTHER}, 		// DSMCC_DL
+	{ 0x15, 0x15, TS_STREAM_TYPE_OTHER}, 		// MetaDataPES    
+	{ 0x16, 0x16, TS_STREAM_TYPE_OTHER}, 		// MetaDataSec     
+	{ 0x17, 0x17, TS_STREAM_TYPE_OTHER}, 		// MetaDataDC      
+	{ 0x18, 0x18, TS_STREAM_TYPE_OTHER}, 		// MetaDataOC      
+	{ 0x19, 0x19, TS_STREAM_TYPE_OTHER}, 		// MetaDataDL      
+ 
+	// other
+	{ 0x05, 0x05, TS_STREAM_TYPE_OTHER}, 		// PrivSec         
+	{ 0x06, 0x06, TS_STREAM_TYPE_OTHER},		// PrivData        
+	{ 0x07, 0x07, TS_STREAM_TYPE_OTHER}, 		// MHEG            
+	{ 0x09, 0x09, TS_STREAM_TYPE_OTHER}, 		// H222_1          
+	{ 0x0e, 0x0e, TS_STREAM_TYPE_OTHER}, 		// MPEG2Aux        
+	{ 0x12, 0x12, TS_STREAM_TYPE_OTHER}, 		// FlexMuxPES      
+	{ 0x13, 0x13, TS_STREAM_TYPE_OTHER}, 		// FlexMuxSec      
+	{ 0x1a, 0x1a, TS_STREAM_TYPE_OTHER}, 		// MPEG2IPMP       
+	{ 0x7f, 0x7f, TS_STREAM_TYPE_OTHER},		// MPEG2IPMP2     
+
+	{ 0x97, 0x97, TS_STREAM_TYPE_PRIVATE_DATA},	// TiVo Private Data     
+	
+	{ 0x00, 0x00, TS_STREAM_TYPE_NONE}	
+};
+
 
 /**
  * This is from analyzing the TiVo directshow dll.  Most of the parameters I have no idea what they are for.
@@ -146,7 +190,12 @@ static int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, i
 }
 
 #define LOOK_AHEAD(fh, bytes, n) do {\
-    if (read_handler((bytes) + looked_ahead, (n) - looked_ahead, fh) != (n) - looked_ahead) { \
+	int retval = read_handler((bytes) + looked_ahead, (n) - looked_ahead, fh);\
+	if ( retval == 0 )\
+	{\
+		return(0);	\
+	}\
+    else if ( retval != (n) - looked_ahead) { \
         perror ("read"); \
         return -1; \
     } else { \
@@ -155,9 +204,9 @@ static int do_header(BYTE * arg_0, int * block_no, int * arg_8, int * crypted, i
 } while (0)
 
 /*
- * called for each frame
+ * called for each PS frame
  */
-int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler)
+int process_ps_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler)
 {
     static union {
 	    td_uint64_t align;
@@ -169,6 +218,8 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
     int scramble=0;
     unsigned int header_len = 0;
     unsigned int length;
+
+    memset( bytes, 0, 32 );
 
     for (i = 0; packet_tags[i].packet != PACK_NONE; i++)
     {
@@ -223,22 +274,35 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
                                     off += 4;
                                 }
 
-
                                 //private data flag
                                 if (bytes[ext_byte] & 0x80)
                                 {
-                                    int block_no, crypted;
+                                    int block_no	= 0;
+                                    int crypted		= 0;
+                                    
+									VERBOSE("\n\n---Turing : Key\n");
+									if ( IS_VERBOSE ) 
+										hexbulk( (unsigned char *)&bytes[off], 16 );
+									VERBOSE("---Turing : header : block %d crypted 0x%08x\n", block_no, crypted );
 
                                     if (do_header (&bytes[off], &block_no, NULL, &crypted, NULL, NULL))
                                     {
-                                        fprintf(stderr, "do_header not returned 0!\n");
+                                        fprintf(stderr, "do_header did not return 0!\n");
                                     }
 
-                                    if (o_verbose)
-                                        fprintf(stderr, "%10" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
+									VERBOSE("BBB : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
+									VERBOSE("%Zu" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
+									VERBOSE("---Turing : prepare : code 0x%02x block_no %d\n", code, block_no );
 
                                     prepare_frame(turing, code, block_no);
+
+									VERBOSE("CCC : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
+									VERBOSE("---Turing : decrypt : crypted 0x%08x len %d\n", crypted, 4 );
+
                                     decrypt_buffer(turing, (unsigned char *)&crypted, 4);
+
+									VERBOSE("DDD : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
+
                                 }
 
                                 // STD buffer flag
@@ -288,7 +352,10 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
 
                     if (scramble == 3)
                     {
-                        decrypt_buffer (turing, packet_ptr, packet_size);
+						VERBOSE("---Turing : decrypt : size %d\n", (int)packet_size );
+
+                        decrypt_buffer(turing, packet_ptr, packet_size);
+
                         // turn off scramble bits
                         aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x30;
 
@@ -347,3 +414,978 @@ int process_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packet_s
     return -1;
 }
 
+/*
+ * called for each TS frame
+ */
+
+int ts_fill_headers( TS_Stream * pStream )
+{
+	unsigned int ts_hdr_val		= 0;
+	unsigned short ts_adapt_val	= 0;
+	int i						= 0;
+	unsigned char * pPtr		= NULL;
+
+	if ( !pStream || !pStream->pPacket )
+	{
+		perror("Invalid TS header argument");
+		return(-1);
+	}
+
+	pPtr = pStream->pPacket;
+
+	// Yuck.  Make sure that we're dealing with the proper endianess.
+	// TS packet streams are big endian, and we may be running on little endian platform.
+
+	memset( &pStream->ts_header, 0, sizeof(TS_Header) );
+	ts_hdr_val	= portable_ntohl( pPtr );
+	pPtr		+= 4;
+
+	pStream->ts_header.sync_byte 					= ( ts_hdr_val & 0xff000000 ) >> 24;
+	pStream->ts_header.transport_error_indicator 	= ( ts_hdr_val & 0x00800000 ) >> 23;
+	pStream->ts_header.payload_unit_start_indicator	= ( ts_hdr_val & 0x00400000 ) >> 22;
+	pStream->ts_header.transport_priority 			= ( ts_hdr_val & 0x00200000 ) >> 21;
+	pStream->ts_header.pid 							= ( ts_hdr_val & 0x001FFF00 ) >> 8;
+	pStream->ts_header.transport_scrambling_control = ( ts_hdr_val & 0x000000C0 ) >> 6;
+	pStream->ts_header.adaptation_field_exists		= ( ts_hdr_val & 0x00000020 ) >> 5;
+	pStream->ts_header.payload_data_exists 			= ( ts_hdr_val & 0x00000010 ) >> 4;
+	pStream->ts_header.continuity_counter 			= ( ts_hdr_val & 0x0000000F );
+
+	if ( pStream->ts_header.sync_byte != 0x47 )
+	{
+		fprintf(stderr, "TS header : incorrect sync byte [%02x]\n", pStream->ts_header.sync_byte );
+		fprintf(stderr, "TS header : ts_hdr_val 0x%08x\n", ts_hdr_val );
+		return(-1);
+	}
+
+    for (i = 0; ts_packet_tags[i].ts_packet != TS_PID_TYPE_NONE; i++)
+    {
+        if (pStream->ts_header.pid >= ts_packet_tags[i].code_match_lo &&
+                pStream->ts_header.pid <= ts_packet_tags[i].code_match_hi)
+        {
+        	pStream->ts_packet_type = ts_packet_tags[i].ts_packet;
+        	break;
+        }
+    }
+
+	if ( pStream->ts_header.adaptation_field_exists )
+	{
+		memset( &pStream->ts_adapt, 0, sizeof(TS_Adaptation_Field) );
+		
+		ts_adapt_val											= portable_ntohs( pPtr );
+		pPtr++;
+		
+		pStream->ts_adapt.adaptation_field_length 				= (ts_adapt_val & 0xff00) >> 8;
+		pStream->ts_adapt.discontinuity_indicator 				= (ts_adapt_val & 0x0080) >> 7;
+		pStream->ts_adapt.random_access_indicator 				= (ts_adapt_val & 0x0040) >> 6;
+		pStream->ts_adapt.elementary_stream_priority_indicator 	= (ts_adapt_val & 0x0020) >> 5;
+		pStream->ts_adapt.pcr_flag 								= (ts_adapt_val & 0x0010) >> 4;
+		pStream->ts_adapt.opcr_flag 							= (ts_adapt_val & 0x0008) >> 3;
+		pStream->ts_adapt.splicing_point_flag 					= (ts_adapt_val & 0x0004) >> 2;
+		pStream->ts_adapt.transport_private_data_flag 			= (ts_adapt_val & 0x0002) >> 1;
+		pStream->ts_adapt.adaptation_field_extension_flag 		= (ts_adapt_val & 0x0001);
+		
+		pPtr += pStream->ts_adapt.adaptation_field_length;
+	}
+
+	pStream->payload_offset = (unsigned int)(pPtr - pStream->pPacket);
+	return(0);
+}
+
+
+void ts_dump_headers( OFF_T_TYPE ts_offset, TS_Stream * pStream )
+{
+    char pidType[50];
+
+	if ( !pStream )
+	{
+		perror("Invalid TS header argument");
+		return;
+	}
+
+	VERBOSE("TS   Offset 0x%zx (%Zu)\n", ts_offset,   ts_offset );
+	VERBOSE("MPEG Offset 0x%zx (%Zu)\n", ts_offset - pStream->initial_offset, ts_offset - pStream->initial_offset );
+	VERBOSE("Packet Counter 0x%08x (%d)\n", pStream->packet_counter, pStream->packet_counter );
+	
+	switch(pStream->ts_packet_type)
+	{
+		case TS_PID_TYPE_RESERVED 					: { sprintf(pidType,  "Reserved"); break; }
+		case TS_PID_TYPE_NULL_PACKET 				: { sprintf(pidType,  "NULL Packet"); break; }
+		case TS_PID_TYPE_PROGRAM_ASSOCIATION_TABLE 	: { sprintf(pidType,  "Program Association Table"); break; }
+		case TS_PID_TYPE_PROGRAM_MAP_TABLE 			: { sprintf(pidType,  "Program Map Table"); break; }
+		case TS_PID_TYPE_CONDITIONAL_ACCESS_TABLE 	: { sprintf(pidType,  "Conditional Access Table"); break; }
+		case TS_PID_TYPE_NETWORK_INFORMATION_TABLE 	: { sprintf(pidType,  "Network Information Table"); break; }
+		case TS_PID_TYPE_SERVICE_DESCRIPTION_TABLE 	: { sprintf(pidType,  "Service Description Table"); break; }
+		case TS_PID_TYPE_EVENT_INFORMATION_TABLE 	: {	sprintf(pidType,  "Event Information Table"); break; }
+		case TS_PID_TYPE_RUNNING_STATUS_TABLE 		: { sprintf(pidType,  "Running Status Table"); break; }
+		case TS_PID_TYPE_TIME_DATE_TABLE 			: { sprintf(pidType,  "Time Date Table"); break; }
+		case TS_PID_TYPE_NONE 						: { sprintf(pidType,  "None"); break; }
+		case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA :
+		{
+			if ( pStream->ts_pat.program_map_pid == pStream->ts_header.pid )
+			{
+				sprintf(pidType,  "Program Map Table");
+			}
+			else
+			{
+				sprintf(pidType,  "Audio/Video/PrivateData");
+			}
+
+			break;
+		}
+
+		default :
+		{
+			sprintf(pidType,  "**** UNKNOWN ***");
+		}
+	}
+
+	VERBOSE("%-15s : %s\n", "TS Pkt header", pidType );
+	
+	VERBOSE("%-15s : %-25.25s : 0x%04x\n", "TS Pkt header", 
+			"sync_byte", pStream->ts_header.sync_byte );
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header", 
+			"transport_error_indicator", pStream->ts_header.transport_error_indicator );
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header", 
+			"payload_unit_start_indicator", pStream->ts_header.payload_unit_start_indicator);
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+			"transport_priority", pStream->ts_header.transport_priority);
+	VERBOSE("%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
+			"pid", pStream->ts_header.pid);
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+			"transport_scrambling_control", pStream->ts_header.transport_scrambling_control);
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+			"adaptation_field_exists", pStream->ts_header.adaptation_field_exists);
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+			"payload_data_exists", pStream->ts_header.payload_data_exists);
+	VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+			"continuity_counter", pStream->ts_header.continuity_counter);
+
+    if ( pStream->ts_header.adaptation_field_exists )
+    {
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"adaptation_field_length", pStream->ts_adapt.adaptation_field_length);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"discontinuity_indicator", pStream->ts_adapt.discontinuity_indicator);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"random_access_indicator", pStream->ts_adapt.random_access_indicator);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"elementary_stream_priority_indicator", pStream->ts_adapt.elementary_stream_priority_indicator);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"pcr_flag", pStream->ts_adapt.pcr_flag);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"opcr_flag", pStream->ts_adapt.opcr_flag);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"splicing_point_flag", pStream->ts_adapt.splicing_point_flag);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"transport_private_data_flag",	pStream->ts_adapt.transport_private_data_flag);
+		
+		VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+				"adaptation_field_extension_flag", pStream->ts_adapt.adaptation_field_extension_flag);
+	}
+    return;
+}
+
+
+int ts_handle_tivo_private_data( TS_Stream * pStream, turing_state * turing )
+{
+	unsigned char * pPtr	= NULL;
+	int	stream_loop			= 0;
+	unsigned int validator		= 0;
+	unsigned short pid			= 0;
+	unsigned char  stream_id	= 0;
+	unsigned short stream_bytes	= 0;		
+	unsigned int foundit		= 0;
+		
+	if ( !pStream || !pStream->pPacket )
+	{
+		perror("Invalid TS header argument");
+		return(-1);
+	}
+
+	pPtr = pStream->pPacket + pStream->payload_offset;
+
+	// TiVo Private Data format
+	// ------------------------
+	//   4 bytes   : validator -- "TiVo"
+	//   4 bytes   : Unknown -- always 0x81 0x3 0x7d 0x0 -- ???
+	//   2 bytes   : number of elementary stream bytes following
+	//   For each elementary stream :
+	//     2 byte  : packet id
+	//     1 byte  : stream id
+	//     1 byte  : Unknown -- always 0x10 -- reserved ???
+	//    16 bytes : Turing key
+
+	VERBOSE("\n");
+
+	validator = portable_ntohl( pPtr );
+	if ( validator != 0x5469566f )
+	{
+		perror("Invalid TiVo private data validator");
+		return(-1);
+	}
+
+	VERBOSE("%-15s : %-25.25s : 0x%08x (%c%c%c%c)\n",	"TiVo Private", 
+			"Validator", validator, *pPtr, *(pPtr+1), *(pPtr+2), *(pPtr+3) );
+
+	VERBOSE("%-15s : %-25.25s : 0x%x 0x%x 0x%x 0x%x\n", "TiVo Private", 
+			"Unknown", *(pPtr+4), *(pPtr+5), *(pPtr+6), *(pPtr+7) );
+
+	pPtr += 4;	// advance past "TiVo"
+
+	pPtr += 4;	// advance past ??? field
+
+	stream_bytes = portable_ntohs( pPtr );
+	pPtr += 2;	// advance past stream_bytes
+
+	VERBOSE("%-15s : %-25.25s : %d\n", "TiVo Private", 
+			"Stream Bytes", stream_bytes );
+
+	while ( stream_bytes > 0 )
+	{
+		pid = portable_ntohs( pPtr );
+		stream_bytes -= 2;
+		pPtr += 2;	// advance past pid
+
+		stream_id = *pPtr;
+		stream_bytes--;
+		pPtr++;		// advance past stream_id;
+
+		stream_bytes--;		
+		pPtr++;		// advance past reserved???
+
+		for ( foundit = 0, stream_loop = 0; stream_loop<TS_STREAM_ELEMENT_MAX; stream_loop++ )
+		{
+			if ( pStream->ts_stream_elem[stream_loop].stream_pid == pid )
+			{
+				foundit = 1;
+				pStream->ts_stream_elem[stream_loop].stream_id = stream_id;
+				
+				if ( memcmp( &pStream->ts_stream_elem[stream_loop].turing_stuff.key[0], pPtr, 16 ) )
+				{
+					VVERBOSE( "\nUpdating PID 0x%04x Type 0x%02x Turing Key\n", pid, stream_id );
+					if ( IS_VVERBOSE ) 
+					{
+						hexbulk( &pStream->ts_stream_elem[stream_loop].turing_stuff.key[0], 16 );
+						hexbulk( pPtr, 16 );
+					}
+
+					memcpy( &pStream->ts_stream_elem[stream_loop].turing_stuff.key[0], pPtr, 16);
+				}
+
+				VERBOSE("%-15s : %-25.25s : %d\n", "TiVo Private", "Block No", 
+						pStream->ts_stream_elem[stream_loop].turing_stuff.block_no );
+				VERBOSE("%-15s : %-25.25s : 0x%08x\n", "TiVo Private", "Crypted", 
+						pStream->ts_stream_elem[stream_loop].turing_stuff.crypted );
+				VERBOSE("%-15s : %-25.25s : 0x%04x (%d)\n", "TiVo Private", "PID", 
+						pStream->ts_stream_elem[stream_loop].stream_pid, 
+						pStream->ts_stream_elem[stream_loop].stream_pid );
+				VERBOSE("%-15s : %-25.25s : 0x%02x (%d)\n", "TiVo Private", "Stream ID", 
+						pStream->ts_stream_elem[stream_loop].stream_id,
+						pStream->ts_stream_elem[stream_loop].stream_id );
+				VERBOSE("%-15s : %-25.25s : ", "TiVo Private", "Turing Key" );
+				if ( IS_VERBOSE )
+					hexbulk( &pStream->ts_stream_elem[stream_loop].turing_stuff.key[0], 16 );
+				break;
+			}
+		}
+		
+		if ( !foundit )
+		{
+			perror("TiVo Private Data : Unmatched Stream ID");
+			return(-1);	
+		}
+
+		pPtr += 16;
+		stream_bytes -= 16;
+	}
+	
+	return(0);
+}
+
+
+int ts_handle_pmt( TS_Stream * pStream, turing_state * turing )
+{
+	unsigned short section_length	= 0;
+	unsigned short pmt_field		= 0;
+	unsigned short i				= 0;
+	unsigned char * pPtr			= NULL;
+
+	if ( !pStream || !pStream->pPacket )
+	{
+		perror("Invalid TS header argument");
+		return(-1);
+	}
+
+	VERBOSE("\n" );
+
+	pPtr = pStream->pPacket + pStream->payload_offset;
+
+	if ( pStream->ts_header.payload_unit_start_indicator )
+	{
+		pPtr++;	// advance past pointer field
+	}
+
+	// advance past table_id field
+	pPtr++;
+
+	pmt_field = portable_ntohs( pPtr );
+	section_length = pmt_field & 0x0fff;
+
+	// advance past section_length
+	pPtr += 2;
+
+	// advance past program/section/next numbers
+	pPtr += 9;
+	section_length -= 9;
+
+	// ignore the CRC for now
+	section_length -= 4;
+
+	for ( i=0; section_length > 0; i++ )
+	{
+		unsigned short es_info_length = 0;
+		char strTypeStr[25];
+		int foundit = 0;
+		int j = 0;
+
+		pStream->ts_stream_elem[i].stream_type_id = *pPtr;
+		for (j = 0; ts_pmt_stream_tags[j].ts_stream_type != TS_STREAM_TYPE_NONE; j++)
+		{
+			if ( ( pStream->ts_stream_elem[i].stream_type_id >= ts_pmt_stream_tags[j].code_match_lo )  &&
+				 ( pStream->ts_stream_elem[i].stream_type_id <= ts_pmt_stream_tags[j].code_match_hi ) )
+			{
+				pStream->ts_stream_elem[i].stream_type = ts_pmt_stream_tags[j].ts_stream_type;
+				foundit = 1;
+				break;
+		}
+		}
+		
+		if ( !foundit )
+		{
+			pStream->ts_stream_elem[i].stream_type_id = TS_STREAM_TYPE_PRIVATE_DATA;
+		}
+		
+		switch( pStream->ts_stream_elem[i].stream_type ) 
+		{
+			case TS_STREAM_TYPE_PRIVATE_DATA : sprintf(strTypeStr,"PrivateData"); break;
+			case TS_STREAM_TYPE_AUDIO 		 : sprintf(strTypeStr,"Audio"); break;
+			case TS_STREAM_TYPE_VIDEO		 : sprintf(strTypeStr,"Video"); break;
+			case TS_STREAM_TYPE_OTHER		 : sprintf(strTypeStr,"Other"); break;
+			default							 : sprintf(strTypeStr,"Unknown"); break;
+		}
+
+		// advance past stream_type field
+		pPtr++;
+		section_length--;
+
+		pmt_field = portable_ntohs( pPtr );
+		pStream->ts_stream_elem[i].stream_pid = pmt_field & 0x1fff;
+
+		// advance past elementary field
+		pPtr += 2;
+		section_length -= 2;
+
+		pmt_field = portable_ntohs( pPtr );
+		es_info_length = pmt_field & 0x1fff;
+
+		// advance past ES info length field
+		pPtr += 2;
+		section_length -= 2;
+
+		// advance past es info
+		pPtr += es_info_length;
+		section_length -= es_info_length;
+
+		VERBOSE("%-15s : StreamId 0x%x (%d), PID 0x%x (%d), Type 0x%0x (%d)(%s)\n", "TS ProgMapTbl",
+				pStream->ts_stream_elem[i].stream_type_id,
+				pStream->ts_stream_elem[i].stream_type_id,
+				pStream->ts_stream_elem[i].stream_pid,
+				pStream->ts_stream_elem[i].stream_pid,
+				pStream->ts_stream_elem[i].stream_type,
+				pStream->ts_stream_elem[i].stream_type,
+				strTypeStr );
+	}
+
+	return(0);
+}
+
+
+int ts_handle_pat( TS_Stream * pStream, turing_state * turing )
+{
+	unsigned short pat_field 			= 0;
+	unsigned short section_length		= 0;
+	unsigned short transport_stream_id 	= 0;
+	unsigned char * pPtr				= NULL;
+
+	VERBOSE("\n" );
+
+	if ( !pStream || !pStream->pPacket )
+	{
+		perror("Invalid TS header argument");
+		return(-1);
+	}
+
+	pPtr = pStream->pPacket + pStream->payload_offset;
+
+	if ( pStream->ts_header.payload_unit_start_indicator )
+	{
+		pPtr++;	// advance past pointer field
+	}
+
+	if ( *pPtr != 0x00 )
+	{
+		perror("PAT Table ID must be 0x00");
+		return(-1);
+	}
+	else
+	{
+		pPtr++;
+	}
+
+	pat_field = portable_ntohs( pPtr );
+	section_length = pat_field & 0x03ff;
+	pPtr += 2;
+
+	if ( (pat_field & 0xC000) != 0x8000 )
+	{
+		perror("Failed to validate PAT Misc field");
+		return(-1);
+	}
+
+	if ( (pat_field & 0x0C00) != 0x0000 )
+	{
+		perror("Failed to validate PAT MBZ of section length");
+		return(-1);
+	}
+
+	transport_stream_id = portable_ntohs( pPtr );
+	pPtr += 2;
+	section_length -= 2;
+
+	if ( (*pPtr & 0x3E) != pStream->ts_pat.version_number )
+	{
+		pStream->ts_pat.version_number = *pPtr & 0x3E;
+		VERBOSE( "%-15s : version changed : %d\n", "TS ProgAssocTbl",
+				pStream->ts_pat.version_number );
+	}
+
+	pPtr++;
+	section_length--;
+
+	pStream->ts_pat.section_number = *pPtr++;
+	section_length--;
+
+	pStream->ts_pat.last_section_number = *pPtr++;
+	section_length--;
+
+	section_length -= 4; // ignore the CRC for now
+
+	while ( section_length > 0 )
+	{
+		pat_field = portable_ntohs( pPtr );
+		VERBOSE( "%-15s : Program Num : %d\n", "TS ProgAssocTbl", pat_field );
+		pPtr += 2;
+		section_length -= 2;
+
+		pat_field = portable_ntohs( pPtr );
+
+		pStream->ts_pat.program_map_pid = pat_field & 0x1FFF;
+		VERBOSE( "%-15s : Program PID : 0x%x (%d)\n", "TS ProgAssocTbl",
+				pStream->ts_pat.program_map_pid, pStream->ts_pat.program_map_pid );
+		pPtr += 2;
+		section_length -= 2;
+	}
+
+	return(0);
+}
+
+
+int ts_handle_audio_video( TS_Stream * pStream, turing_state * turing )
+{
+	unsigned char * pPtr	= NULL;
+	unsigned int done		= 0;
+
+	if ( !pStream || !pStream->pPacket )
+	{
+		perror("Invalid TS header argument");
+		return(-1);
+	}
+
+	pPtr = pStream->pPacket + pStream->payload_offset;
+	
+	if ( !pStream->ts_header.payload_data_exists || !pStream->ts_header.transport_scrambling_control )
+	{
+		return(0);
+	}
+
+	if ( pStream->ts_header.transport_scrambling_control )
+	{
+		VVERBOSE( "\n--- Encrypted transport packet\n");
+		if ( IS_VVERBOSE )
+			hexbulk( (unsigned char *)pStream->pPacket, TS_FRAME_SIZE );
+	}
+
+	while (!done )
+	{
+		if ( (*(pPtr+0)!=0x00) || (*(pPtr+1)!=0x00)	|| (*(pPtr+2)!=0x01) )
+		{
+			// Invalid PES elementary start code
+			done = 1;
+			continue;
+		}
+
+		pPtr += 3;
+		pStream->ts_pes_packet.stream_id = *pPtr;
+		pPtr++;
+
+		VVERBOSE( "\n--- Elementary Stream : 0x%x (%d)\n",
+			pStream->ts_pes_packet.stream_id,
+			pStream->ts_pes_packet.stream_id );
+		
+		if ( pStream->ts_pes_packet.stream_id == EXTENSION_START_CODE )
+		{
+			unsigned int ext_hdr_len = 0;
+
+			if ( (*pPtr & 0x10) == 0x10 )
+			{
+				ext_hdr_len += 6;
+			}
+			else if ( (*pPtr & 0x20) == 0x20 )
+			{
+				if ( (*pPtr & 0x01) == 0x01 )
+				{
+					ext_hdr_len += 3;
+				}
+				ext_hdr_len += 9;
+			}
+			else if ( (*pPtr & 0x80) == 0x80 )
+			{
+				if ( (*(pPtr+4) & 0x40) == 0x40 )
+				{
+					ext_hdr_len += 2;
+				}
+				ext_hdr_len += 5;
+			}
+
+			pPtr += ext_hdr_len;
+			
+			while ( (*(pPtr+0)!=0x00) || (*(pPtr+1)!=0x00) || (*(pPtr+2)!=0x01) )
+			{
+				pPtr++;	
+			}
+			
+			
+			VERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet", 
+					"Extension header", ext_hdr_len );
+		}
+		else if ( pStream->ts_pes_packet.stream_id == GROUP_START_CODE )
+		{
+			VERBOSE("%-15s : %-25.25s : %d bytes\n", "TS PES Packet", "Group Of Pictures", 4 );
+			pPtr += 4;
+		}
+		else if ( pStream->ts_pes_packet.stream_id == USER_DATA_START_CODE )
+		{
+			unsigned char * pPtr2 = pPtr;
+			unsigned int i = 0;
+
+			while ( 1 )
+			{
+				if ( (*pPtr2==0x00)	&& ( *(pPtr2+1)==0x00) && ( *(pPtr2+2)==0x01) )
+				{
+					break;
+				}
+
+				i++;
+				pPtr2++;
+			}
+
+			VERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet", "User Data", i);
+			pPtr += i;
+		}
+		else if ( pStream->ts_pes_packet.stream_id == PICTURE_START_CODE )
+		{
+			VERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet", "Picture", 4 );
+			pPtr += 4;
+		}
+		else if ( pStream->ts_pes_packet.stream_id == SEQUENCE_HEADER_CODE )
+		{
+		    unsigned int PES_load_intra_flag		= 0;
+		    unsigned int PES_load_non_intra_flag	= 0;
+		    
+			VERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Sequence header" );
+			pPtr += 7;
+
+			PES_load_intra_flag = *pPtr & 0x02;
+			if ( PES_load_intra_flag ) pPtr += 64;
+
+			PES_load_non_intra_flag = *pPtr & 0x01;
+			if ( PES_load_non_intra_flag ) pPtr += 64;
+
+			pPtr++;
+
+			VERBOSE( "%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"PES_load_intra_flag", PES_load_intra_flag );
+
+			VERBOSE( "%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"PES_load_non_intra_flag", PES_load_non_intra_flag );
+		}
+		else if ( ( pStream->ts_pes_packet.stream_id == 0xBD ) ||
+			 ( pStream->ts_pes_packet.stream_id >= 0xC0 && pStream->ts_pes_packet.stream_id <= 0xEF ) )
+		{
+			pStream->ts_pes_packet.pkt_length 					= portable_ntohs( pPtr );
+			pPtr += 2;
+			VVERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Extension Hdr" );
+
+			pStream->ts_pes_packet.marker_bits					= (*pPtr & 0xc0) >> 6;
+			pStream->ts_pes_packet.scrambling_control			= (*pPtr & 0x30) >> 4;
+			pStream->ts_pes_packet.priority						= (*pPtr & 0x08) >> 3;
+			pStream->ts_pes_packet.data_alignment_indicator		= (*pPtr & 0x04) >> 2;
+			pStream->ts_pes_packet.copyright					= (*pPtr & 0x02) >> 1;
+			pStream->ts_pes_packet.original_or_copy				= (*pPtr & 0x01);
+			pPtr++;
+			pStream->ts_pes_packet.PTS_DTS_indicator			= (*pPtr & 0xc0) >> 6;
+			pStream->ts_pes_packet.ESCR_flag					= (*pPtr & 0x20) >> 5;
+			pStream->ts_pes_packet.ES_rate_flag					= (*pPtr & 0x10) >> 4;
+			pStream->ts_pes_packet.DSM_trick_mode_flag			= (*pPtr & 0x08) >> 3;
+			pStream->ts_pes_packet.additional_copy_info_flag	= (*pPtr & 0x04) >> 2;
+			pStream->ts_pes_packet.CRC_flag						= (*pPtr & 0x02) >> 1;
+			pStream->ts_pes_packet.extension_flag				= (*pPtr & 0x01);
+			pPtr++;
+			pStream->ts_pes_packet.PES_header_length			= *pPtr;
+			pPtr++;
+
+			pPtr += pStream->ts_pes_packet.PES_header_length;
+			
+			VVERBOSE("%-15s : %-25.25s : 0x%02x (%d)(%s)\n", "TS PES Packet",
+					"stream_id", pStream->ts_pes_packet.stream_id,	
+					pStream->ts_pes_packet.stream_id,
+					(pStream->ts_pes_packet.stream_id<0xe0) ? "audio" : "video" );
+			
+			VVERBOSE("%-15s : %-25.25s : 0x%04x (%d)\n", "TS PES Packet",
+					"pkt_length", pStream->ts_pes_packet.pkt_length, 
+					pStream->ts_pes_packet.pkt_length );
+			
+			VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
+					"scrambling_control",
+					pStream->ts_pes_packet.scrambling_control,
+					pStream->ts_pes_packet.scrambling_control );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"priority", pStream->ts_pes_packet.priority );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"data_alignment_indicator",	
+					pStream->ts_pes_packet.data_alignment_indicator );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"copyright", pStream->ts_pes_packet.copyright );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"original_or_copy", pStream->ts_pes_packet.original_or_copy );
+			
+			VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
+					"PTS_DTS_indicator",
+					pStream->ts_pes_packet.PTS_DTS_indicator,
+					pStream->ts_pes_packet.PTS_DTS_indicator );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"ESCR_flag", pStream->ts_pes_packet.ESCR_flag );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"ES_rate_flag", pStream->ts_pes_packet.ES_rate_flag );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"DSM_trick_mode_flag", pStream->ts_pes_packet.DSM_trick_mode_flag );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet", 
+					"additional_copy_info_flag",
+					pStream->ts_pes_packet.additional_copy_info_flag );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"CRC_flag", pStream->ts_pes_packet.CRC_flag );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"extension_flag", pStream->ts_pes_packet.extension_flag );
+			
+			VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+					"PES_header_length", pStream->ts_pes_packet.PES_header_length );
+
+/* 			switch( pStream->ts_pes_packet.PTS_DTS_indicator )
+			{
+				case 0x02 : pPtr +=  5; break;	// advance past PTS
+				case 0x03 : pPtr += 10; break;	// advance past PTS+DTS
+				case 0x00 : break;
+				default	  :
+				{
+					fprintf(stderr,"Invalid PES PTS/DTS indicator : 0x%x\n",
+							pStream->ts_pes_packet.PTS_DTS_indicator );
+					return(-1);
+				}
+			} */
+
+/* 			if ( pStream->ts_pes_packet.ESCR_flag ) 				pPtr += 4;
+			if ( pStream->ts_pes_packet.ES_rate_flag )				pPtr += 2;
+			if ( pStream->ts_pes_packet.additional_copy_info_flag )	pPtr += 1;
+			if ( pStream->ts_pes_packet.CRC_flag )					pPtr += 2;
+
+			if ( pStream->ts_pes_packet.extension_flag )
+			{
+			    unsigned int PES_priv_data	= (*pPtr & 0x80) ? 1 : 0;
+			    unsigned int PES_pack_hdr 	= (*pPtr & 0x40) ? 1 : 0;
+			    unsigned int PES_pkt_seq  	= (*pPtr & 0x20) ? 1 : 0;
+			    unsigned int PES_pstd_buf 	= (*pPtr & 0x10) ? 1 : 0;
+			    unsigned int PES_ext_flag2	= (*pPtr & 0x01) ? 1 : 0;
+
+				VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Ext",
+						"PES_priv_data", PES_priv_data );
+			
+				VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Ext",
+						"PES_pack_hdr", PES_pack_hdr );
+			
+				VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Ext",
+						"PES_pkt_seq", PES_pkt_seq );
+			
+				VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Ext",
+						"PES_pstd_buf", PES_pstd_buf );
+			
+				VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Ext",
+						"PES_ext_flag2", PES_ext_flag2 );
+
+				if ( PES_priv_data )
+				{
+					VVERBOSE("%-15s : %-25.25s\n", "TS PES Packet", "PES PRIVATE DATA" );
+					pPtr += 16;
+				}
+
+				if ( PES_pack_hdr )	pPtr += 1;
+				if ( PES_pkt_seq )	pPtr += 2;
+				if ( PES_pstd_buf )	pPtr += 2;
+				if ( PES_ext_flag2 )
+				{
+				    unsigned short PES_ext2_field 	= portable_ntohs( pPtr );
+					unsigned int PES_ext2_len		= (PES_ext2_field & 0x70) >> 8;
+					pPtr += 2;
+					pPtr += PES_ext2_len;
+					VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet", "PES_ext2_len", PES_ext2_len );
+				}
+			} */
+		}
+		else
+		{
+			perror("Unhandled PES header");
+			return(0);
+		}
+	}
+
+	if ( pStream->ts_header.transport_scrambling_control )
+	{
+		unsigned int foundit = 0;
+		int stream_loop		 = 0;
+		
+		// turn off crypto bits in TS header
+		unsigned char * pTsHeader = pStream->pPacket;
+		pTsHeader += 3;
+		*pTsHeader &= ~0xC0;
+		
+		for ( stream_loop = 0; stream_loop<TS_STREAM_ELEMENT_MAX; stream_loop++ )
+		{
+			if ( pStream->ts_stream_elem[stream_loop].stream_pid == pStream->ts_header.pid )
+			{
+				foundit = 1;
+				break;
+			}
+		}		
+		
+		if ( !foundit )
+		{
+			perror("Audio/Video Unmatched Encrypted Stream ID");
+			return(-1);
+		}
+		else
+		{
+	        if ( do_header(&pStream->ts_stream_elem[stream_loop].turing_stuff.key[0],
+	        		&(pStream->ts_stream_elem[stream_loop].turing_stuff.block_no), NULL,
+	        		&(pStream->ts_stream_elem[stream_loop].turing_stuff.crypted), NULL, NULL) )
+	        {
+	            perror("do_header did not return 0!\n");
+	            return(-1);
+	        }
+	
+			VVERBOSE( "BBB : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
+					pStream->ts_stream_elem[stream_loop].stream_id,
+					pStream->ts_stream_elem[stream_loop].turing_stuff.block_no,
+					pStream->ts_stream_elem[stream_loop].turing_stuff.crypted );
+	
+	        prepare_frame( turing, pStream->ts_stream_elem[stream_loop].stream_id, 
+	        	pStream->ts_stream_elem[stream_loop].turing_stuff.block_no);
+	
+			VVERBOSE( "CCC : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
+					pStream->ts_stream_elem[stream_loop].stream_id,
+					pStream->ts_stream_elem[stream_loop].turing_stuff.block_no,
+					pStream->ts_stream_elem[stream_loop].turing_stuff.crypted );
+	
+			// Do not need to do this for TS streams - crypted is zero and apparently not used
+	        // decrypt_buffer( turing, (unsigned char *)&pStream->ts_stream_elem[stream_loop].turing_stuff.crypted, 4);
+	
+			VVERBOSE( "DDD : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
+					pStream->ts_stream_elem[stream_loop].stream_id,
+					pStream->ts_stream_elem[stream_loop].turing_stuff.block_no,
+					pStream->ts_stream_elem[stream_loop].turing_stuff.crypted );
+			
+			decrypt_buffer( turing, pPtr, TS_FRAME_SIZE - ((int)(pPtr - pStream->pPacket)) );
+	
+			VVERBOSE("---Decrypted transport packet\n");
+			if (IS_VVERBOSE)
+				hexbulk( (unsigned char *)pStream->pPacket, TS_FRAME_SIZE );
+		}
+	}
+
+	return(0);
+}
+
+
+int process_ts_frame(turing_state * turing, OFF_T_TYPE packet_start, void * packet_stream, read_func_t read_handler, void * ofh, write_func_t write_handler)
+{
+    static union
+   	{
+	    td_uint64_t align;
+	    unsigned char packet_buffer[TS_FRAME_SIZE + sizeof(td_uint64_t) + 2];
+    } aligned_buf;
+
+	static int tsStreamInit = 0;
+	static TS_Stream tsStream;
+
+    int looked_ahead = 0;
+    int err = 0;
+    int old_verbose_level = 0;
+
+    if ( !tsStreamInit )
+    {
+    	memset( &tsStream, 0, sizeof(TS_Stream) );
+		tsStream.pPacket 		= &aligned_buf.packet_buffer[sizeof(td_uint64_t)];
+		tsStream.initial_offset = packet_start;
+    	tsStreamInit 			= 1;
+    }
+
+	tsStream.packet_counter++;
+
+	if ( o_ts_pkt_dump != tsStream.packet_counter )
+	{
+		old_verbose_level = o_verbose;
+		o_verbose = 0;
+	}
+
+	LOOK_AHEAD(packet_stream, &aligned_buf.packet_buffer[sizeof(td_uint64_t)], TS_FRAME_SIZE);
+
+	if ( ts_fill_headers( &tsStream ) )
+	{
+		perror("Failed to fill TS headers");
+		o_verbose = old_verbose_level;
+		return (-1);
+	}
+
+	VVVERBOSE("\n ==================================== \n" );
+	if (IS_VVVERBOSE)
+	{
+		hexbulk( tsStream.pPacket, TS_FRAME_SIZE );
+		ts_dump_headers( packet_start, &tsStream );
+	}
+
+	switch ( tsStream.ts_packet_type )
+	{
+		case TS_PID_TYPE_RESERVED :
+		case TS_PID_TYPE_NULL_PACKET :
+		case TS_PID_TYPE_PROGRAM_MAP_TABLE :
+		case TS_PID_TYPE_CONDITIONAL_ACCESS_TABLE :
+		case TS_PID_TYPE_NETWORK_INFORMATION_TABLE :
+		case TS_PID_TYPE_SERVICE_DESCRIPTION_TABLE :
+		case TS_PID_TYPE_EVENT_INFORMATION_TABLE :
+		case TS_PID_TYPE_RUNNING_STATUS_TABLE :
+		case TS_PID_TYPE_TIME_DATE_TABLE :
+		{
+			break;
+		}
+		case TS_PID_TYPE_PROGRAM_ASSOCIATION_TABLE :
+		{
+			err = ts_handle_pat( &tsStream, turing );
+			if ( err )
+			{
+				perror("ts_handle_pat failed");
+			}
+			break;
+		}
+		case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA :
+		{
+			if ( tsStream.ts_header.pid == tsStream.ts_pat.program_map_pid )
+			{
+				err = ts_handle_pmt( &tsStream, turing );
+				if ( err )
+				{
+					perror("ts_handle_pmt failed");
+				}
+			}
+			else
+			{
+				unsigned int i   			= 0;
+				unsigned int is_tivo_pkt	= 0;
+						
+				for ( i=0; i<TS_STREAM_ELEMENT_MAX; i++ )
+				{
+					if ( ( tsStream.ts_stream_elem[i].stream_pid == tsStream.ts_header.pid ) &&
+						 ( tsStream.ts_stream_elem[i].stream_type == TS_STREAM_TYPE_PRIVATE_DATA ) )
+					{
+						is_tivo_pkt = 1;
+						break;
+					}
+				}
+				
+				if ( is_tivo_pkt )
+				{
+					err = ts_handle_tivo_private_data( &tsStream, turing );
+					if ( err )
+					{
+						perror("ts_handle_tivo_private_data failed");
+					}
+				}
+				else
+				{
+					err = ts_handle_audio_video( &tsStream, turing );
+					if ( err )
+					{
+						perror("ts_handle_audio_video failed");
+					}
+				}					
+			}
+			break;
+		}
+		default :
+		{
+			perror( "Unknown Packet Type" );
+			o_verbose = old_verbose_level;			
+			return (-1);
+		}
+	}
+
+	if ( err )
+	{
+		o_verbose = old_verbose_level;		
+		return(err);
+	}
+
+	if (write_handler(aligned_buf.packet_buffer + sizeof(td_uint64_t), TS_FRAME_SIZE, ofh) != TS_FRAME_SIZE)
+	{
+		o_verbose = old_verbose_level;		
+		perror ("writing buffer");
+		return (-1);
+	}
+
+	o_verbose = old_verbose_level;
+	return looked_ahead;
+}

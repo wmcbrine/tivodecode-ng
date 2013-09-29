@@ -27,8 +27,8 @@ typedef struct tivo_stream_header_s {
 	unsigned short chunks;        /* Number of metadata chunks */
 } tivo_stream_header;
 
-#define TIVO_CHUNK_XML  0
-#define TIVO_CHUNK_BLOB 1
+#define TIVO_CHUNK_PLAINTEXT_XML  0
+#define TIVO_CHUNK_ENCRYPTED_XML  1
 
 #define SIZEOF_STREAM_CHUNK 12
 typedef struct tivo_stream_chunk_s {
@@ -46,6 +46,21 @@ typedef int (*read_func_t) (void * mem, int size, void * fh);
 
 int read_tivo_header(void * file, tivo_stream_header * head, read_func_t read_handler);
 tivo_stream_chunk * read_tivo_chunk(void * file, read_func_t read_handler);
+
+void dump_tivo_header(tivo_stream_header * head);
+void dump_tivo_chunk(tivo_stream_chunk * chunk);
+
+extern int isBigEndian();
+extern unsigned short portable_ntohs( unsigned char * pVal );
+extern unsigned long  portable_ntohl( unsigned char * pVal );
+
+#define VERBOSE(...)		if ( o_verbose >= 1 ) { printf(__VA_ARGS__); }
+#define VVERBOSE(...)		if ( o_verbose >= 2 ) { printf(__VA_ARGS__); }
+#define VVVERBOSE(...)		if ( o_verbose >= 3 ) { printf(__VA_ARGS__); }
+	
+#define IS_VERBOSE			( o_verbose >= 1 )
+#define IS_VVERBOSE			( o_verbose >= 2 )
+#define IS_VVVERBOSE		( o_verbose >= 3 )
 
 #ifdef __cplusplus
 }

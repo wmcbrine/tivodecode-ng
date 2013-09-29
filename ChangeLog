@@ -1,3 +1,12 @@
+0.3pre1:
+        * add support for TS files.
+
+        * known bug :
+        Packet N of PID XX starts a new series of PES headers, which spill over into
+        packet N+1 of PID XX, which has an encrypted payload.  The problem is how to
+        cleanly make that "continuation" from packet N to N+1, such that the offset
+        into Packet N+1 can be determined where the decrypt needs to start.
+
 0.2pre3:
 
 	* add an option to not process video - handy if all you want is to
