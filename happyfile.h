@@ -9,11 +9,15 @@
 extern "C" {
 #endif
 
+#include "tdconfig.h"
+
 #include <stdio.h>
 #include <stddef.h>
+
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
+
 #ifdef HAVE_SYS_TYPES_H
 # include <sys/types.h>
 #endif
@@ -51,7 +55,7 @@ typedef struct
 	char buffer[BUFFERSIZE];
 } happy_file;
 
-happy_file * hopen (const char * filename, const char * mode);
+happy_file * hopen (char * filename, char * mode);
 happy_file * hattach (FILE * fh);
 
 int hclose(happy_file * fh);

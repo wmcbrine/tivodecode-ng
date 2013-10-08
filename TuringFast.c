@@ -149,7 +149,7 @@ mixwords(WORD w[], int n)
 void
 TuringKey(void * internal, const BYTE key[], const int keylength)
 {
-    struct turing_internal * turing = internal;
+    struct turing_internal * turing = (struct turing_internal*)internal;
     register int	i, j, k;
     register WORD	w;
 
@@ -211,7 +211,7 @@ TuringKey(void * internal, const BYTE key[], const int keylength)
 void
 TuringIV(void * internal, const BYTE iv[], const int ivlength)
 {
-    struct turing_internal * turing = internal;
+    struct turing_internal * turing = (struct turing_internal*)internal;
     register int	i, j;
 
     /* check args */
@@ -269,7 +269,7 @@ TuringIV(void * internal, const BYTE iv[], const int ivlength)
 int
 TuringGen(void * internal, BYTE *buf)
 {
-    struct turing_internal * turing = internal;
+    struct turing_internal * turing = (struct turing_internal*)internal;
     WORD	    A, B, C, D, E;
 
     ROUND(0,buf);

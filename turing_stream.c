@@ -82,52 +82,22 @@ product or in the associated documentation.
 #include "hexlib.h"
 #include "md5.h"
 #include "sha1.h"
-#include "tivo-parse.h"
 #include "turing_stream.h"
 
-// from tivodecode.c, verbose option
-extern int o_verbose;
 
-unsigned int init_turing_from_file(turing_state * turing, void * tivofile, read_func_t read_handler, char * mak)
-{
-    tivo_stream_header head;
-    tivo_stream_chunk *xml;
-    int i;
-
-    if (read_tivo_header (tivofile, &head, read_handler))
-        return -1;
-
-    for (i = 0; i < head.chunks; i++)
-    {
-        if ((xml = read_tivo_chunk (tivofile, read_handler)) == NULL)
-            return -1;
-
-        if (xml->data_size && xml->type == TIVO_CHUNK_PLAINTEXT_XML )
-        {
-            setup_turing_key (turing, xml, mak);
-            free(xml);
-            return head.mpeg_offset;
-        }
-        else
-            free(xml);
-    }
-
-    return -1;
-}
-
-void setup_turing_key(turing_state * turing, tivo_stream_chunk * xml, char * mak)
+void setup_turing_key(turing_state * turing, unsigned char * buffer, size_t buffer_length, char * mak)
 {
     SHA1_CTX context;
 
     sha1_init(&context);
     sha1_update(&context, (unsigned char *)mak, strlen(mak));
-    sha1_update(&context, xml->data, xml->data_size);
+    sha1_update(&context, buffer, buffer_length);
     sha1_final(turing->turingkey, &context);
 }
 
 #define static_strlen(str) (sizeof(str) - 1)
 
-void setup_metadata_key(turing_state * turing, tivo_stream_chunk * xml, char * mak)
+void setup_metadata_key(turing_state * turing, unsigned char * buffer, size_t buffer_length, char * mak)
 {
     static const char lookup[] = "0123456789abcdef";
     static const unsigned char media_mak_prefix[] = "tivo:TiVo DVR:";
@@ -136,7 +106,6 @@ void setup_metadata_key(turing_state * turing, tivo_stream_chunk * xml, char * m
     unsigned char md5result[16];
     char metakey[33];
 
-    
     MD5Init(&md5);
     MD5Update(&md5, media_mak_prefix, static_strlen(media_mak_prefix));
     MD5Update(&md5, (unsigned char *)mak, strlen(mak));
@@ -152,7 +121,7 @@ void setup_metadata_key(turing_state * turing, tivo_stream_chunk * xml, char * m
     /* this is done the same as the normal one, only replacing the mak
      * with the metakey
      */
-    setup_turing_key(turing, xml, metakey);
+    setup_turing_key(turing, buffer, buffer_length, metakey);
 }
 
 static void prepare_frame_helper(turing_state * turing, unsigned char stream_id, int block_id)
@@ -193,12 +162,10 @@ static void prepare_frame_helper(turing_state * turing, unsigned char stream_id,
 
 #define CREATE_TURING_LISTITM(turing, nxt, stream_id, block_id) \
     do { \
-        (turing)->active = calloc (1, sizeof (turing_state_stream)); \
+        (turing)->active = (turing_state_stream*)calloc (1, sizeof (turing_state_stream)); \
         (turing)->active->next = (nxt); \
         (nxt) = (turing)->active; \
         (turing)->active->internal = TuringAlloc(); \
-        if (o_verbose) \
-            fprintf(stdout, "Creating turing stream for packet type %02x\n", (stream_id)); \
         prepare_frame_helper((turing), (stream_id), (block_id)); \
     } while(0)
 
@@ -219,11 +186,11 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
             if (turing->active->stream_id != stream_id)
             {
                 /* did not find a state for this stream type */
-                CREATE_TURING_LISTITM (turing, start->next, stream_id, block_id);
+                CREATE_TURING_LISTITM (turing, (start->next), stream_id, block_id);
             }
         }
 
-        if (turing->active->block_id != block_id)
+        if (turing->active->block_id != (unsigned int) block_id)
         {
             prepare_frame_helper(turing, stream_id, block_id);
         }
@@ -231,7 +198,7 @@ void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id)
     else
     {
         /* first stream type seen */
-        CREATE_TURING_LISTITM (turing, turing->active, stream_id, block_id);
+        CREATE_TURING_LISTITM (turing, (turing->active), stream_id, block_id);
     }
 }
 
@@ -279,12 +246,40 @@ void destruct_turing(turing_state * turing)
             turing_state_stream * prev = turing->active;
             TuringFree(turing->active->internal);
             turing->active = turing->active->next;
-            free (prev);
+            if(prev)
+                free (prev);
         }
         while (turing->active != start);
     }
 
     turing->active = NULL;
+}
+
+void dump_turing(turing_state * turing)
+{
+    fprintf(stderr, "turing dump : %p\n", turing);
+    if(!turing)
+        return;
+        
+    fprintf(stderr,"turingKey   :\n");
+    hexbulk(turing->turingkey, 20);
+    
+    fprintf(stderr,"active      : %p\n", turing->active);
+
+    if(turing->active)
+    {
+        fprintf(stderr,"cipher_pos  : %d\n", turing->active->cipher_pos);
+        fprintf(stderr,"cipher_len  : %d\n", turing->active->cipher_len);
+        fprintf(stderr,"block_id    : %d\n", turing->active->block_id);
+        fprintf(stderr,"stream_id   : %d\n", turing->active->stream_id);
+        fprintf(stderr,"next        : %p\n", turing->active->next);
+        fprintf(stderr,"internal    : %p\n", turing->active->internal);
+    
+        fprintf(stderr,"cipher_data :\n");    
+        hexbulk(turing->active->cipher_data, MAXSTREAM + sizeof(td_uint64_t));
+    }
+
+    fprintf(stderr,"\n\n");
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

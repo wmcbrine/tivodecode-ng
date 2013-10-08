@@ -55,31 +55,9 @@ typedef int (*write_func_t) (void * mem, int size, void * fh);
 
 #define TS_FRAME_SIZE 			188
 
-
-//============================
-// PS Specific data structures
-//============================
-
-typedef enum
-{
-    PACK_NONE,
-    PACK_SPECIAL,
-    PACK_PES_SIMPLE,            // packet length == data length
-    PACK_PES_COMPLEX,           // crazy headers need skipping
-}
-packet_type;
+#define TS_PES_HDR_BUFSIZE		1024
 
 
-typedef struct
-{
-    // the byte value match for the packet tags
-    unsigned char code_match_lo;      // low end of the range of matches
-    unsigned char code_match_hi;      // high end of the range of matches
-
-    // what kind of PES is it?
-    packet_type packet;
-}
-packet_tag_info;
 
 
 
@@ -140,7 +118,6 @@ typedef struct
 }
 ts_packet_tag_info;
 
-
 typedef struct _TS_header
 {
 	unsigned int 	sync_byte:8;
@@ -154,7 +131,6 @@ typedef struct _TS_header
 	unsigned int	continuity_counter:4;
 }
 TS_Header;
-
 
 typedef struct _TS_adaptation_field
 {
@@ -170,7 +146,6 @@ typedef struct _TS_adaptation_field
 }
 TS_Adaptation_Field;
 
-
 typedef struct _TS_PAT_data
 {
 	unsigned char	version_number;
@@ -180,7 +155,6 @@ typedef struct _TS_PAT_data
 	unsigned short	program_map_pid;
 } TS_PAT_data;
 
-
 typedef struct _TS_Turing_Stuff
 {
 	int						block_no;
@@ -189,21 +163,8 @@ typedef struct _TS_Turing_Stuff
 	unsigned char			key[16];
 } TS_Turing_Stuff;
 
-
-typedef struct _TS_Prog_Elements
-{
-	unsigned char			stream_type_id;
-	unsigned int			stream_pid;
-	unsigned char			stream_id;
-	ts_stream_types			stream_type;
-	TS_Turing_Stuff			turing_stuff;
-} TS_Stream_Element;
-
-
 typedef struct _TS_PES_Packet
 {
-	unsigned char			stream_id;
-	unsigned short			pkt_length;
 	unsigned char			marker_bits:2;
 	unsigned char			scrambling_control:2;
 	unsigned char			priority:1;
@@ -217,9 +178,22 @@ typedef struct _TS_PES_Packet
 	unsigned char			additional_copy_info_flag:1;
 	unsigned char			CRC_flag:1;
 	unsigned char			extension_flag:1;
-	unsigned char			PES_header_length;
+	unsigned int			PES_header_length;
 } PES_packet;
 
+typedef struct _TS_Prog_Elements
+{
+	unsigned char			stream_type_id;
+	unsigned int			stream_pid;
+	unsigned char			stream_id;
+	ts_stream_types			stream_type;
+	TS_Turing_Stuff			turing_stuff;
+	unsigned int			pkt_length;
+	PES_packet				PES_pkt;	
+	unsigned char			PES_hdr[TS_FRAME_SIZE];
+	unsigned int			PES_hdr_len;
+	
+} TS_Stream_Element;
 
 typedef struct _TS_Stream
 {
@@ -232,7 +206,6 @@ typedef struct _TS_Stream
 	TS_PAT_data				ts_pat;
 	ts_packet_pid_types		ts_packet_type;
 	TS_Stream_Element		ts_stream_elem[TS_STREAM_ELEMENT_MAX];
-	PES_packet				ts_pes_packet;
 } TS_Stream;
 
 

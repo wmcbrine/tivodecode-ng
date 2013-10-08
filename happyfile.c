@@ -28,9 +28,9 @@
 #	warning Large file support is questionable on this platform
 #endif
 
-happy_file * hopen (const char * filename, const char * mode)
+happy_file * hopen (char * filename, char * mode)
 {
-	happy_file * fh = malloc (sizeof (happy_file));
+	happy_file * fh = (happy_file*) malloc (sizeof (happy_file));
 	fh->fh = fopen (filename, mode);
 	if (!fh->fh)
 	{
@@ -45,7 +45,7 @@ happy_file * hopen (const char * filename, const char * mode)
 
 happy_file * hattach (FILE * fh)
 {
-	happy_file * hfh = malloc (sizeof (happy_file));
+	happy_file * hfh = (happy_file*) malloc (sizeof (happy_file));
 	hfh->fh = fh;
 	hfh->pos = 0;
 	hfh->buffer_start = 0;
@@ -136,7 +136,7 @@ int hseek (happy_file * fh, hoff_t offset, int whence)
 						return -1;
 				}
 
-				if (hread(junk_buf, t, fh) != t)
+				if (hread(junk_buf, t, fh) != (size_t)t)
 				{
 					return -1;
 				}
@@ -166,7 +166,7 @@ int hseek (happy_file * fh, hoff_t offset, int whence)
 						return -1;
 				}
 
-				if (hread(junk_buf, t, fh) != t)
+				if (hread(junk_buf, t, fh) != (size_t)t)
 				{
 					return -1;
 				}

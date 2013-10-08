@@ -21,13 +21,13 @@ static char	*hex = "0123456789abcdef";
 int
 hexprint(const char *s, unsigned char *p, int n)
 {
-    printf("%14s:", s);
+    fprintf(stderr,"%14s:", s);
     while (--n >= 0) {
-	if (n % 20 == 19)
-	    printf("\n%14s ", "");
-	printf(" %02x", *p++);
+		if (n % 20 == 19)
+		    fprintf(stderr,"\n%14s ", "");
+		fprintf(stderr," %02x", *p++);
     }
-    printf("\n");
+    fprintf(stderr,"\n");
     return 0;
 }
 
@@ -37,10 +37,10 @@ hexread(unsigned char *buf, char *p, int n)
     int		i;
 
     while (--n >= 0) {
-	while (*p == ' ') ++p;
-	i = HEX(*p++) << 4;
-	i += HEX(*p++);
-	*buf++ = i;
+		while (*p == ' ') ++p;
+			i = HEX(*p++) << 4;
+		i += HEX(*p++);
+		*buf++ = i;
     }
     return 0;
 }
@@ -51,13 +51,13 @@ hexcheck(unsigned char *buf, char *p, int n)
     int		i;
 
     while (--n >= 0) {
-	while (*p == ' ') ++p;
-	i = HEX(*p++) << 4;
-	i += HEX(*p++);
-	if (*buf++ != i) {
-	    printf("Expected %02x, got %02x.\n", i, buf[-1]);
-	    ++nerrors;
-	}
+		while (*p == ' ') ++p;
+			i = HEX(*p++) << 4;
+		i += HEX(*p++);
+		if (*buf++ != i) {
+		    fprintf(stderr,"Expected %02x, got %02x.\n", i, buf[-1]);
+		    ++nerrors;
+		}
     }
     return nerrors;
 }
@@ -74,35 +74,35 @@ hexbulk(unsigned char *buf, int n)
     char 	strdigit[5];
     char 	hexstr[100];
     char 	strstr[100];
-
-	while ( i<n )
-	{
+    
+ 	while ( i<n )
+   	{
 		memset(hexstr, 0, 100);
 		memset(strstr, 0, 100);
+	
+   		for(j=0; (j<COLS) && (i<n); j++, i++ )
+   		{
+	   		if ( isspace(buf[i]) )
+	   			ch = ' ';
+	   		else if ( isprint( buf[i]))
+	   			ch = buf[i];
+	   		else
+	   			ch = '.';
 
-		for(j=0; (j<COLS) && (i<n); j++, i++ )
-		{
-			if ( isspace(buf[i]) )
-				ch = ' ';
-			else if ( isprint( buf[i]))
-				ch = buf[i];
-			else
-				ch = '.';
-
-			sprintf( hexdigit, "%02x ", buf[i] );
-			sprintf( strdigit, "%c",    ch);
-			strcat( hexstr, hexdigit );
-			strcat( strstr, strdigit );
+	   		sprintf(hexdigit, "%02x ", buf[i] );	   			
+	   		sprintf(strdigit, "%c",    ch);
+			strcat(hexstr, hexdigit ); 
+			strcat(strstr, strdigit );
 		}
-
+		
 		while(j<COLS)
 		{
-			strcat( hexstr, "   " );
+			strcat( hexstr, "   " );	
 			j++;
 		}
-
-		printf("%s %s\n", hexstr, strstr);
-	}
-
+		
+		fprintf(stderr,"%s %s\n", hexstr, strstr);
+	}		
+				
     return 0;
 }

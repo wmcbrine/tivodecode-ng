@@ -1,9 +1,9 @@
-AC_INIT(tivodecode, 0.3pre6)
-AC_CONFIG_SRCDIR(tivodecode.c)
+AC_INIT(tivodecode, 0.4)
+AC_CONFIG_SRCDIR(tivo_decode.cxx)
 AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 AC_CONFIG_HEADERS(tdconfig.h)
-AC_PROG_CC
+AC_PROG_CXX(g++)
 AC_PROG_CPP
 AC_AIX
 AC_ISC_POSIX
@@ -24,11 +24,11 @@ choke me
   if test "$ICC" = no; then
     CFLAGS="$CFLAGS -Wall -Wpointer-arith -Winline"
 
-    PGAC_PROG_CC_CFLAGS_OPT([-Wdeclaration-after-statement])
-    PGAC_PROG_CC_CFLAGS_OPT([-Wendif-labels])
-    PGAC_PROG_CC_CFLAGS_OPT([-Werror-implicit-function-declaration])
+#    PGAC_PROG_CC_CFLAGS_OPT([-Wdeclaration-after-statement])
+#    PGAC_PROG_CC_CFLAGS_OPT([-Wendif-labels])
+#    PGAC_PROG_CC_CFLAGS_OPT([-Werror-implicit-function-declaration])
   fi
-  PGAC_PROG_CC_CFLAGS_OPT([-fno-strict-aliasing])
+#  PGAC_PROG_CC_CFLAGS_OPT([-fno-strict-aliasing])
 fi
 
 AC_SYS_LARGEFILE
@@ -108,3 +108,4 @@ else
 fi
 
 AC_OUTPUT(Makefile)
+
