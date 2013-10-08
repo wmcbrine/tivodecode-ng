@@ -230,14 +230,14 @@ BOOL TiVoStreamChunk::read(void * file, read_func_t read_handler)
     id          = portable_ntohs(id);
     type        = portable_ntohs(type);
     
-    pData = new UINT8[dataSize];
+    UINT16 readSize = chunkSize - size(); 
+    pData = new UINT8[readSize];
     if(NULL == pData)
     {
         perror("chunk data alloc");
         return(FALSE);    
     }
     
-    UINT16 readSize = chunkSize - size();
     if(read_handler(pData, readSize, file) != readSize)
     {
         perror ("read chunk data");
