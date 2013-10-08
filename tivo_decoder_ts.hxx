@@ -39,21 +39,37 @@ extern std::map<UINT32, BOOL>::iterator pktDumpMap_iter;
 
 #define TS_FRAME_SIZE  188
 
-#define PICTURE_START_CODE      0x00
-#define SLICE_START_CODE_MIN    0x01
-#define SLICE_START_CODE_MAX    0xAF
-#define USER_DATA_START_CODE    0xB2
-#define SEQUENCE_HEADER_CODE    0xB3
-#define SEQUENCE_ERROR_CODE     0xB4
-#define EXTENSION_START_CODE    0xB5
-#define SEQUENCE_END_CODE       0xB7
-#define GROUP_START_CODE        0xB8
-#define SYSTEM_START_CODE_MIN   0xB9
-#define SYSTEM_START_CODE_MAX   0xFF
-#define ISO_END_CODE            0xB9
-#define PACK_START_CODE         0xBA
-#define SYSTEM_START_CODE       0xBB
-#define VIDEO_ELEMENTARY_STREAM 0xE0
+#define PICTURE_START_CODE      0x100
+#define SLICE_START_CODE_MIN    0x101
+#define SLICE_START_CODE_MAX    0x1AF
+#define USER_DATA_START_CODE    0x1B2
+#define SEQUENCE_HEADER_CODE    0x1B3
+#define SEQUENCE_ERROR_CODE     0x1B4
+#define EXTENSION_START_CODE    0x1B5
+#define SEQUENCE_END_CODE       0x1B7
+#define GROUP_START_CODE        0x1B8
+#define SYSTEM_START_CODE_MIN   0x1B9
+#define SYSTEM_START_CODE_MAX   0x1FF
+#define ISO_END_CODE            0x1B9
+#define PACK_START_CODE         0x1BA
+#define SYSTEM_START_CODE       0x1BB
+#define VIDEO_ELEMENTARY_STREAM 0x1E0
+
+//#define PICTURE_START_CODE      0x00
+//#define SLICE_START_CODE_MIN    0x01
+//#define SLICE_START_CODE_MAX    0xAF
+//#define USER_DATA_START_CODE    0xB2
+//#define SEQUENCE_HEADER_CODE    0xB3
+//#define SEQUENCE_ERROR_CODE     0xB4
+//#define EXTENSION_START_CODE    0xB5
+//#define SEQUENCE_END_CODE       0xB7
+//#define GROUP_START_CODE        0xB8
+//#define SYSTEM_START_CODE_MIN   0xB9
+//#define SYSTEM_START_CODE_MAX   0xFF
+//#define ISO_END_CODE            0xB9
+//#define PACK_START_CODE         0xBA
+//#define SYSTEM_START_CODE       0xBB
+//#define VIDEO_ELEMENTARY_STREAM 0xE0
 
 typedef enum
 {
@@ -237,12 +253,10 @@ class TiVoDecoderTsStream
         TS_Turing_Stuff turing_stuff;
         
         UINT8           pesDecodeBuffer[TS_FRAME_SIZE * 10];
-
+        
         void            setDecoder(TiVoDecoderTS * pDecoder);
         BOOL            addPkt(TiVoDecoderTsPacket * pPkt);
-        
         BOOL            getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen, UINT16 & pesLength);
-        
         BOOL            decrypt(UINT8 * pBuffer, UINT16 bufLen);
 
         TiVoDecoderTsStream(UINT16 pid);

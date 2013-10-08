@@ -544,7 +544,10 @@ BOOL TiVoDecoderTS::process()
         }
         
         if(IS_VERBOSE)
+        {
+            VERBOSE("=============== Packet : %d ===============\n", pPkt->packetId );
             pPkt->dump();
+        }
 
         pid = pPkt->getPID();
 
@@ -619,8 +622,8 @@ BOOL TiVoDecoderTS::process()
             }
             else
             {
-                VVERBOSE("Added packet to PID 0x%x (%d)\n",
-                    pPkt->getPID(), pPkt->getPID() );
+                VVERBOSE("Added packet %d to PID 0x%x (%d)\n",
+                    pktCounter, pPkt->getPID(), pPkt->getPID() );
             }
         }
     }

@@ -33,7 +33,7 @@
 #include "md5.h"
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
-
+#include "tivo_decoder_mpeg_parser.hxx"
 
 TiVoDecoderTsStream::TiVoDecoderTsStream(UINT16 pid)
 {
@@ -210,228 +210,84 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
 
 BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen, UINT16 & pesLength)
 {
-    UINT8 * pPtr    = pBuffer;
-    BOOL done       = FALSE;
-    pesLength       = 0;
-    char startCode[] = { 0x00, 0x00, 0x01 };
+    TiVoDecoder_MPEG2_Parser parser(pBuffer,bufLen);
     
-    while ( ( FALSE == done ) && ( (UINT16)(pPtr-pBuffer) < bufLen ) )
+    BOOL done        = FALSE;
+    UINT8 streamId   = 0;
+    UINT32 startCode = 0;
+    
+    while ( (FALSE==done) && (FALSE==parser.isEndOfFile()) && (bufLen > parser.getReadPos()) )
     {
-        VVERBOSE("PES Header Offset : %d (0x%x)\n", pPtr-pBuffer, *pPtr );
-
-        if ( (UINT16)(pPtr-pBuffer+4) > bufLen )
+        VVERBOSE("PES Header Offset : %d (0x%x)\n", parser.getReadPos(), parser.nextbits(8) );
+        
+        if( 0x000001 != parser.nextbits(24) )
         {
-            // PES headers run into next packet
-            pPtr = pBuffer + bufLen;
-            done = TRUE;
-            continue;            
-        }
-        else if (memcmp(startCode, pPtr, 3)) 
-        {
-            // Invalid PES elementary start code
             done = TRUE;
             continue;
         }
 
-        pPtr += 3;
-        UINT8 streamId = *pPtr;
-        pPtr++;
-
-        VVERBOSE( "\n--- Elementary Stream : 0x%x (%d)\n", streamId, streamId );
-
-        if ( streamId == EXTENSION_START_CODE )
+        startCode = parser.nextbits(32);
+ 
+        if( EXTENSION_START_CODE == startCode )
         {
-            unsigned int ext_hdr_len = 0;
-
-            if ( (*pPtr & 0x10) == 0x10 )
-            {
-                ext_hdr_len += 6;
-            }
-            else if ( (*pPtr & 0x20) == 0x20 )
-            {
-                if ( (*pPtr & 0x01) == 0x01 )
-                {
-                    ext_hdr_len += 8;
-                }
-                else
-                {
-                    ext_hdr_len += 5;
-                }
-            }
-            else if ( (*pPtr & 0x80) == 0x80 )
-            {
-                if ( (*(pPtr+4) & 0x40) == 0x40 )
-                {
-                    ext_hdr_len += 2;
-                }
-                ext_hdr_len += 5;
-            }
-
-            pPtr += ext_hdr_len;
-
-//            VVERBOSE("pPtr[0-2] = %02x:%02x:%02x\n", *(pPtr+0), *(pPtr+1), *(pPtr+2) );
-//
-//            while ( ((UINT16)(pPtr-pBuffer)<bufLen) && (memcmp(startCode, pPtr, 3)) )
-//            {
-//                pPtr++;
-//                VVERBOSE("pPtr[0-2] = %02x:%02x:%02x\n", *(pPtr+0), *(pPtr+1), *(pPtr+2) );
-//            }
-
-            VVVERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet",
-                    "Extension header", ext_hdr_len );
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode, "Extension header" );    
+            parser.extension_header();
         }
-        else if ( streamId == GROUP_START_CODE )
+        else if ( GROUP_START_CODE == startCode )
         {
-            VVVERBOSE("%-15s : %-25.25s : %d bytes\n", "TS PES Packet", "Group Of Pictures", 4 );
-            pPtr += 4;
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode,"GOP header" );    
+            parser.group_of_pictures_header();
         }
-        else if ( streamId == USER_DATA_START_CODE )
+        else if ( USER_DATA_START_CODE == startCode )
         {
-            unsigned char * pPtr2 = pPtr;
-            unsigned int i = 0;
-
-            while ( 1 )
-            {
-                if ( memcmp(startCode, pPtr, 3) )
-                {
-                    break;
-                }
-
-                i++;
-                pPtr2++;
-            }
-
-            VVVERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet", "User Data", i);
-            pPtr += i;
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode,"User Data header" );    
+            parser.user_data();
         }
-        else if ( streamId == PICTURE_START_CODE )
+        else if ( PICTURE_START_CODE == startCode )
         {
-            VVVERBOSE( "%-15s : %-25.25s : %d bytes\n", "TS PES Packet", "Picture", 4 );
-            pPtr += 4;
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode,"Picture header" );    
+            parser.picture_header();
         }
-        else if ( streamId == SEQUENCE_HEADER_CODE )
+        else if ( SEQUENCE_HEADER_CODE == startCode )
         {
-            unsigned int PES_load_intra_flag        = 0;
-            unsigned int PES_load_non_intra_flag    = 0;
-
-            VVVERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Sequence header" );
-            pPtr += 7;
-
-            PES_load_intra_flag = *pPtr & 0x02;
-            if ( PES_load_intra_flag ) pPtr += 64;
-
-            PES_load_non_intra_flag = *pPtr & 0x01;
-            if ( PES_load_non_intra_flag ) pPtr += 64;
-
-            pPtr++;
-
-            VVVERBOSE( "%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "PES_load_intra_flag", PES_load_intra_flag );
-
-            VVVERBOSE( "%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "PES_load_non_intra_flag", PES_load_non_intra_flag );
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode,"Sequence header" );    
+            parser.sequence_header();
         }
-        else if ( ( streamId >= 0x01 && streamId <= 0xAF ) )
+        else if ( SEQUENCE_END_CODE == startCode )
         {
-            VVVERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Slice" );            
-        }            
-        else if ( streamId == SEQUENCE_END_CODE )
-        {
-            VVVERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Sequence End" );                        
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode,"Sequence End header" );    
+            parser.sequence_end();
         }
-        else if ( ( streamId == 0xBD ) ||
-                  ( streamId >= 0xC0 && streamId <= 0xEF ) )
+        else if ( ( startCode >= 0x101 && startCode <= 0x1AF ) )
         {
-            TS_Stream_Element   ts_elem_stream;
-            memset(&ts_elem_stream, 0, sizeof(TS_Stream_Element) );
-
-            ts_elem_stream.pesPktLength = portable_ntohs( pPtr );
-            pPtr += 2;
-            VVVERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Extension Hdr" );
-
-            ts_elem_stream.PES_hdr.marker_bits                  = (*pPtr & 0xc0) >> 6;
-            ts_elem_stream.PES_hdr.scrambling_control           = (*pPtr & 0x30) >> 4;
-            ts_elem_stream.PES_hdr.priority                     = (*pPtr & 0x08) >> 3;
-            ts_elem_stream.PES_hdr.data_alignment_indicator     = (*pPtr & 0x04) >> 2;
-            ts_elem_stream.PES_hdr.copyright                    = (*pPtr & 0x02) >> 1;
-            ts_elem_stream.PES_hdr.original_or_copy             = (*pPtr & 0x01);
-            pPtr++;
-            ts_elem_stream.PES_hdr.PTS_DTS_indicator            = (*pPtr & 0xc0) >> 6;
-            ts_elem_stream.PES_hdr.ESCR_flag                    = (*pPtr & 0x20) >> 5;
-            ts_elem_stream.PES_hdr.ES_rate_flag                 = (*pPtr & 0x10) >> 4;
-            ts_elem_stream.PES_hdr.DSM_trick_mode_flag          = (*pPtr & 0x08) >> 3;
-            ts_elem_stream.PES_hdr.additional_copy_info_flag    = (*pPtr & 0x04) >> 2;
-            ts_elem_stream.PES_hdr.CRC_flag                     = (*pPtr & 0x02) >> 1;
-            ts_elem_stream.PES_hdr.extension_flag               = (*pPtr & 0x01);
-            pPtr++;
-            ts_elem_stream.PES_hdr.PES_header_length            = *pPtr;
-            pPtr++;
-
-            pPtr += ts_elem_stream.PES_hdr.PES_header_length;
-
-            VVERBOSE("%-15s : %-25.25s : 0x%02x (%d)(%s)\n", "TS PES Packet",
-                    "stream_id", streamId, streamId, 
-                    (streamId<0xe0) ? "audio" : "video" );
-
-            VVERBOSE("%-15s : %-25.25s : 0x%04x (%d)\n", "TS PES Packet",
-                    "pkt_length", ts_elem_stream.pesPktLength,
-                    ts_elem_stream.pesPktLength );
-
-            VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
-                    "scrambling_control",
-                    ts_elem_stream.PES_hdr.scrambling_control,
-                    ts_elem_stream.PES_hdr.scrambling_control );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "priority", ts_elem_stream.PES_hdr.priority );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "data_alignment_indicator",
-                    ts_elem_stream.PES_hdr.data_alignment_indicator );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "copyright", ts_elem_stream.PES_hdr.copyright );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "original_or_copy", ts_elem_stream.PES_hdr.original_or_copy );
-
-            VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
-                    "PTS_DTS_indicator",
-                    ts_elem_stream.PES_hdr.PTS_DTS_indicator,
-                    ts_elem_stream.PES_hdr.PTS_DTS_indicator );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "ESCR_flag", ts_elem_stream.PES_hdr.ESCR_flag );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "ES_rate_flag", ts_elem_stream.PES_hdr.ES_rate_flag );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "DSM_trick_mode_flag", ts_elem_stream.PES_hdr.DSM_trick_mode_flag );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "additional_copy_info_flag",
-                    ts_elem_stream.PES_hdr.additional_copy_info_flag );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "CRC_flag", ts_elem_stream.PES_hdr.CRC_flag );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "extension_flag", ts_elem_stream.PES_hdr.extension_flag );
-
-            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
-                    "PES_header_length", ts_elem_stream.PES_hdr.PES_header_length );
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode,"Slice" );    
+//            parser.slice();
+            done = TRUE;
+        }
+        else if ( ( startCode == 0x1BD ) || ( startCode >= 0x1C0 && startCode <= 0x1EF ) )
+        {
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode,"Audio/Video Stream" );
+            parser.pes_header();
         }
         else
         {
-            perror("Unhandled PES header");
+            VERBOSE("Unhandled PES header : 0x%08x\n", startCode );
             return(FALSE);
         }
     }
 
-    pesLength = (UINT16) (pPtr - pBuffer);
+    pesLength = parser.getReadPos();
     if(pesLength > bufLen)
         pesLength = bufLen;
+        
     return(TRUE);
 }
 

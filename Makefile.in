@@ -75,7 +75,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_tivodecode_OBJECTS = happyfile.$(OBJEXT) tivo_decode.$(OBJEXT) \
 	tivo_decoder_base.$(OBJEXT) tivo_decoder_ts.$(OBJEXT) \
 	tivo_decoder_ts_pkt.$(OBJEXT) tivo_decoder_ts_stream.$(OBJEXT) \
-	tivo_decoder_ps.$(OBJEXT)
+	tivo_decoder_ps.$(OBJEXT) tivo_decoder_mpeg_parser.$(OBJEXT)
 tivodecode_OBJECTS = $(am_tivodecode_OBJECTS)
 am__DEPENDENCIES_1 = @LIBOBJS@
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
@@ -194,7 +194,7 @@ lib_LIBRARIES = libtivodecode.a
 pkginclude_HEADERS = tivo_parse.hxx turing_stream.h Turing.h
 nodist_pkginclude_HEADERS = tdconfig.h
 libtivodecode_a_SOURCES = hexlib.c TuringFast.c sha1.c md5.c tivo_parse.cxx turing_stream.c QUTsbox.h TuringMultab.h TuringSbox.h hexlib.h sha1.h md5.h
-tivodecode_SOURCES = happyfile.c tivo_decode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx happyfile.h getopt_long.h fseeko.h tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx
+tivodecode_SOURCES = happyfile.c tivo_decode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx happyfile.h getopt_long.h fseeko.h tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
 tivodecode_LDADD = $(LIBOBJS) -L. -ltivodecode
 tivodecode_DEPENDENCIES = $(LIBOBJS) libtivodecode.a
 EXTRA_DIST = libtivodecode.vcproj libtdcommon.vcproj tdcat.vcproj tdconfig.h.win32 tivodecode.rules tivodecode.sln tivodecode.vcproj
@@ -329,6 +329,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_base.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_mpeg_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_ps.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_ts.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_ts_pkt.Po@am__quote@
