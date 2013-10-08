@@ -35,6 +35,7 @@
 #include "tivo_parse.hxx"
 
 int o_verbose;
+BOOL o_pkt_dump;
 
 int hread_wrapper(void * mem, int size, void * fh)
 {

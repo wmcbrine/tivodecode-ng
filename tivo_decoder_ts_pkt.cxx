@@ -44,6 +44,7 @@ TiVoDecoderTsPacket::TiVoDecoderTsPacket()
     payloadOffset   = 0;
     pesHdrOffset    = 0;
     ts_packet_type  = TS_PID_TYPE_NONE;
+    packetId        = 0;
     
     memset(buffer,    0, TS_FRAME_SIZE);
     memset(&tsHeader, 0, sizeof(TS_Header) );
@@ -65,13 +66,16 @@ int TiVoDecoderTsPacket::read(read_func_t read_handler, void * pInfile)
     }
     
     size = read_handler(buffer, TS_FRAME_SIZE, pInfile);
+    
+    VVERBOSE("Read handler : size %d\n", size);
+    
     if(0==size)
     {
         VERBOSE("End of file\n");
     }
     else if(TS_FRAME_SIZE != size)
     {
-        VERBOSE("Read error : TS Frame Size : %d, Size Read %d\n", TS_FRAME_SIZE, size);
+        fprintf(stderr,"Read error : TS Frame Size : %d, Size Read %d\n", TS_FRAME_SIZE, size);
         return(-1);
     }
 
@@ -82,9 +86,9 @@ int TiVoDecoderTsPacket::read(read_func_t read_handler, void * pInfile)
 
 BOOL TiVoDecoderTsPacket::decode()
 {
-
     if(FALSE==isValid)
     {
+        perror("Packet not valid");
         return(FALSE);  
     }
     
@@ -148,13 +152,7 @@ BOOL TiVoDecoderTsPacket::decode()
 }
 
 void TiVoDecoderTsPacket::dump()
-{
-    if(FALSE==isTsPacket())
-    {
-        perror("Invalid packet");
-        return;    
-    }
-    
+{   
     CHAR pidType[30];
     switch(ts_packet_type)
     {
@@ -200,79 +198,102 @@ void TiVoDecoderTsPacket::dump()
         }
     }
 
-    VERBOSE("%-15s : %s   : PktID %d\n", 
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %s   : PktID %d\n", 
         "TS Pkt header", pidType, packetId );
 
-    VERBOSE("%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %s   : Valid Decode %d\n", 
+        "TS Pkt header", pidType, isValid );
+
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
             "sync_byte", 
             tsHeader.sync_byte );
-    VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
             "transport_error_indicator", 
             tsHeader.transport_error_indicator );
-    VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
             "payload_unit_start_indicator", 
             tsHeader.payload_unit_start_indicator);
-    VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
             "transport_priority", 
             tsHeader.transport_priority);
-    VERBOSE("%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
             "pid", 
             tsHeader.pid);
-    VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
             "transport_scrambling_control", 
             tsHeader.transport_scrambling_control);
-    VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
             "adaptation_field_exists", 
             tsHeader.adaptation_field_exists);
-    VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
             "payload_data_exists", 
             tsHeader.payload_data_exists);
-    VERBOSE("%-15s : %-25.25s : %06d\n", "TS Pkt header",
+    if(IS_VVERBOSE)
+    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
             "continuity_counter", 
             tsHeader.continuity_counter);
 
     if ( tsHeader.adaptation_field_exists )
     {
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "adaptation_field_length", 
                 tsAdaptation.adaptation_field_length);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "discontinuity_indicator", 
                 tsAdaptation.discontinuity_indicator);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "random_access_indicator", 
                 tsAdaptation.random_access_indicator);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "elementary_stream_priority_indicator", 
                 tsAdaptation.elementary_stream_priority_indicator);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "pcr_flag", 
                 tsAdaptation.pcr_flag);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "opcr_flag", 
                 tsAdaptation.opcr_flag);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "splicing_point_flag", 
                 tsAdaptation.splicing_point_flag);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "transport_private_data_flag", 
                 tsAdaptation.transport_private_data_flag);
 
-        VERBOSE("%-15s : %-25.25s : %06d\n", "TS Adaptation",
+        if(IS_VVERBOSE)
+        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
                 "adaptation_field_extension_flag", 
                 tsAdaptation.adaptation_field_extension_flag);
     }
+    
+    if(IS_VVERBOSE)
+    hexbulk( buffer, TS_FRAME_SIZE );
 }
-
-
-
 
 
 BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
@@ -287,7 +308,9 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
         return(FALSE);
     }
 
-    VVERBOSE( "AAA : dump turing : INIT\n");
+    if(IS_VVERBOSE)
+        fprintf(stderr, "AAA : dump turing : INIT\n");
+    
     if(IS_VVERBOSE)
         dump_turing( pParent->pTuring );
     
@@ -299,27 +322,34 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
         return(FALSE);
     }
 
-    VVERBOSE( "BBB : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
+    if(IS_VVERBOSE)
+        fprintf(stderr, "BBB : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
             stream_id, turing_stuff.block_no, turing_stuff.crypted );
 
     prepare_frame( pParent->pTuring, stream_id, turing_stuff.block_no);
 
-    VVERBOSE( "CCC : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
+    if(IS_VVERBOSE)
+        fprintf(stderr, "CCC : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
             stream_id, turing_stuff.block_no, turing_stuff.crypted );
 
     // Do not need to do this for TS streams - crypted is zero and apparently not used
     // decrypt_buffer( turing, (unsigned char *)&pStream->turing_stuff.crypted, 4);
 
-    VVERBOSE( "DDD : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
+    if(IS_VVERBOSE)
+        fprintf(stderr, "DDD : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
             stream_id, turing_stuff.block_no, turing_stuff.crypted );
 
-    VVERBOSE( "ZZZ : dump turing : BEFORE DECRYPT\n");
+    if(IS_VVERBOSE)
+        fprintf(stderr, "ZZZ : dump turing : BEFORE DECRYPT\n");
+    
     if(IS_VVERBOSE)
         dump_turing( pParent->pTuring );
                 
     decrypt_buffer( pParent->pTuring, pBuffer, bufferLen );
 
-    VVERBOSE("---Decrypted transport packet\n");
+    if(IS_VVERBOSE)
+        fprintf(stderr,"---Decrypted transport packet\n");
+    
     if (IS_VVERBOSE)
         hexbulk( pBuffer, bufferLen );
 

@@ -66,6 +66,8 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         return(FALSE);
     }
 
+    pPkt->setStream(this);
+
     // If this packet's Payload Unit Start Indicator is set,
     // or one of the stream's previous packet's was set, we
     // need to buffer the packet, such that we can make an
@@ -74,8 +76,6 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
     // the packet offset at which decryption is to occur.
     // The accounts for the situation where the PES headers
     // span more than one TS packet, and decryption is needed.
-
-    pPkt->setStream(this);
 
     if( (TRUE==pPkt->getPayloadStartIndicator()) || (0!=packets.size() ) )
     {
@@ -110,7 +110,8 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         BOOL pesParse = getPesHdrLength( pesDecodeBuffer, pesDecodeBufferLen, pesHeaderLength );
         if ( FALSE == pesParse )
         {
-            perror("failed to parse PES headers");
+            fprintf(stderr,"failed to parse PES headers : pktID %d\n", 
+                pPkt->packetId);
             return(FALSE);
         }
         
@@ -147,6 +148,8 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
     }
     else
     {
+        VERBOSE("Push Back : PayloadStartIndicator %d, packets.size() %d \n", 
+            pPkt->getPayloadStartIndicator(), packets.size());
         flushBuffers = TRUE;
         packets.push_back(pPkt);
     }
@@ -154,12 +157,16 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
     
     if ( TRUE == flushBuffers )
     {        
+        VERBOSE("Flush packets for write\n");
+        
         // Loop through each buffered packet.
         // If it is encrypted, perform decryption and then write it out.
         // Otherwise, just write it out.
         for(iter=packets.begin(); iter!=packets.end(); iter++)
         {
             pPkt2 = *iter;
+            
+            VERBOSE("Flushing packet %d\n", pPkt2->packetId );
         
             if ( TRUE == pPkt2->getScramblingControl() )
             {
@@ -191,6 +198,11 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         
         packets.clear();
     }
+    else
+    {
+        VERBOSE("Do NOT flush packets for write\n");        
+    }
+        
 
     return(TRUE);
 }
@@ -323,10 +335,15 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen, UINT16
         {
             VVVERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Slice" );            
         }            
+        else if ( streamId == SEQUENCE_END_CODE )
+        {
+            VVVERBOSE( "%-15s : %-25.25s\n", "TS PES Packet", "Sequence End" );                        
+        }
         else if ( ( streamId == 0xBD ) ||
                   ( streamId >= 0xC0 && streamId <= 0xEF ) )
         {
             TS_Stream_Element   ts_elem_stream;
+            memset(&ts_elem_stream, 0, sizeof(TS_Stream_Element) );
 
             ts_elem_stream.pesPktLength = portable_ntohs( pPtr );
             pPtr += 2;
@@ -352,58 +369,57 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen, UINT16
 
             pPtr += ts_elem_stream.PES_hdr.PES_header_length;
 
-            VVVERBOSE("%-15s : %-25.25s : 0x%02x (%d)(%s)\n", "TS PES Packet",
-                    "stream_id", ts_elem_stream.streamId,
-                    ts_elem_stream.streamId,
-                    (ts_elem_stream.streamId<0xe0) ? "audio" : "video" );
+            VVERBOSE("%-15s : %-25.25s : 0x%02x (%d)(%s)\n", "TS PES Packet",
+                    "stream_id", streamId, streamId, 
+                    (streamId<0xe0) ? "audio" : "video" );
 
-            VVVERBOSE("%-15s : %-25.25s : 0x%04x (%d)\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : 0x%04x (%d)\n", "TS PES Packet",
                     "pkt_length", ts_elem_stream.pesPktLength,
                     ts_elem_stream.pesPktLength );
 
-            VVVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
                     "scrambling_control",
                     ts_elem_stream.PES_hdr.scrambling_control,
                     ts_elem_stream.PES_hdr.scrambling_control );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "priority", ts_elem_stream.PES_hdr.priority );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "data_alignment_indicator",
                     ts_elem_stream.PES_hdr.data_alignment_indicator );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "copyright", ts_elem_stream.PES_hdr.copyright );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "original_or_copy", ts_elem_stream.PES_hdr.original_or_copy );
 
-           VVVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : 0x%x (%d)\n", "TS PES Packet",
                     "PTS_DTS_indicator",
                     ts_elem_stream.PES_hdr.PTS_DTS_indicator,
                     ts_elem_stream.PES_hdr.PTS_DTS_indicator );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "ESCR_flag", ts_elem_stream.PES_hdr.ESCR_flag );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "ES_rate_flag", ts_elem_stream.PES_hdr.ES_rate_flag );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "DSM_trick_mode_flag", ts_elem_stream.PES_hdr.DSM_trick_mode_flag );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "additional_copy_info_flag",
                     ts_elem_stream.PES_hdr.additional_copy_info_flag );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "CRC_flag", ts_elem_stream.PES_hdr.CRC_flag );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "extension_flag", ts_elem_stream.PES_hdr.extension_flag );
 
-            VVVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
+            VVERBOSE("%-15s : %-25.25s : %d\n", "TS PES Packet",
                     "PES_header_length", ts_elem_stream.PES_hdr.PES_header_length );
         }
         else

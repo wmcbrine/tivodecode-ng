@@ -34,6 +34,7 @@
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
 
+TsPktDump pktDumpMap;
 
 ts_packet_tag_info ts_packet_tags[] = {
     {0x0000, 0x0000, TS_PID_TYPE_PROGRAM_ASSOCIATION_TABLE},
@@ -214,8 +215,8 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
                 
         // locate previous stream definition
         // if lookup fails, create a new stream
-        TsStreams_it iter = streams.find( patData.program_map_pid );
-        if( iter == streams.end() )
+        TsStreams_it stream_iter = streams.find( patData.program_map_pid );
+        if( stream_iter == streams.end() )
         {
             VERBOSE("Creating new stream for PMT PID 0x%04x\n", 
                 patData.program_map_pid );
@@ -331,8 +332,8 @@ int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
 
         // locate previous stream definition
         // if lookup fails, create a new stream
-        TsStreams_it iter = streams.find( streamPid );
-        if( iter == streams.end() )
+        TsStreams_it stream_iter = streams.find( streamPid );
+        if( stream_iter == streams.end() )
         {
             VERBOSE("Creating new stream for PID 0x%04x\n", streamPid );
             TiVoDecoderTsStream * pStream = new TiVoDecoderTsStream(streamPid);
@@ -400,10 +401,12 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
 
     pPtr += 4;  // advance past "TiVo"
 
-    pPtr += 4;  // advance past ??? field
+    pPtr += 2;  // advance past validator field
+    pPtr += 2;  // advance past unknown1 field
+    pPtr += 1;  // advance past unknown2 field
 
-    stream_bytes = portable_ntohs( pPtr );
-    pPtr += 2;  // advance past stream_bytes
+    stream_bytes = *pPtr;
+    pPtr += 1;  // advance past unknown3 field
 
     VERBOSE("%-15s : %-25.25s : %d\n", "TiVo Private",
             "Stream Bytes", stream_bytes );
@@ -423,8 +426,8 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
 
         // locate previous stream definition
         // if lookup fails, create a new stream
-        TsStreams_it iter = streams.find( pid );
-        if( iter == streams.end() )
+        TsStreams_it stream_iter = streams.find( pid );
+        if( stream_iter == streams.end() )
         {
             VERBOSE("TiVo private data : No such PID 0x%04x\n", pid );
             return(-1);
@@ -432,7 +435,7 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
         else
         {
             VERBOSE("TiVo private data : matched PID 0x%04x\n", pid );
-            TiVoDecoderTsStream * pStream = iter->second;
+            TiVoDecoderTsStream * pStream = stream_iter->second;
 
             pStream->stream_id = stream_id;
 
@@ -456,8 +459,8 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
             VERBOSE("%-15s : %-25.25s : 0x%02x (%d)\n", "TiVo Private", "Stream ID",
                     pStream->stream_id,
                     pStream->stream_id );
-            VERBOSE("%-15s : %-25.25s : ", "TiVo Private", "Turing Key" );
-
+                    
+            VERBOSE("%-15s : %-25.25s : \n", "TiVo Private", "Turing Key" );
             if( IS_VERBOSE )
                 hexbulk( &pStream->turing_stuff.key[0], 16 );
         }
@@ -483,7 +486,8 @@ BOOL TiVoDecoderTS::process()
     UINT16 pid      = 0;
     hoff_t position = 0;
     TiVoDecoderTsStream * pStream = NULL;
-    TsStreams_it          iter;
+    TsStreams_it        stream_iter;
+    TsPktDump_iter      pktDump_iter;
 
     if(FALSE==isValid)
     {
@@ -510,9 +514,12 @@ BOOL TiVoDecoderTS::process()
         pPkt->packetId = pktCounter;
 
         int readSize = pPkt->read(read_handler, pFileIn);
+        
+        VVERBOSE("Read Size : %d\n", readSize );
+        
         if( readSize < 0 )
         {
-            perror("processing frame");
+            fprintf(stderr,"Error TS packet read : pkt %d : size read %d", pktCounter, readSize);
             return 10;
         }
         else if( readSize == 0 )
@@ -523,14 +530,21 @@ BOOL TiVoDecoderTS::process()
         }
         else if(TS_FRAME_SIZE != readSize )
         {
-            perror("Error TS packet read");
+            fprintf(stderr,"Error TS packet read : pkt %d : size read %d", pktCounter, readSize);
             return 10;
         }
-        else if( FALSE==pPkt->decode() )
+        
+        pktDump_iter = pktDumpMap.find( pktCounter );
+        o_pkt_dump   = (pktDump_iter != pktDumpMap.end()) ? TRUE : FALSE;
+
+        if( FALSE==pPkt->decode() )
         {
-            perror("Error TS packet decode");
+            fprintf(stderr,"packet decode fails : pktId %d\n", pktCounter);
             return 10;
         }
+        
+        if(IS_VERBOSE)
+            pPkt->dump();
 
         pid = pPkt->getPID();
 
@@ -554,9 +568,9 @@ BOOL TiVoDecoderTS::process()
                 }
                 else
                 {
-                    for( iter=streams.begin(); iter!=streams.end(); iter++ )
+                    for( stream_iter=streams.begin(); stream_iter!=streams.end(); stream_iter++ )
                     {
-                        pStream = iter->second;
+                        pStream = stream_iter->second;
                         if( (pPkt->getPID()==pStream->stream_pid) && 
                             (TS_STREAM_TYPE_PRIVATE_DATA==pStream->stream_type ) )
                         {
@@ -587,8 +601,8 @@ BOOL TiVoDecoderTS::process()
             }
         }
 
-        iter = streams.find(pPkt->getPID());
-        if(iter == streams.end())
+        stream_iter = streams.find(pPkt->getPID());
+        if(stream_iter == streams.end())
         {
             perror("Can not locate packet stream by PID");
         }
@@ -597,10 +611,11 @@ BOOL TiVoDecoderTS::process()
             VVERBOSE("Adding packet %d to PID 0x%x (%d)\n",
                 pktCounter, pPkt->getPID(), pPkt->getPID() );
 
-            pStream = iter->second;
+            pStream = stream_iter->second;
             if(FALSE == pStream->addPkt( pPkt ) )
             {
-                perror("Failed to add packet to stream");
+                fprintf(stderr,"Failed to add packet to stream : pktId %d\n", 
+                    pPkt->packetId);
             }
             else
             {

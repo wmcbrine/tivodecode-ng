@@ -29,9 +29,13 @@
 
 #include <deque>
 #include <map>
+using namespace std;
+
 #include "tivo_types.hxx"
 #include "tivo_decoder_base.hxx"
 
+extern std::map<UINT32, BOOL> pktDumpMap;
+extern std::map<UINT32, BOOL>::iterator pktDumpMap_iter;
 
 #define TS_FRAME_SIZE  188
 
@@ -186,6 +190,10 @@ typedef std::deque<TiVoDecoderTsPacket*>::iterator     TsPackets_it;
 typedef std::map<int, TiVoDecoderTsStream*>             TsStreams;
 typedef std::map<int, TiVoDecoderTsStream*>::iterator   TsStreams_it;
 
+typedef std::map<UINT32,BOOL>                           TsPktDump;
+typedef std::map<UINT32,BOOL>::iterator                 TsPktDump_iter;
+    
+extern TsPktDump pktDumpMap;
 
 /* All elements are in big-endian format and are packed */
 

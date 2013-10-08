@@ -58,13 +58,20 @@ commercial product utilising any of the Turing family of encryption
 algorithms should show the words "Encryption by QUALCOMM" either on the
 product or in the associated documentation.
 */
-
 #ifdef HAVE_CONFIG_H
-# include "tdconfig.h"
+#include "tdconfig.h"
 #endif
+
+#include <stdio.h>
+
 #ifdef HAVE_STDLIB_H
-# include <stdlib.h>
+#include <stdlib.h>
 #endif
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
 #include "Turing.h"		/* interface definitions */
 #include "TuringSbox.h"
 #include "QUTsbox.h"
@@ -294,10 +301,14 @@ TuringGen(void * internal, BYTE *buf)
 
 void * TuringAlloc()
 {
-	return calloc(1, sizeof(struct turing_internal));
+//	return calloc(1, sizeof(struct turing_internal));
+    void * pVoid = malloc(sizeof(struct turing_internal));
+    memset(pVoid, 0, sizeof(struct turing_internal) );
+	return malloc(sizeof(struct turing_internal));
 }
 
 void TuringFree(void * internal)
 {
-	free(internal);
+    if(internal)
+    	free(internal);
 }

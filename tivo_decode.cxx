@@ -38,7 +38,6 @@
 #include "tivo_decoder_ps.hxx"
 
 int o_no_verify;
-int o_ts_pkt_dump = 0;
 
 static struct option long_options[] = {
     {"mak", 1, 0, 'm'},
@@ -88,6 +87,7 @@ int main(int argc, char *argv[])
     int o_dump_metadata = 0;
     int ret = 0;
     int makgiven = 0;
+    UINT32 pktDump = 0;
 
     char * tivofile = NULL;
     char * outfile  = NULL;
@@ -106,6 +106,7 @@ int main(int argc, char *argv[])
     happy_file * hfh=NULL;
 
     TiVoStreamHeader header;
+    pktDumpMap.clear();
 
     while(1)
     {
@@ -122,7 +123,8 @@ int main(int argc, char *argv[])
                 makgiven = 1;
                 break;
             case 'p':
-                sscanf(optarg, "%d", &o_ts_pkt_dump);
+                sscanf(optarg, "%d", &pktDump);
+                pktDumpMap[pktDump] = TRUE;
                 break;
             case 'o':
                 outfile = optarg;
@@ -274,7 +276,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    destruct_turing(&metaturing);
+//    destruct_turing(&metaturing);
 
     if(o_no_video)
         exit(0);

@@ -50,15 +50,17 @@ extern int fwrite_wrapper(void * mem, int size, void * fh);
 
 #define static_strlen(str) (sizeof(str) - 1)
 
-extern int o_verbose;
+extern int  o_verbose;
+extern BOOL o_pkt_dump;
 
-#define VERBOSE(...)        if ( o_verbose >= 1 ) { printf(__VA_ARGS__); }
-#define VVERBOSE(...)       if ( o_verbose >= 2 ) { printf(__VA_ARGS__); }
-#define VVVERBOSE(...)      if ( o_verbose >= 3 ) { printf(__VA_ARGS__); }
+#define IS_VERBOSE          ( (o_pkt_dump) || (o_verbose >= 1) )
+#define IS_VVERBOSE         ( (o_pkt_dump) || (o_verbose >= 2) )
+#define IS_VVVERBOSE        ( (o_pkt_dump) || (o_verbose >= 3) )
+
+#define VERBOSE(...)        if ( IS_VERBOSE )   { printf(__VA_ARGS__); }
+#define VVERBOSE(...)       if ( IS_VVERBOSE )  { printf(__VA_ARGS__); }
+#define VVVERBOSE(...)      if ( IS_VVVERBOSE ) { printf(__VA_ARGS__); }
     
-#define IS_VERBOSE          ( o_verbose >= 1 )
-#define IS_VVERBOSE         ( o_verbose >= 2 )
-#define IS_VVVERBOSE        ( o_verbose >= 3 )
     
     
 /*
