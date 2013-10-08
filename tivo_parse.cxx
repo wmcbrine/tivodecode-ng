@@ -308,13 +308,30 @@ void TiVoStreamChunk::setupMetadataKey(turing_state * pTuring, UINT8 * pMAK)
      * with the metakey
      */
     setupTuringKey(pTuring, metakey);
+
+//    fprintf(stderr,"METADATA TURING DUMP : INIT\n");    
+//    dump_turing(pTuring);
 }
 
 void TiVoStreamChunk::decryptMetadata(turing_state * pTuring, UINT16 offsetVal)
 {
+//    fprintf(stderr,"METADATA TURING DECRYPT : INIT : offsetVal %d\n", offsetVal);
+//    dump_turing(pTuring);
+    
     prepare_frame(pTuring, 0, 0);
+
+//    fprintf(stderr,"METADATA TURING DECRYPT : AFTER PREPARE\n");
+//    dump_turing(pTuring);
+
     skip_turing_data(pTuring, offsetVal);
+
+//    fprintf(stderr,"METADATA TURING DECRYPT : AFTER SKIP\n");
+//    dump_turing(pTuring);
+
     decrypt_buffer(pTuring, pData, dataSize);
+
+//    fprintf(stderr,"METADATA TURING DECRYPT : AFTER DECRYPT\n");
+//    dump_turing(pTuring);
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

@@ -65,9 +65,13 @@ int TiVoDecoderTsPacket::read(read_func_t read_handler, void * pInfile)
     }
     
     size = read_handler(buffer, TS_FRAME_SIZE, pInfile);
-    if(TS_FRAME_SIZE != size)
+    if(0==size)
     {
-        perror("read error");
+        VERBOSE("End of file\n");
+    }
+    else if(TS_FRAME_SIZE != size)
+    {
+        VERBOSE("Read error : TS Frame Size : %d, Size Read %d\n", TS_FRAME_SIZE, size);
         return(-1);
     }
 

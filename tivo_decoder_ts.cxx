@@ -519,6 +519,7 @@ BOOL TiVoDecoderTS::process()
         {
             VERBOSE( "End of File\n");
             running = FALSE;
+            continue;
         }
         else if(TS_FRAME_SIZE != readSize )
         {

@@ -55,9 +55,9 @@ static struct option long_options[] = {
 
 static void do_version(int exitval)
 {
-    VERBOSE( "%s\n", PACKAGE_STRING);
-    VERBOSE( "Copyright (c) 2006-2007, Jeremy Drake\n");
-    VERBOSE( "See COPYING file in distribution for details\n\n");
+    fprintf(stderr, "%s\n", PACKAGE_STRING);
+    fprintf(stderr, "Copyright (c) 2006-2007, Jeremy Drake\n");
+    fprintf(stderr, "See COPYING file in distribution for details\n\n");
     PRINT_QUALCOMM_MSG();
 
     exit (exitval);
@@ -65,18 +65,18 @@ static void do_version(int exitval)
 
 static void do_help(char * arg0, int exitval)
 {
-    VERBOSE( "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n", arg0);
-    VERBOSE( " -m, --mak         media access key (required)\n");
-    VERBOSE( " -o, --out,        output file (default stdout)\n");
-    VERBOSE( " -v, --verbose,    verbose\n");
-    VERBOSE( " -p, --pkt-dump,   verbose logging for specific TS packet number\n");
-    VERBOSE( " -D, --metadata,   dump TiVo recording metadata\n");
-    VERBOSE( " -n, --no-verify,  do not verify MAK while decoding\n");
-    VERBOSE( " -x, --no-video,   don't decode video, exit after metadata\n");
-    VERBOSE( " -V, --version,    print the version information and exit\n");
-    VERBOSE( " -h, --help,       print this help and exit\n\n");
-    VERBOSE( "The file names specified for the output file or the tivo file may be -, which\n");
-    VERBOSE( "means stdout or stdin respectively\n\n");
+    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n", arg0);
+    fprintf(stderr, " -m, --mak         media access key (required)\n");
+    fprintf(stderr, " -o, --out,        output file (default stdout)\n");
+    fprintf(stderr, " -v, --verbose,    verbose\n");
+    fprintf(stderr, " -p, --pkt-dump,   verbose logging for specific TS packet number\n");
+    fprintf(stderr, " -D, --metadata,   dump TiVo recording metadata\n");
+    fprintf(stderr, " -n, --no-verify,  do not verify MAK while decoding\n");
+    fprintf(stderr, " -x, --no-video,   don't decode video, exit after metadata\n");
+    fprintf(stderr, " -V, --version,    print the version information and exit\n");
+    fprintf(stderr, " -h, --help,       print this help and exit\n\n");
+    fprintf(stderr, "The file names specified for the output file or the tivo file may be -, which\n");
+    fprintf(stderr, "means stdout or stdin respectively\n\n");
     exit(exitval);
 }
 
@@ -248,7 +248,7 @@ int main(int argc, char *argv[])
         else
         {
             perror("Unknown chunk type");
-            return(8);            
+            return(8);
         }
 
         if( o_dump_metadata )
@@ -272,10 +272,9 @@ int main(int argc, char *argv[])
 
             fclose(chunkfh);
         }
-
-        destruct_turing(&metaturing);
     }
 
+    destruct_turing(&metaturing);
 
     if(o_no_video)
         exit(0);
@@ -301,38 +300,6 @@ int main(int argc, char *argv[])
         perror("Failed to process file");
         return 9;
     }
-
-
-#if 0    
-    
-    switch( header.getFormatType() )
-    {
-
-
-        case TIVO_FORMAT_TS:
-        {
-            running = 1;
-            while( running )
-            {
-                ret = process_ts_frame(&turing, htell(hfh), hfh, &hread_wrapper, ofh, &fwrite_wrapper);
-                if( ret < 0 )
-                {
-                    perror("processing frame");
-                    return 10;
-                }
-                else if( ret == 0 )
-                {
-                    VERBOSE( "End of File\n");
-                    running = 0;
-                }
-            }
-            break;
-        }
-
-        default:
-    }
-    
-#endif
 
     destruct_turing(&turing);
 
