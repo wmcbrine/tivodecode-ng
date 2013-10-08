@@ -231,7 +231,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                                     }
 
                                     VERBOSE("BBB : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
-                                    VERBOSE("%Zu : stream_no: %x, block_no: %d\n", packet_start, code, block_no);
+                                    VERBOSE("%Zu : stream_no: %x, block_no: %d\n", (size_t)packet_start, code, block_no);
                                     VERBOSE("---Turing : prepare : code 0x%02x block_no %d\n", code, block_no );
 
                                     prepare_frame(pTuring, code, block_no);
