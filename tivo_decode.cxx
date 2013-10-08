@@ -30,6 +30,10 @@
 #include <netinet/in.h>
 #endif
 
+#ifdef HAVE_CTYPE_H
+#include <ctype.h>
+#endif
+
 #include "getopt_long.h"
 #include "happyfile.h"
 
@@ -256,7 +260,8 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if(!(hfh=hopen(tivofile, "rb")))
+        hfh=hopen(tivofile, (char*)"rb");
+        if(NULL==hfh)
         {
             perror(tivofile);
             return 6;
@@ -277,7 +282,8 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if(!(ofh = fopen(outfile, "wb")))
+        ofh = fopen(outfile, (char*)"wb");
+        if(NULL==ofh)
         {
             perror("opening output file");
             return 7;

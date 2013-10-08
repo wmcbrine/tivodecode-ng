@@ -55,6 +55,8 @@ extern std::map<UINT32, BOOL>::iterator pktDumpMap_iter;
 #define SYSTEM_START_CODE       0x1BB
 #define VIDEO_ELEMENTARY_STREAM 0x1E0
 
+#define ANCILLARY_DATA_CODE     0x1F9
+
 //#define PICTURE_START_CODE      0x00
 //#define SLICE_START_CODE_MIN    0x01
 //#define SLICE_START_CODE_MAX    0xAF
@@ -200,8 +202,11 @@ class TiVoDecoderTS;
 class TiVoDecoderTsStream;
 class TiVoDecoderTsPacket;
 
-typedef std::deque<TiVoDecoderTsPacket*>               TsPackets;
-typedef std::deque<TiVoDecoderTsPacket*>::iterator     TsPackets_it;
+typedef std::deque<UINT16>                              TsLengths;
+typedef std::deque<UINT16>::iterator                    TsLengths_it;
+
+typedef std::deque<TiVoDecoderTsPacket*>                TsPackets;
+typedef std::deque<TiVoDecoderTsPacket*>::iterator      TsPackets_it;
 
 typedef std::map<int, TiVoDecoderTsStream*>             TsStreams;
 typedef std::map<int, TiVoDecoderTsStream*>::iterator   TsStreams_it;
@@ -241,6 +246,7 @@ class TiVoDecoderTsStream
 
         TiVoDecoderTS * pParent;
         TsPackets       packets;
+        TsLengths       pesHdrLengths;
 
         UINT8           stream_type_id;
         UINT16          stream_pid;
@@ -256,7 +262,7 @@ class TiVoDecoderTsStream
         
         void            setDecoder(TiVoDecoderTS * pDecoder);
         BOOL            addPkt(TiVoDecoderTsPacket * pPkt);
-        BOOL            getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen, UINT16 & pesLength);
+        BOOL            getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen);
         BOOL            decrypt(UINT8 * pBuffer, UINT16 bufLen);
 
         TiVoDecoderTsStream(UINT16 pid);

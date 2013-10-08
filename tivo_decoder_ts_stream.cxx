@@ -58,7 +58,8 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
 {
     TiVoDecoderTsPacket * pPkt2 = NULL;
     BOOL flushBuffers           = FALSE;
-    TsPackets_it iter;
+    TsPackets_it pkt_iter;
+    TsLengths_it len_iter;
 
     if(!pPkt)
     {
@@ -75,7 +76,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
     // lies.   Only after we've done that, can we determine
     // the packet offset at which decryption is to occur.
     // The accounts for the situation where the PES headers
-    // span more than one TS packet, and decryption is needed.
+    // straddles two packets, and decryption is needed on the 2nd.
 
     if( (TRUE==pPkt->getPayloadStartIndicator()) || (0!=packets.size() ) )
     {
@@ -87,9 +88,9 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         // Form one contiguous buffer containing all buffered packet payloads
         UINT16 pesDecodeBufferLen = 0;
         memset( pesDecodeBuffer, 0, 10 * TS_FRAME_SIZE);
-        for(iter=packets.begin(); iter!=packets.end(); iter++)
+        for(pkt_iter=packets.begin(); pkt_iter!=packets.end(); pkt_iter++)
         {
-            pPkt2 = *iter;
+            pPkt2 = *pkt_iter;
             VERBOSE("DEQUE : PktID %d from PID 0x%04x\n", pPkt2->packetId, stream_pid );
 
             memcpy( &pesDecodeBuffer[pesDecodeBufferLen],
@@ -107,13 +108,23 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         // Scan the contiguous buffer for PES headers 
         // in order to find the end of PES headers.  
         UINT16 pesHeaderLength = 0;
-        BOOL pesParse = getPesHdrLength( pesDecodeBuffer, pesDecodeBufferLen, pesHeaderLength );
+        TsLengths_it len_iter;
+        pesHdrLengths.clear();
+        
+        BOOL pesParse = getPesHdrLength( pesDecodeBuffer, pesDecodeBufferLen );
         if ( FALSE == pesParse )
         {
             fprintf(stderr,"failed to parse PES headers : pktID %d\n", 
                 pPkt->packetId);
             return(FALSE);
         }
+        
+        for(len_iter=pesHdrLengths.begin(); len_iter!=pesHdrLengths.end(); len_iter++ )
+        {
+            VVERBOSE("  pes hdr len : parsed : %d\n", *len_iter );        
+            pesHeaderLength += *len_iter;
+        }
+        pesHeaderLength = (pesHeaderLength/8);
         
         VVERBOSE("pesDecodeBufferLen %d, pesHeaderLength %d\n", pesDecodeBufferLen, pesHeaderLength );
 
@@ -124,20 +135,67 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
             flushBuffers = TRUE;
 
             // For each packet, set the end point for PES headers in that packet
-            for(iter=packets.begin(); (pesHeaderLength>0) && iter!=packets.end(); iter++)
+            for(pkt_iter=packets.begin(); (pesHeaderLength>0) && pkt_iter!=packets.end(); pkt_iter++)
             {
-                pPkt2 = *iter;
-                if( (TS_FRAME_SIZE - pPkt2->payloadOffset) < pesHeaderLength )
+                pPkt2 = *pkt_iter;
+
+                VVERBOSE("  scanning PES header lengths : pktId %d\n", pPkt2->packetId );        
+ 
+                while(!pesHdrLengths.empty())
                 {
-                    // Entire packet is PES headers
-                    pPkt2->pesHdrOffset =  (TS_FRAME_SIZE - pPkt2->payloadOffset);
-                    pesHeaderLength     -= (TS_FRAME_SIZE - pPkt2->payloadOffset);
-                }
-                else
-                {
-                    // Only first portion of packet is PES headers
-                    pPkt2->pesHdrOffset = pesHeaderLength;
-                    pesHeaderLength     = 0;
+                    UINT16 pesHdrLen = pesHdrLengths.front();
+                    pesHdrLen = (pesHdrLen/8);
+                    pesHdrLengths.pop_front();
+
+                    VVERBOSE("  pes hdr len : checked : %d\n", pesHdrLen );        
+
+                    // Does this PES header fit completely within remaining packet space?
+                    if( pesHdrLen + pPkt2->payloadOffset + pPkt2->pesHdrOffset < TS_FRAME_SIZE )
+                    {
+                        VVERBOSE("  PES header fits : %d\n", pesHdrLen );        
+                        
+                        pPkt2->pesHdrOffset += pesHdrLen;
+                        pesHeaderLength     -= pesHdrLen;
+                    }
+                    else
+                    {
+                        // Packet boundary occurs within this PES header
+                        // Three cases to handle :
+                        //   1. pkt boundary falls within startCode
+                        //        start decrypt after startCode finish in NEXT pkt
+                        //   2. pkt boundary falls between startCode and payload
+                        //        start decrypt at payload start in NEXT pkt
+                        //   3. pkt boundary falls within payload 
+                        //        start decrypt offset into the payload
+
+                        // Case 1                        
+                        UINT16 pktBoundaryOffset = TS_FRAME_SIZE - pPkt2->payloadOffset - pPkt2->pesHdrOffset;
+
+                        VVERBOSE("  pktBoundaryOffset : %d (%d - %d - %d)\n", pktBoundaryOffset, TS_FRAME_SIZE, pPkt2->payloadOffset, pPkt2->pesHdrOffset );        
+
+                        if ( pktBoundaryOffset < 4 )
+                        {
+//                            pesHdrLen -= (4 - pktBoundaryOffset);
+                            pesHdrLen -= pktBoundaryOffset;
+                            pesHdrLen *= 8;
+                            VVERBOSE("  pes hdr len : re-push : %d\n", pesHdrLen );        
+                            pesHdrLengths.push_front(pesHdrLen);
+
+                            pesHdrLen = pesHdrLengths.front();  
+                            VVERBOSE("  pes hdr len : front now : %d\n", pesHdrLen );        
+
+                        }
+                        else if ( pktBoundaryOffset == 4 )
+                        {
+                            VVERBOSE("  pes hdr len : between startCode and payload\n" );                            
+                        }
+                        else
+                        {
+                            VVERBOSE("  pes hdr len : inside payload\n" );                                                        
+                        }                                
+                        
+                        break;
+                    }
                 }
             }
         }
@@ -162,9 +220,9 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         // Loop through each buffered packet.
         // If it is encrypted, perform decryption and then write it out.
         // Otherwise, just write it out.
-        for(iter=packets.begin(); iter!=packets.end(); iter++)
+        for(pkt_iter=packets.begin(); pkt_iter!=packets.end(); pkt_iter++)
         {
-            pPkt2 = *iter;
+            pPkt2 = *pkt_iter;
             
             VERBOSE("Flushing packet %d\n", pPkt2->packetId );
         
@@ -182,6 +240,12 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
                     perror("Packet decrypt fails");
                     return(FALSE);
                 }
+            }
+        
+            if(IS_VVERBOSE)
+            { 
+                VERBOSE("Writing PktID %d from stream 0x%04x\n", pPkt2->packetId, stream_pid);
+                pPkt2->dump();
             }
         
             if( writeFunc(&pPkt2->buffer[0], TS_FRAME_SIZE, pOutfile) != TS_FRAME_SIZE)
@@ -208,13 +272,14 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
 }
 
 
-BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen, UINT16 & pesLength)
+BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen)
 {
     TiVoDecoder_MPEG2_Parser parser(pBuffer,bufLen);
     
-    BOOL done        = FALSE;
-    UINT8 streamId   = 0;
+    BOOL   done      = FALSE;
+    UINT8  streamId  = 0;
     UINT32 startCode = 0;
+    UINT16 len       = 0;
     
     while ( (FALSE==done) && (FALSE==parser.isEndOfFile()) && (bufLen > parser.getReadPos()) )
     {
@@ -226,68 +291,79 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen, UINT16
             continue;
         }
 
+        len = 0;
         startCode = parser.nextbits(32);
+        parser.clear();
  
         if( EXTENSION_START_CODE == startCode )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
                 "TS PES Packet", startCode, "Extension header" );    
-            parser.extension_header();
+            parser.extension_header(len);
         }
         else if ( GROUP_START_CODE == startCode )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
-                "TS PES Packet", startCode,"GOP header" );    
-            parser.group_of_pictures_header();
+                "TS PES Packet", startCode, "GOP header" );    
+            parser.group_of_pictures_header(len);
         }
         else if ( USER_DATA_START_CODE == startCode )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
-                "TS PES Packet", startCode,"User Data header" );    
-            parser.user_data();
+                "TS PES Packet", startCode, "User Data header" );    
+            parser.user_data(len);
         }
         else if ( PICTURE_START_CODE == startCode )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
-                "TS PES Packet", startCode,"Picture header" );    
-            parser.picture_header();
+                "TS PES Packet", startCode, "Picture header" );    
+            parser.picture_header(len);
         }
         else if ( SEQUENCE_HEADER_CODE == startCode )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
-                "TS PES Packet", startCode,"Sequence header" );    
-            parser.sequence_header();
+                "TS PES Packet", startCode, "Sequence header" );    
+            parser.sequence_header(len);
         }
         else if ( SEQUENCE_END_CODE == startCode )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
-                "TS PES Packet", startCode,"Sequence End header" );    
-            parser.sequence_end();
+                "TS PES Packet", startCode, "Sequence End header" );    
+            parser.sequence_end(len);
+        }
+        else if (ANCILLARY_DATA_CODE == startCode )
+        {
+            VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
+                "TS PES Packet", startCode, "Ancillary Data header" );    
+            parser.ancillary_data(len);            
         }
         else if ( ( startCode >= 0x101 && startCode <= 0x1AF ) )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
-                "TS PES Packet", startCode,"Slice" );    
-//            parser.slice();
+                "TS PES Packet", startCode, "Slice" );    
+//            parser.slice(len);
             done = TRUE;
         }
         else if ( ( startCode == 0x1BD ) || ( startCode >= 0x1C0 && startCode <= 0x1EF ) )
         {
             VVERBOSE( "%-15s   : 0x%08x : %-25.25s\n", 
-                "TS PES Packet", startCode,"Audio/Video Stream" );
-            parser.pes_header();
+                "TS PES Packet", startCode, "Audio/Video Stream" );
+            parser.pes_header(len);
         }
         else
         {
             VERBOSE("Unhandled PES header : 0x%08x\n", startCode );
             return(FALSE);
         }
-    }
-
-    pesLength = parser.getReadPos();
-    if(pesLength > bufLen)
-        pesLength = bufLen;
         
+        if(len)
+        {
+            VVERBOSE( "%-15s   : %d : %-25.25s\n", 
+                "TS PES Packet", len, "PES Hdr Len" );  
+            pesHdrLengths.push_back(len);
+        }
+    }
+    
     return(TRUE);
 }
 

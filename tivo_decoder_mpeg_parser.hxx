@@ -41,6 +41,7 @@ class TiVoDecoder_MPEG2_Parser
         BOOL   _end_of_file;
         UINT32 _buffer_length;
         UINT8  * _pBuffer;
+        UINT16  hdr_len;
 
         /* start codes */
         UINT32 picture_start_code;
@@ -85,6 +86,7 @@ class TiVoDecoder_MPEG2_Parser
 
         inline BOOL    isEndOfFile() { return(_end_of_file); }
         inline UINT16  getReadPos()  { return(_bit_ptr / 8); }
+        inline void    clear()       { hdr_len = 0;          }
 
         BOOL    byteAligned();
         void    advanceBits(UINT32 n);
@@ -92,33 +94,31 @@ class TiVoDecoder_MPEG2_Parser
         INT32   readByte(UINT32 bit_pos, UINT8 & byte);
 
         void    next_start_code();
-        void    video_sequence();
-        void    sequence_end();
-        void    sequence_header();
-        void    extension_and_user_data(INT32 i);
-        void    extension_data(INT32 i);
-        void    user_data();
-        void    sequence_extension();
-        void    sequence_display_extension();
-        void    sequence_scalable_extension();
-        void    group_of_pictures_header();
-        void    picture_header();
-        void    picture_coding_extension();
-        void    quant_matrix_extension();
-        void    picture_display_extension();
-        void    picture_spatial_scalable_extension(); 
-        void    picture_temporal_scalable_extension(); 
-        void    copyright_extension(); 
-        void    picture_data(); 
-        void    extension_header();
-        void    pes_header();
-        void    pes_header_extension();
+        void    video_sequence(UINT16 & len);
+        void    sequence_end(UINT16 & len);
+        void    sequence_header(UINT16 & len);
+        void    extension_and_user_data(INT32 i, UINT16 & len);
+        void    extension_data(INT32 i, UINT16 & len );
+        void    user_data(UINT16 & len);
+        void    sequence_extension(UINT16 & len);
+        void    sequence_display_extension(UINT16 & len);
+        void    sequence_scalable_extension(UINT16 & len);
+        void    group_of_pictures_header(UINT16 & len);
+        void    picture_header(UINT16 & len);
+        void    picture_coding_extension(UINT16 & len);
+        void    quant_matrix_extension(UINT16 & len);
+        void    picture_display_extension(UINT16 & len);
+        void    picture_spatial_scalable_extension(UINT16 & len); 
+        void    picture_temporal_scalable_extension(UINT16 & len); 
+        void    copyright_extension(UINT16 & len); 
+        void    picture_data(UINT16 & len); 
+        void    extension_header(UINT16 & len);
+        void    pes_header(UINT16 & len);
+        void    pes_header_extension(UINT16 & len);
+        void    ancillary_data(UINT16 & len);
 
-
-        void    slice();
-        void    macroblock();
-
-
+        void    slice(UINT16 & len);
+        void    macroblock(UINT16 & len);
 };
 
 #endif /* __TIVO_DECODER_MPEG_PARSER_HXX__ */
