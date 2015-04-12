@@ -273,6 +273,8 @@ class TiVoDecoderTsStream
 class TiVoDecoderTsPacket
 {
     public:
+        static int			globalBufferLen;
+        static UINT8		globalBuffer[TS_FRAME_SIZE*3];
 
         TiVoDecoderTsStream * pParent;
         UINT32              packetId;

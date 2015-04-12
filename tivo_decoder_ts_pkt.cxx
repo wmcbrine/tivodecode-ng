@@ -34,6 +34,8 @@
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
 
+int TiVoDecoderTsPacket::globalBufferLen=0;
+UINT8 TiVoDecoderTsPacket::globalBuffer[];
 
 TiVoDecoderTsPacket::TiVoDecoderTsPacket()
 {
@@ -59,24 +61,134 @@ void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream * pStream)
 int TiVoDecoderTsPacket::read(read_func_t read_handler, void * pInfile)
 {
     int size = 0;
+    int loss_of_sync = 0;
+
     if(!read_handler || !pInfile)
     {
         perror("bad parameter");
         return(-1);
     }
-    
-    size = read_handler(buffer, TS_FRAME_SIZE, pInfile);
-    
-    VVERBOSE("Read handler : size %d\n", size);
-    
+
+    if (globalBufferLen > TS_FRAME_SIZE)
+    {
+        fprintf(stderr, "globalBufferLen > TS_FRAME_SIZE, "
+                        "pulling packet from globalBuffer[]\n");
+
+        globalBufferLen -= TS_FRAME_SIZE;
+
+        memmove(globalBuffer, globalBuffer + TS_FRAME_SIZE, globalBufferLen);
+
+        size = min(globalBufferLen, TS_FRAME_SIZE);
+        memcpy(buffer, globalBuffer, size);
+    }
+    else
+    {
+        size = read_handler(buffer, TS_FRAME_SIZE, pInfile);
+        globalBufferLen = 0;
+
+        VVERBOSE("Read handler : size %d\n", size);
+    }
+
     if(0==size)
     {
         VERBOSE("End of file\n");
+        isValid = TRUE;
+        return(size);
     }
     else if(TS_FRAME_SIZE != size)
     {
-        fprintf(stderr,"Read error : TS Frame Size : %d, Size Read %d\n", TS_FRAME_SIZE, size);
-        return(-1);
+        fprintf(stderr,"Read error : TS Frame Size : %d, Size Read %d\n",TS_FRAME_SIZE,size);
+        if (size < 0)
+            return -1;
+        else
+            return 0; // indicate EOF on partial packet
+    }
+
+    if (buffer[0] != 'G')
+    {
+        loss_of_sync = 1;
+        fprintf(stderr, "loss_of_sync\n");
+
+        if (globalBufferLen == 0)
+        {
+            memcpy(globalBuffer, buffer, size);
+            globalBufferLen = size;
+        }
+    }
+
+    int skip = 0;
+
+    while (loss_of_sync)
+    {
+        for (int i = 1; 1; i++)
+        {
+            skip++;
+
+            if (i < globalBufferLen)
+            {
+                if (globalBuffer[i] == 'G')
+                {
+                    fprintf(stderr, "skipped %d bytes, found a SYNC\n", skip);
+
+                    globalBufferLen -= i;
+                    memmove(globalBuffer, globalBuffer + i, globalBufferLen);
+                    break;
+                }
+            }
+            else
+            {
+                size = read_handler(globalBuffer, TS_FRAME_SIZE*3, pInfile);
+
+                VVERBOSE("Read handler : size %d\n", size);
+
+                if (0 == size)
+                {
+                    VERBOSE("End of file\n");
+                    isValid = true;
+                    return 0;
+                }
+                else if ((TS_FRAME_SIZE*3) != size)
+                {
+                    fprintf(stderr,
+                            "Read error : TS Frame Size*3 : %d, Size Read %d\n",
+                            TS_FRAME_SIZE * 3, size);
+
+                    if (size < 0)
+                        return -1;
+                    else
+                        return 0; // indicate EOF on partial packet
+                }
+
+                globalBufferLen = size;
+                i = 0;
+            }
+        }
+
+        size = read_handler(globalBuffer + globalBufferLen,
+                            (3 * TS_FRAME_SIZE) - globalBufferLen, pInfile);
+        if (size < 0)
+        {
+            fprintf(stderr, "ERROR: size=%d\n", size);
+            return -1;
+        }
+
+        globalBufferLen += size;
+
+        if (globalBufferLen != (3 * TS_FRAME_SIZE))
+        {
+            fprintf(stderr, "ERROR: globalBufferLen != (3 * TS_FRAME_SIZE)\n");
+                return 0;  // indicate EOF on partial packet
+        }
+
+        if (globalBuffer[0] == 'G' && globalBuffer[TS_FRAME_SIZE] == 'G' &&
+            globalBuffer[TS_FRAME_SIZE * 2] == 'G')
+        {
+            loss_of_sync = 0;
+            fprintf(stderr, "found 3 syncs in a row, loss_of_sync = 0\n");
+
+            size = TS_FRAME_SIZE;
+            memcpy(buffer, globalBuffer, size);
+        }
     }
 
     isValid = TRUE;
