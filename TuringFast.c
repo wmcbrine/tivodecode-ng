@@ -137,8 +137,8 @@ fixedS(WORD w)
 void
 mixwords(WORD w[], int n)
 {
-    register WORD	sum;
-    register int	i;
+    WORD sum;
+    int i;
 
     for (sum = i = 0; i < n-1; ++i)
 	sum += w[i];
@@ -157,8 +157,8 @@ void
 TuringKey(void * internal, const BYTE key[], const int keylength)
 {
     struct turing_internal * turing = (struct turing_internal*)internal;
-    register int	i, j, k;
-    register WORD	w;
+    int i, j, k;
+    WORD w;
 
     if ((keylength & 0x03) != 0 || keylength > MAXKEY)
 	abort();
@@ -219,7 +219,7 @@ void
 TuringIV(void * internal, const BYTE iv[], const int ivlength)
 {
     struct turing_internal * turing = (struct turing_internal*)internal;
-    register int	i, j;
+    int i, j;
 
     /* check args */
     if ((ivlength & 0x03) != 0 || (ivlength + 4*turing->keylen) > MAXKIV)

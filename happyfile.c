@@ -110,7 +110,7 @@ int hseek (happy_file * fh, hoff_t offset, int whence)
 {
 	static char junk_buf[4096];
 
-	register int r;
+	int r;
 
 	switch (whence)
 	{
