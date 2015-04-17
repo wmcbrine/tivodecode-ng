@@ -8,14 +8,6 @@ generic autoconf instructions, or just run:
 make
 make install
 
-To build on Windows, a Visual C++ Express 2005 solution file is included.  If
-you have a working installation of this compiler, building should be as simple
-as opening this solution file and building the tivodecode project.
-
-If you are using the Windows binary download, you may need the Visual Studio
-2005 Redisributables from Microsoft, if you do not already have MSVCR80.DLL
-installed from some other software.
-
 You now have the option to, rather than specifying the MAK on the command line
 every time, to specify it in a config file in your home directory.  Simply put
 your MAK in a file called ~/.tivodecode_mak and it will be automatically used
