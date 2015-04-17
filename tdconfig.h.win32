@@ -75,22 +75,22 @@
 #define HAVE_WINSOCK2_H 1
 
 /* Name of package */
-#define PACKAGE "tivodecode"
+#define PACKAGE "tivodecode-ng"
 
 /* Define to the address where bug reports for this package should be sent. */
 #define PACKAGE_BUGREPORT ""
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "tivodecode"
+#define PACKAGE_NAME "tivodecode-ng"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "tivodecode 0.3pre6"
+#define PACKAGE_STRING "tivodecode-ng 0.1"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "tivodecode"
+#define PACKAGE_TARNAME "tivodecode-ng"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.3pre6"
+#define PACKAGE_VERSION "0.1"
 
 /* The size of `off_t', as computed by sizeof. */
 #define SIZEOF_OFF_T 4
@@ -108,7 +108,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.3pre6"
+#define VERSION "0.1"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
