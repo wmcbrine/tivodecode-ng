@@ -5,11 +5,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int	nerrors;
 
-int hexprint(const char *, unsigned char *, int n);
-int hexread(unsigned char *, char *, int n);
-int hexcheck(unsigned char *, char *, int n);
 int hexbulk(unsigned char *, int n);
 #ifdef __cplusplus
 }

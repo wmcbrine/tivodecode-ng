@@ -13,55 +13,6 @@
 #include "hexlib.h"
 #include <ctype.h>
 
-int	nerrors;
-
-static char	*hex = "0123456789abcdef";
-#define HEX(c) ((int)(strchr(hex, (c)) - hex))
-
-int
-hexprint(const char *s, unsigned char *p, int n)
-{
-    fprintf(stderr,"%14s:", s);
-    while (--n >= 0) {
-		if (n % 20 == 19)
-		    fprintf(stderr,"\n%14s ", "");
-		fprintf(stderr," %02x", *p++);
-    }
-    fprintf(stderr,"\n");
-    return 0;
-}
-
-int
-hexread(unsigned char *buf, char *p, int n)
-{
-    int		i;
-
-    while (--n >= 0) {
-		while (*p == ' ') ++p;
-			i = HEX(*p++) << 4;
-		i += HEX(*p++);
-		*buf++ = i;
-    }
-    return 0;
-}
-
-int
-hexcheck(unsigned char *buf, char *p, int n)
-{
-    int		i;
-
-    while (--n >= 0) {
-		while (*p == ' ') ++p;
-			i = HEX(*p++) << 4;
-		i += HEX(*p++);
-		if (*buf++ != i) {
-		    fprintf(stderr,"Expected %02x, got %02x.\n", i, buf[-1]);
-		    ++nerrors;
-		}
-    }
-    return nerrors;
-}
-
 #define COLS 16
 
 int
