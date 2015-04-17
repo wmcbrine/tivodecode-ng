@@ -80,7 +80,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
 
     if( (TRUE==pPkt->getPayloadStartIndicator()) || (0!=packets.size() ) )
     {
-        VERBOSE("Add PktID %d from PID 0x%04x to packet list : payloadStart %d listCount %Zu\n",
+        VERBOSE("Add PktID %d from PID 0x%04x to packet list : payloadStart %d listCount %zu\n",
             pPkt->packetId, stream_pid, pPkt->getPayloadStartIndicator(), packets.size() );
         
         packets.push_back(pPkt);
@@ -206,7 +206,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
     }
     else
     {
-        VERBOSE("Push Back : PayloadStartIndicator %d, packets.size() %Zu \n", 
+        VERBOSE("Push Back : PayloadStartIndicator %d, packets.size() %zu \n", 
             pPkt->getPayloadStartIndicator(), packets.size());
         flushBuffers = TRUE;
         packets.push_back(pPkt);

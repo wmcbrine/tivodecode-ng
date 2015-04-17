@@ -291,7 +291,7 @@ int process_ps_frame(unsigned char code, turing_state * turing, OFF_T_TYPE packe
                                     }
 
                                     VERBOSE("BBB : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
-                                    VERBOSE("%Zu" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
+                                    VERBOSE("%zu" OFF_T_FORMAT ": stream_no: %x, block_no: %d\n", packet_start, code, block_no);
                                     VERBOSE("---Turing : prepare : code 0x%02x block_no %d\n", code, block_no );
 
                                     prepare_frame(turing, code, block_no);
@@ -502,8 +502,8 @@ void ts_dump_headers( OFF_T_TYPE ts_offset, TS_Stream * pStream )
         return;
     }
 
-    VERBOSE("TS   Offset 0x%zx (%Zu)\n", ts_offset,   ts_offset );
-    VERBOSE("MPEG Offset 0x%zx (%Zu)\n", ts_offset - pStream->initial_offset, ts_offset - pStream->initial_offset );
+    VERBOSE("TS   Offset 0x%zx (%zu)\n", ts_offset,   ts_offset );
+    VERBOSE("MPEG Offset 0x%zx (%zu)\n", ts_offset - pStream->initial_offset, ts_offset - pStream->initial_offset );
     VERBOSE("Packet Counter 0x%08x (%d)\n", pStream->packet_counter, pStream->packet_counter );
 
     switch(pStream->ts_packet_type)
