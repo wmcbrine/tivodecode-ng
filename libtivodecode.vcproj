@@ -177,10 +177,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\tivodecoder.c"
-				>
-			</File>
-			<File
 				RelativePath=".\turing_stream.c"
 				>
 			</File>
@@ -216,10 +212,6 @@
 			</File>
 			<File
 				RelativePath=".\tivo-parse.h"
-				>
-			</File>
-			<File
-				RelativePath=".\tivodecoder.h"
 				>
 			</File>
 			<File
