@@ -41,18 +41,13 @@
 #include "tivo_decoder_ts.hxx"
 #include "tivo_decoder_ps.hxx"
 
-int o_no_verify;
-
 static struct option long_options[] = {
     {"mak", 1, 0, 'm'},
     {"out", 1, 0, 'o'},
-    {"verbose", 0, 0, 'v'},
-    {"pkt-dump", 1, 0, 'p'},
-    {"metadata", 0, 0, 'D'},
-    {"no-verify", 0, 0, 'n'},
-    {"no-video", 0, 0, 'x'},
     {"version", 0, 0, 'V'},
     {"help", 0, 0, 'h'},
+    {"chunk-1", 0, 0, '1'},
+    {"chunk-2", 0, 0, '2'},
     {0, 0, 0, 0}
 };
 
@@ -139,16 +134,13 @@ fail:
 
 static void do_help(char * arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n", arg0);
+    fprintf(stderr, "Usage: %s [--help] {--mak|-m} mak [--chunk-1|-1] [--chunk-2|-2][{--out|-o} outfile] <tivofile>\n\n", arg0);
     fprintf(stderr, " -m, --mak         media access key (required)\n");
     fprintf(stderr, " -o, --out,        output file (default stdout)\n");
-    fprintf(stderr, " -v, --verbose,    verbose\n");
-    fprintf(stderr, " -p, --pkt-dump,   verbose logging for specific TS packet number\n");
-    fprintf(stderr, " -D, --metadata,   dump TiVo recording metadata\n");
-    fprintf(stderr, " -n, --no-verify,  do not verify MAK while decoding\n");
-    fprintf(stderr, " -x, --no-video,   don't decode video, exit after metadata\n");
     fprintf(stderr, " -V, --version,    print the version information and exit\n");
     fprintf(stderr, " -h, --help,       print this help and exit\n\n");
+    fprintf(stderr, " -1, --chunk-1     output chunk 1 (default if neither chunk specified)\n");
+    fprintf(stderr, " -2, --chunk-2     output chunk 2\n");
     fprintf(stderr, "The file names specified for the output file or the tivo file may be -, which\n");
     fprintf(stderr, "means stdout or stdin respectively\n\n");
     exit(exitval);
@@ -157,12 +149,11 @@ static void do_help(char * arg0, int exitval)
 
 int main(int argc, char *argv[])
 {
-    int o_no_video = 0;
-    int o_dump_chunks = 1;
-    int o_dump_metadata = 0;
+    int o_chunk_1 = 1;
+    int o_chunk_2 = 0;
+
     int ret = 0;
     int makgiven = 0;
-    UINT32 pktDump = 0;
 
     const char * tivofile = NULL;
     const char * outfile  = NULL;
@@ -181,11 +172,10 @@ int main(int argc, char *argv[])
     happy_file * hfh=NULL;
 
     TiVoStreamHeader header;
-    pktDumpMap.clear();
 
     while(1)
     {
-        int c = getopt_long(argc, argv, "m:o:hnDxvVp:", long_options, 0);
+        int c = getopt_long(argc, argv, "m:o:Vh12", long_options, 0);
 
         if(c == -1)
             break;
@@ -197,33 +187,33 @@ int main(int argc, char *argv[])
                 mak[11] = '\0';
                 makgiven = 1;
                 break;
-            case 'p':
-                sscanf(optarg, "%d", &pktDump);
-                pktDumpMap[pktDump] = TRUE;
-                break;
             case 'o':
-                outfile = optarg;
+                //if the output file is to be stdout then the argv
+                //will be null and the next argc will be "-"
+                if (optarg == NULL && !strcmp(argv[optind+1], "-"))
+                {
+                    outfile = "-";
+                    optind++;
+                }
+                else
+                    outfile = optarg;
                 break;
             case 'h':
                 do_help(argv[0], 1);
-                break;
-            case 'v':
-                o_verbose++;
-                break;
-            case 'n':
-                o_no_verify = 1;
-                break;
-            case 'D' :
-                o_dump_metadata = 1;
-                break;
-            case 'x':
-                o_no_video = 1;
                 break;
             case '?':
                 do_help(argv[0], 2);
                 break;
             case 'V':
                 do_version(10);
+                break;
+            case '1':
+                o_chunk_1 = 1;
+                o_chunk_2 = 0;
+                break;
+            case '2':
+                o_chunk_1 = 0;
+                o_chunk_2 = 1;
                 break;
             default:
                 do_help(argv[0], 3);
@@ -268,27 +258,30 @@ int main(int argc, char *argv[])
         }
     }
 
-    if(!outfile || !strcmp(outfile, "-"))
+
+    if (!outfile || !strcmp(outfile, "-"))
     {
-// JKOZEE-Make sure stdout is set to binary on Windows
-#ifdef WIN32
+        // JKOZEE-Make sure stdout is set to binary on Windows
+        #ifdef WIN32
         int result = _setmode(_fileno(stdout), _O_BINARY );
         if( result == -1 ) {
            perror( "Cannot set stdout to binary mode" );
            return 10;
         }
-#endif
+        #endif
         ofh = stdout;
     }
     else
     {
-        ofh = fopen(outfile, "wb");
-        if(NULL==ofh)
+        if (!(ofh = fopen(outfile, "wb")))
         {
             perror("opening output file");
             return 7;
         }
     }
+
+    if (!o_chunk_1 && !o_chunk_2)
+        o_chunk_1 = 1;
 
     PRINT_QUALCOMM_MSG();
 
@@ -333,64 +326,26 @@ int main(int argc, char *argv[])
             return(8);
         }
 
-        if( o_dump_metadata )
+        if ((o_chunk_1 && pChunks[i].id == 1) ||
+            (o_chunk_2 && pChunks[i].id == 2))
         {
-            CHAR buf[25];
-            sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, pChunks[i].id);
-
-            FILE * chunkfh = fopen(buf, "wb");
-            if(!chunkfh)
-            {
-                perror("create metadata file");
-                return 8;
-            }
-
             pChunks[i].dump();
-            if(FALSE==pChunks[i].write(chunkfh, fwrite_wrapper))
+            if(FALSE==pChunks[i].write(ofh, fwrite_wrapper))
             {
                 perror("write chunk");
                 return 8;
             }
-
-            fclose(chunkfh);
         }
     }
 
-//    destruct_turing(&metaturing);
+    destruct_turing(&metaturing);
 
-    if(o_no_video)
-        exit(0);
-
-    TiVoDecoder * pDecoder = NULL;
-    if( TIVO_FORMAT_PS == header.getFormatType() )
-    {
-        pDecoder = new TiVoDecoderPS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh, hread_wrapper, fwrite_wrapper);
-    }
-    else if ( TIVO_FORMAT_TS == header.getFormatType() )
-    {
-        pDecoder = new TiVoDecoderTS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh, hread_wrapper, fwrite_wrapper);
-    }
-
-    if(NULL==pDecoder)
-    {
-        perror("Unable to create TiVo Decoder");
-        return 9;
-    }
-    
-    if(FALSE == pDecoder->process())
-    {
-        perror("Failed to process file");
-        return 9;
-    }
-
-    destruct_turing(&turing);
-
-    if(hfh->fh == stdin)
+    if (hfh->fh == stdin)
         hdetach(hfh);
     else
         hclose(hfh);
 
-    if(ofh != stdout)
+    if (ofh != stdout)
         fclose(ofh);
 
     return 0;
