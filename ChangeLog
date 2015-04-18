@@ -3,6 +3,8 @@ tivodecode-ng 0.1:
 
     * Renamed project to distinguish from classic tivodecode.
 
+    * Revived tdcat.    
+
     * Minor cleanups.
 
 tivodecode 0.4.4:
