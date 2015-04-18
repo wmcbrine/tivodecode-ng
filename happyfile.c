@@ -37,6 +37,7 @@ happy_file * hopen (const char * filename, const char * mode)
 		free (fh);
 		return NULL;
 	}
+	setvbuf (fh->fh, NULL, _IOFBF, 65536);
 	fh->pos = 0;
 	fh->buffer_start = 0;
 	fh->buffer_fill = 0;
@@ -47,6 +48,7 @@ happy_file * hattach (FILE * fh)
 {
 	happy_file * hfh = (happy_file*) malloc (sizeof (happy_file));
 	hfh->fh = fh;
+	setvbuf (fh, NULL, _IOFBF, 65536);
 	hfh->pos = 0;
 	hfh->buffer_start = 0;
 	hfh->buffer_fill = 0;
