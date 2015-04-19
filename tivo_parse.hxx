@@ -41,7 +41,6 @@
 typedef INT32 (*read_func_t)  (void * mem, int size, void * fh);
 typedef INT32 (*write_func_t) (void * mem, int size, void * fh);
 
-extern BOOL   isBigEndian();
 extern UINT16 portable_ntohs( UINT8 * pVal );
 extern UINT32 portable_ntohl( UINT8 * pVal );
 

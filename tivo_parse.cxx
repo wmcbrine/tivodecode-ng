@@ -47,74 +47,26 @@ int fwrite_wrapper(void * mem, int size, void * fh)
     return (int)fwrite(mem, 1, size, (FILE *)fh);
 }
 
-
-BOOL isBigEndian()
-{
-    UINT8 EndianTest[2] = {1,0};
-    UINT16 x = *(UINT16 *)EndianTest;
-    
-    if( x == 1 )
-        return FALSE;
-    else
-        return TRUE;
-}
-
 UINT32 portable_ntohl( UINT8 * pVal )
 {
-    UINT32 s = 0;
-    if( isBigEndian() )
-    {
-        return *(UINT32 *)pVal;
-    }
-    else
-    {
-        s = (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
-        return s;
-    }
+    return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
 }
 
 UINT32 portable_ntohl( UINT32 val )
 {
     UINT8 * pVal = (UINT8*) &val;
-    UINT32 s = 0;
-    if( isBigEndian() )
-    {
-        return val;
-    }
-    else
-    {
-        s = (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
-        return s;
-    }
+    return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
 }
 
 UINT16 portable_ntohs( UINT8 * pVal )
 {
-    UINT16 s = 0;
-    if( isBigEndian() )
-    {
-        return *(UINT16 *)pVal;
-    }
-    else
-    {
-        s = (pVal[0] << 8) | pVal[1];
-        return s;
-    }
+    return (pVal[0] << 8) | pVal[1];
 }
 
 UINT16 portable_ntohs( UINT16 val )
 {
     UINT8 * pVal = (UINT8*) &val;
-    UINT16 s = 0;
-    if( isBigEndian() )
-    {
-        return *(UINT16 *)pVal;
-    }
-    else
-    {
-        s = (pVal[0] << 8) | pVal[1];
-        return s;
-    }
+    return (pVal[0] << 8) | pVal[1];
 }
 
 // ===================================================================
