@@ -32,7 +32,7 @@
 #include "tivo_decoder_base.hxx"
 
 
-TiVoDecoder::TiVoDecoder(turing_state * pTuringState, happy_file * pInfile, hoff_t fileOffset, FILE * pOutfile, read_func_t readFunc, write_func_t writeFunc)
+TiVoDecoder::TiVoDecoder(turing_state * pTuringState, happy_file * pInfile, hoff_t fileOffset, FILE * pOutfile)
 {
     isValid = FALSE;
 
@@ -50,8 +50,6 @@ TiVoDecoder::TiVoDecoder(turing_state * pTuringState, happy_file * pInfile, hoff
     pFileOut      = pOutfile;
     pTuring       = pTuringState;
     isValid       = TRUE;
-    read_handler  = readFunc;
-    write_handler = writeFunc;
 }
 
 TiVoDecoder::~TiVoDecoder()

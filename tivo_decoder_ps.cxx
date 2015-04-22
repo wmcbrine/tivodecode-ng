@@ -65,15 +65,11 @@ TiVoDecoderPS::TiVoDecoderPS(
         turing_state * pTuringState, 
         happy_file * pInfile, 
         hoff_t fileOffset, 
-        FILE * pOutfile, 
-        read_func_t readFunc, 
-        write_func_t writeFunc) : 
+        FILE * pOutfile) :
     TiVoDecoder(pTuringState, 
         pInfile, 
         fileOffset, 
-        pOutfile, 
-        readFunc, 
-        writeFunc)
+        pOutfile)
 {
     marker = 0xFFFFFFFF;
 }
@@ -338,7 +334,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                         aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x20;
                     }
 
-                    if (write_handler(aligned_buf.packet_buffer + sizeof(td_uint64_t) - 1, length + 3, pFileOut) != length + 3)
+                    if (fwrite(aligned_buf.packet_buffer + sizeof(td_uint64_t) - 1, 1, length + 3, pFileOut) != length + 3)
                     {
                         perror ("writing buffer");
                     }

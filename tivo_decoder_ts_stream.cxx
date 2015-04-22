@@ -248,7 +248,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
                 pPkt2->dump();
             }
         
-            if( writeFunc(&pPkt2->buffer[0], TS_FRAME_SIZE, pOutfile) != TS_FRAME_SIZE)
+            if( fwrite(&pPkt2->buffer[0], 1, TS_FRAME_SIZE, pOutfile) != TS_FRAME_SIZE)
             {
                 perror("Writing packet to output file");
             }

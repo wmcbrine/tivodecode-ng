@@ -32,20 +32,12 @@
 #include <netinet/in.h>
 #endif
 
+#include "happyfile.h"
 #include "tivo_types.hxx"
 #include "turing_stream.h"
 
-/* genericized read function so that different underlying implementations can
- * be swapped out for more of a library setup
- */
-typedef INT32 (*read_func_t)  (void * mem, int size, void * fh);
-typedef INT32 (*write_func_t) (void * mem, int size, void * fh);
-
 extern UINT16 portable_ntohs( UINT8 * pVal );
 extern UINT32 portable_ntohl( UINT8 * pVal );
-
-extern int hread_wrapper(void * mem, int size, void * fh);
-extern int fwrite_wrapper(void * mem, int size, void * fh);
 
 #define static_strlen(str) (sizeof(str) - 1)
 
@@ -97,7 +89,7 @@ class TiVoStreamHeader
         UINT16      chunks;         /* Number of metadata chunks */
         
         TiVoFormatType  getFormatType();
-        BOOL            read(void * file, read_func_t read_handler);
+        BOOL            read(happy_file * file);
         void            dump(UINT8 dbgLevel=0);
         UINT16          size() { return(sizeof(TiVoStreamHeader)); };
     
@@ -116,8 +108,8 @@ class TiVoStreamChunk
         UINT16      type;       /* Subtype */
         UINT8       * pData;    /* Variable length data */
         
-        BOOL   read(void * file,  read_func_t read_handler);       
-        BOOL   write(void * file, write_func_t write_handler); 
+        BOOL   read(happy_file * file);       
+        BOOL   write(FILE * file); 
         void   dump(UINT8 dbgLevel=0);
         UINT16 size() { return(sizeof(TiVoStreamChunk)-sizeof(UINT8*)); };
         

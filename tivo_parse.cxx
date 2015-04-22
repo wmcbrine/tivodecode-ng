@@ -31,21 +31,10 @@
 #include "sha1.h"
 #include "hexlib.h"
 #include "md5.h"
-#include "happyfile.h"
 #include "tivo_parse.hxx"
 
 int o_verbose;
 BOOL o_pkt_dump;
-
-int hread_wrapper(void * mem, int size, void * fh)
-{
-    return (int)hread(mem, size, (happy_file *)fh);
-}
-
-int fwrite_wrapper(void * mem, int size, void * fh)
-{
-    return (int)fwrite(mem, 1, size, (FILE *)fh);
-}
 
 UINT32 portable_ntohl( UINT8 * pVal )
 {
@@ -81,9 +70,9 @@ TiVoStreamHeader::TiVoStreamHeader()
     chunks      = 0;
 }
 
-BOOL TiVoStreamHeader::read(void * file, read_func_t read_handler)
+BOOL TiVoStreamHeader::read(happy_file * file)
 {    
-    if(read_handler(this, size(), file) != size())
+    if(hread(this, size(), file) != size())
     {
         perror ("read header");
         return(FALSE);
@@ -169,9 +158,9 @@ TiVoStreamChunk::~TiVoStreamChunk()
     }
 }
 
-BOOL TiVoStreamChunk::read(void * file, read_func_t read_handler)
+BOOL TiVoStreamChunk::read(happy_file * file)
 {    
-    if(read_handler(this, size(), file) != size())
+    if(hread(this, size(), file) != size())
     {
         perror ("read chunk");
         return(FALSE);
@@ -190,7 +179,7 @@ BOOL TiVoStreamChunk::read(void * file, read_func_t read_handler)
         return(FALSE);    
     }
     
-    if(read_handler(pData, readSize, file) != readSize)
+    if(hread(pData, readSize, file) != readSize)
     {
         perror ("read chunk data");
         return(FALSE);
@@ -199,9 +188,9 @@ BOOL TiVoStreamChunk::read(void * file, read_func_t read_handler)
     return(TRUE);
 }
 
-BOOL TiVoStreamChunk::write(void * file, write_func_t write_handler)
+BOOL TiVoStreamChunk::write(FILE * file)
 {
-    if(write_handler(pData, dataSize, file) != dataSize)
+    if(fwrite(pData, 1, dataSize, file) != dataSize)
         return(FALSE);
         
     return(TRUE);    

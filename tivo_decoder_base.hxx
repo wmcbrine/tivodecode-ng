@@ -27,14 +27,13 @@
 #include <netinet/in.h>
 #endif
 
-#include "happyfile.h"
 #include "tivo_types.hxx"
 #include "tivo_parse.hxx"
 #include "turing_stream.h"
 
 
 #define LOOK_AHEAD(fh, bytes, n) do {\
-    int retval = read_handler((bytes) + looked_ahead, (n) - looked_ahead, fh);\
+    int retval = hread((bytes) + looked_ahead, (n) - looked_ahead, fh);\
     if ( retval == 0 )\
     {\
         return(0);  \
@@ -59,14 +58,11 @@ class TiVoDecoder
         happy_file   * pFileIn;
         FILE         * pFileOut;
         
-        read_func_t    read_handler;
-        write_func_t   write_handler;
-
         int do_header(UINT8 * arg_0, int * block_no, int * arg_8, int * crypted, int * arg_10, int * arg_14);
         
         virtual BOOL process() = 0;
                 
-        TiVoDecoder(turing_state * pTuringState, happy_file * pInfile, hoff_t fileOffset, FILE * pOutfile, read_func_t readFunc, write_func_t writeFunc);
+        TiVoDecoder(turing_state * pTuringState, happy_file * pInfile, hoff_t fileOffset, FILE * pOutfile);
         virtual ~TiVoDecoder();
         
 } __attribute__((packed)) ;

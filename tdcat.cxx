@@ -35,7 +35,6 @@
 #endif
 
 #include "getopt_long.h"
-#include "happyfile.h"
 
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
@@ -285,7 +284,7 @@ int main(int argc, char *argv[])
 
     PRINT_QUALCOMM_MSG();
 
-    if(FALSE==header.read(hfh, &hread_wrapper))
+    if(FALSE==header.read(hfh))
     {
         return(8);
     }
@@ -303,7 +302,7 @@ int main(int argc, char *argv[])
     {
         hoff_t chunk_start = htell(hfh) + pChunks[i].size();
 
-        if(FALSE==pChunks[i].read(hfh, &hread_wrapper))
+        if(FALSE==pChunks[i].read(hfh))
         {
             perror("chunk read fail");
             return(8);
@@ -330,7 +329,7 @@ int main(int argc, char *argv[])
             (o_chunk_2 && pChunks[i].id == 2))
         {
             pChunks[i].dump();
-            if(FALSE==pChunks[i].write(ofh, fwrite_wrapper))
+            if(FALSE==pChunks[i].write(ofh))
             {
                 perror("write chunk");
                 return 8;

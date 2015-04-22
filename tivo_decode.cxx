@@ -35,7 +35,6 @@
 #endif
 
 #include "getopt_long.h"
-#include "happyfile.h"
 
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
@@ -292,7 +291,7 @@ int main(int argc, char *argv[])
 
     PRINT_QUALCOMM_MSG();
 
-    if(FALSE==header.read(hfh, &hread_wrapper))
+    if(FALSE==header.read(hfh))
     {
         return(8);
     }
@@ -310,7 +309,7 @@ int main(int argc, char *argv[])
     {
         hoff_t chunk_start = htell(hfh) + pChunks[i].size();
 
-        if(FALSE==pChunks[i].read(hfh, &hread_wrapper))
+        if(FALSE==pChunks[i].read(hfh))
         {
             perror("chunk read fail");
             return(8);
@@ -346,7 +345,7 @@ int main(int argc, char *argv[])
             }
 
             pChunks[i].dump();
-            if(FALSE==pChunks[i].write(chunkfh, fwrite_wrapper))
+            if(FALSE==pChunks[i].write(chunkfh))
             {
                 perror("write chunk");
                 return 8;
@@ -364,11 +363,11 @@ int main(int argc, char *argv[])
     TiVoDecoder * pDecoder = NULL;
     if( TIVO_FORMAT_PS == header.getFormatType() )
     {
-        pDecoder = new TiVoDecoderPS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh, hread_wrapper, fwrite_wrapper);
+        pDecoder = new TiVoDecoderPS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh);
     }
     else if ( TIVO_FORMAT_TS == header.getFormatType() )
     {
-        pDecoder = new TiVoDecoderTS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh, hread_wrapper, fwrite_wrapper);
+        pDecoder = new TiVoDecoderTS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh);
     }
 
     if(NULL==pDecoder)

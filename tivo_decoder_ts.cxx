@@ -102,15 +102,11 @@ TiVoDecoderTS::TiVoDecoderTS(
         turing_state * pTuringState,
         happy_file * pInfile,
         hoff_t fileOffset,
-        FILE * pOutfile,
-        read_func_t readFunc,
-        write_func_t writeFunc) :
+        FILE * pOutfile) :
     TiVoDecoder(pTuringState,
         pInfile,
         fileOffset,
-        pOutfile,
-        readFunc,
-        writeFunc)
+        pOutfile)
 {
     pktCounter  = 0;
     streams.clear();
@@ -120,7 +116,6 @@ TiVoDecoderTS::TiVoDecoderTS(
     VERBOSE("Creating new stream for PID (0x%04x)\n", 0 );
     TiVoDecoderTsStream * pStream = new TiVoDecoderTsStream(0);
     pStream->pOutfile   = pFileOut;
-    pStream->writeFunc  = write_handler;
     pStream->setDecoder(this);
     streams[0]          = pStream;
 }
@@ -223,7 +218,6 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
                 
             TiVoDecoderTsStream * pStream       = new TiVoDecoderTsStream(patData.program_map_pid);
             pStream->pOutfile                   = pFileOut;
-            pStream->writeFunc                  = write_handler;
             pStream->setDecoder(this);
             streams[patData.program_map_pid]    = pStream;
         }
@@ -340,7 +334,6 @@ int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
             pStream->stream_type_id = streamTypeId;
             pStream->stream_type    = streamType;
             pStream->pOutfile       = pFileOut;
-            pStream->writeFunc      = write_handler;
             pStream->setDecoder(this);
 
             streams[streamPid]      = pStream;
@@ -513,7 +506,7 @@ BOOL TiVoDecoderTS::process()
         
         pPkt->packetId = pktCounter;
 
-        int readSize = pPkt->read(read_handler, pFileIn);
+        int readSize = pPkt->read(pFileIn);
         
         VVERBOSE("Read Size : %d\n", readSize );
         
