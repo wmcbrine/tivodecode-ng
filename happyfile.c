@@ -20,10 +20,8 @@
 #include "happyfile.h"
 
 #if defined HAVE_FSEEKO
-#	define hftell(a) ftello(a)
 #	define hfseek(a, b, c) fseeko(a, b, c)
 #else
-#	define hftell(a) ftell(a)
 #	define hfseek(a, b, c) fseek(a, b, c)
 #	warning Large file support is questionable on this platform
 #endif
@@ -146,43 +144,6 @@ int hseek (happy_file * fh, hoff_t offset, int whence)
 				return 0;
 			}
 			break;
-		case SEEK_CUR:
-			if (offset < 0)
-			{
-				r = hfseek (fh->fh, offset, SEEK_CUR);
-				if (r < 0)
-					return r;
-				fh->pos += offset;
-				fh->buffer_start = fh->pos;
-				fh->buffer_fill = 0;
-				return r;
-			}
-			else
-			{
-				int t = (int)(offset & 0xfff);
-				hoff_t u = offset >> 12;
-				hoff_t s;
-				for (s=0; s < u; s++)
-				{
-					if (hread(junk_buf, 4096, fh) != 4096)
-						return -1;
-				}
-
-				if (hread(junk_buf, t, fh) != (size_t)t)
-				{
-					return -1;
-				}
-
-				return 0;
-			}
-
-			break;
-		case SEEK_END:
-			r = hfseek (fh->fh, offset,whence);
-			fh->pos = hftell(fh->fh);
-			fh->buffer_start = fh->pos;
-			fh->buffer_fill = 0;
-			return r;
 		default:
 			errno=EINVAL;
 			return -1;

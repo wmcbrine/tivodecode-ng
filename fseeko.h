@@ -12,7 +12,6 @@ extern "C" {
 #  endif
 
 extern int fseeko(FILE *stream, OFF_T_TYPE offset, int whence);
-extern OFF_T_TYPE ftello(FILE *stream);
 
 #  define HAVE_FSEEKO 1
 

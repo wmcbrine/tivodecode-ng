@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------------
  *
  * fseeko.c
- *	  64-bit versions of fseeko/ftello()
+ *	  64-bit version of fseeko()
  *
  * Portions Copyright (c) 1996-2007, PostgreSQL Global Development Group
  * Portions Copyright (c) 1994, Regents of the University of California
@@ -68,30 +68,8 @@ fseeko(FILE *stream, OFF_T_TYPE offset, int whence)
 
 	switch (whence)
 	{
-		case SEEK_CUR:
-#ifdef bsdi
-			flockfile(stream);
-#endif
-			if (fgetpos(stream, &floc) != 0)
-				goto failure;
-			floc += offset;
-			break;
 		case SEEK_SET:
 			floc = offset;
-			break;
-		case SEEK_END:
-#ifdef bsdi
-			flockfile(stream);
-#endif
-			fflush(stream);		/* force writes to fd for stat() */
-#ifdef WIN32
-			floc = _filelengthi64(_fileno(stream));
-#else
-			if (fstat(fileno(stream), &filestat) != 0)
-				goto failure;
-			floc = filestat.st_size;
-#endif
-			floc += offset;
 			break;
 		default:
 			errno = EINVAL;
@@ -110,17 +88,6 @@ failure:
 	funlockfile(stream);
 #endif
 	return -1;
-}
-
-
-OFF_T_TYPE
-ftello(FILE *stream)
-{
-	fpos_t		floc;
-
-	if (fgetpos(stream, &floc) != 0)
-		return -1;
-	return floc;
 }
 
 #endif
