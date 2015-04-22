@@ -71,7 +71,6 @@ int main(int argc, char *argv[])
     int o_chunk_1 = 1;
     int o_chunk_2 = 0;
 
-    int ret = 0;
     int makgiven = 0;
 
     const char * tivofile = NULL;

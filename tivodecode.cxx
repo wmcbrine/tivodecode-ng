@@ -77,9 +77,7 @@ static void do_help(char * arg0, int exitval)
 int main(int argc, char *argv[])
 {
     int o_no_video = 0;
-    int o_dump_chunks = 1;
     int o_dump_metadata = 0;
-    int ret = 0;
     int makgiven = 0;
     UINT32 pktDump = 0;
 
