@@ -91,7 +91,7 @@ fail:
 void do_version(int exitval)
 {
     fprintf(stderr, "%s\n", PACKAGE_STRING);
-    fprintf(stderr, "Copyright (c) 2006-2007, Jeremy Drake\n");
+    fprintf(stderr, "Copyright 2006-2015, Jeremy Drake et al.\n");
     fprintf(stderr, "See COPYING file in distribution for details\n\n");
     PRINT_QUALCOMM_MSG();
 
