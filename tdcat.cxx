@@ -9,6 +9,7 @@
 #endif
 
 #include <stdio.h>
+#include <iostream>
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -51,20 +52,21 @@ static struct option long_options[] = {
     {0, 0, 0, 0}
 };
 
-static void do_help(char * arg0, int exitval)
+static void do_help(const char *arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] {--mak|-m} mak [--chunk-1|-1] [--chunk-2|-2][{--out|-o} outfile] <tivofile>\n\n", arg0);
-    fprintf(stderr, " -m, --mak         media access key (required)\n");
-    fprintf(stderr, " -o, --out,        output file (default stdout)\n");
-    fprintf(stderr, " -V, --version,    print the version information and exit\n");
-    fprintf(stderr, " -h, --help,       print this help and exit\n\n");
-    fprintf(stderr, " -1, --chunk-1     output chunk 1 (default if neither chunk specified)\n");
-    fprintf(stderr, " -2, --chunk-2     output chunk 2\n");
-    fprintf(stderr, "The file names specified for the output file or the tivo file may be -, which\n");
-    fprintf(stderr, "means stdout or stdin respectively\n\n");
+    std::cerr << "Usage: " << arg0 << " [--help] {--mak|-m} mak [--chunk-1|-1]";
+    std::cerr << " [--chunk-2|-2][{--out|-o} outfile] <tivofile>\n\n";
+    std::cerr << " -m, --mak         media access key (required)\n";
+    std::cerr << " -o, --out,        output file (default stdout)\n";
+    std::cerr << " -V, --version,    print the version information and exit\n";
+    std::cerr << " -h, --help,       print this help and exit\n\n";
+    std::cerr << " -1, --chunk-1     output chunk 1 (default if unspecified)\n";
+    std::cerr << " -2, --chunk-2     output chunk 2\n";
+    std::cerr << "The file names specified for the output file or the tivo ";
+    std::cerr << "file may be -, which\n";
+    std::cerr << "means stdout or stdin respectively\n\n";
     exit(exitval);
 }
-
 
 int main(int argc, char *argv[])
 {

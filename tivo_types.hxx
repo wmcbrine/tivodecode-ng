@@ -9,6 +9,7 @@
 #endif
 
 #include <stdio.h>
+#include <iostream>
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -42,7 +43,7 @@ typedef char                BOOL;
 #define TRUE  1
 #define FALSE 0
 
-#define PRINT_QUALCOMM_MSG() fprintf (stderr, "Encryption by QUALCOMM ;)\n\n")
+#define PRINT_QUALCOMM_MSG() std::cerr << "Encryption by QUALCOMM ;)\n\n"
 
 #endif /* TIVO_TYPES_HXX__ */
 

@@ -34,6 +34,8 @@
 #include <ctype.h>
 #endif
 
+#include <iostream>
+
 #include "getopt_long.h"
 
 #include "cli_common.hxx"
@@ -56,23 +58,26 @@ static struct option long_options[] = {
     {0, 0, 0, 0}
 };
 
-static void do_help(char * arg0, int exitval)
+static void do_help(const char *arg0, int exitval)
 {
-    fprintf(stderr, "Usage: %s [--help] [--verbose|-v] [--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak [--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n", arg0);
-    fprintf(stderr, " -m, --mak         media access key (required)\n");
-    fprintf(stderr, " -o, --out,        output file (default stdout)\n");
-    fprintf(stderr, " -v, --verbose,    verbose\n");
-    fprintf(stderr, " -p, --pkt-dump,   verbose logging for specific TS packet number\n");
-    fprintf(stderr, " -D, --metadata,   dump TiVo recording metadata\n");
-    fprintf(stderr, " -n, --no-verify,  do not verify MAK while decoding\n");
-    fprintf(stderr, " -x, --no-video,   don't decode video, exit after metadata\n");
-    fprintf(stderr, " -V, --version,    print the version information and exit\n");
-    fprintf(stderr, " -h, --help,       print this help and exit\n\n");
-    fprintf(stderr, "The file names specified for the output file or the tivo file may be -, which\n");
-    fprintf(stderr, "means stdout or stdin respectively\n\n");
+    std::cerr << "Usage: " << arg0 << " [--help] [--verbose|-v] ";
+    std::cerr << "[--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak ";
+    std::cerr << "[--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n";
+    std::cerr << " -m, --mak         media access key (required)\n";
+    std::cerr << " -o, --out,        output file (default stdout)\n";
+    std::cerr << " -v, --verbose,    verbose\n";
+    std::cerr << " -p, --pkt-dump,   verbose logging for specific TS ";
+    std::cerr << "packet number\n";
+    std::cerr << " -D, --metadata,   dump TiVo recording metadata\n";
+    std::cerr << " -n, --no-verify,  do not verify MAK while decoding\n";
+    std::cerr << " -x, --no-video,   don't decode video, exit after metadata\n";
+    std::cerr << " -V, --version,    print the version information and exit\n";
+    std::cerr << " -h, --help,       print this help and exit\n\n";
+    std::cerr << "The file names specified for the output file or the ";
+    std::cerr << "tivo file may be -, which\n";
+    std::cerr << "means stdout or stdin respectively\n\n";
     exit(exitval);
 }
-
 
 int main(int argc, char *argv[])
 {

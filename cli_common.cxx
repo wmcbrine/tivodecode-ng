@@ -1,16 +1,11 @@
 #include "tdconfig.h"
-#include <stdio.h>
 
-#include <stddef.h>
-#ifdef HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-#ifdef HAVE_CTYPE_H
-# include <ctype.h>
-#endif
+#include <cctype>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
+#include <string>
 
 #include "tivo_types.hxx"
 #include "cli_common.hxx"
@@ -27,75 +22,58 @@ static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 
 int get_mak_from_conf_file(char *mak)
 {
-    char * mak_fname = NULL;
-    FILE * mak_file = NULL;
-    const char * home_dir = getenv(HOME_ENV_NAME);
-    size_t home_dir_len;
+    FILE *mak_file = NULL;
+    const char *home_dir = std::getenv(HOME_ENV_NAME);
 
     if (!home_dir)
         home_dir = DEFAULT_EMPTY_HOME;
 
-    home_dir_len = strlen(home_dir);
+    std::string mak_fname = home_dir;
+    mak_fname += MAK_DOTFILE_NAME;
 
-    mak_fname = new char[home_dir_len + sizeof(MAK_DOTFILE_NAME)];
-    if (!mak_fname)
+    if ((mak_file = std::fopen(mak_fname.c_str(), "r")))
     {
-        fprintf(stderr, "error allocing string for mak config file name\n");
-        goto fail;
-    }
-
-    memcpy(mak_fname, home_dir, home_dir_len);
-    memcpy(mak_fname + home_dir_len, MAK_DOTFILE_NAME,
-           sizeof(MAK_DOTFILE_NAME));
-
-    if ((mak_file = fopen(mak_fname, "r")))
-    {
-        if (fread(mak, 1, 11, mak_file) >= 10)
+        if (std::fread(mak, 1, 11, mak_file) >= 10)
         {
             int i;
-            for (i = 11; i >= 10 && (mak[i] == '\0' || isspace((int)mak[i]));
+            for (i = 11; i >= 10 && (mak[i] == '\0' || std::isspace(mak[i]));
                  --i)
             {
                 mak[i] = '\0';
             }
         }
-        else if (ferror(mak_file))
+        else if (std::ferror(mak_file))
         {
-            perror ("reading mak config file");
+            perror("reading mak config file");
             goto fail;
         }
         else
         {
-            fprintf(stderr, "mak too short in mak config file\n");
+            std::fprintf(stderr, "mak too short in mak config file\n");
             goto fail;
         }
 
-        fclose (mak_file);
-        mak_file = NULL;
+        std::fclose(mak_file);
     }
     else
         goto fail;
 
-    delete[] mak_fname;
-    mak_fname = NULL;
     return 1;
 
 fail:
     if (mak_file)
-        fclose(mak_file);
-    if (mak_fname)
-        delete[] mak_fname;
+        std::fclose(mak_file);
     return 0;
 }
 
 void do_version(int exitval)
 {
-    fprintf(stderr, "%s\n", PACKAGE_STRING);
-    fprintf(stderr, "Copyright 2006-2015, Jeremy Drake et al.\n");
-    fprintf(stderr, "See COPYING file in distribution for details\n\n");
+    std::cerr << PACKAGE_STRING "\n";
+    std::cerr << "Copyright 2006-2015, Jeremy Drake et al.\n";
+    std::cerr << "See COPYING file in distribution for details\n\n";
     PRINT_QUALCOMM_MSG();
 
-    exit(exitval);
+    std::exit(exitval);
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */
