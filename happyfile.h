@@ -62,7 +62,6 @@ int hclose(happy_file * fh);
 int hdetach(happy_file * fh);
 
 size_t hread (void * ptr, size_t size, happy_file * fh);
-size_t hwrite (const void * ptr, size_t size, happy_file * fh);
 
 hoff_t htell (happy_file * fh);
 int hseek (happy_file * fh, hoff_t offset, int whence);
