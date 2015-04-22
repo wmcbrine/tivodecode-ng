@@ -37,7 +37,7 @@ int get_mak_from_conf_file(char *mak)
 
     home_dir_len = strlen(home_dir);
 
-    mak_fname = (char *) malloc(home_dir_len + sizeof(MAK_DOTFILE_NAME));
+    mak_fname = new char[home_dir_len + sizeof(MAK_DOTFILE_NAME)];
     if (!mak_fname)
     {
         fprintf(stderr, "error allocing string for mak config file name\n");
@@ -76,7 +76,7 @@ int get_mak_from_conf_file(char *mak)
     else
         goto fail;
 
-    free(mak_fname);
+    delete[] mak_fname;
     mak_fname = NULL;
     return 1;
 
@@ -84,7 +84,7 @@ fail:
     if (mak_file)
         fclose(mak_file);
     if (mak_fname)
-        free(mak_fname);
+        delete[] mak_fname;
     return 0;
 }
 
