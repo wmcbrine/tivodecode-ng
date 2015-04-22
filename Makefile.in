@@ -109,7 +109,7 @@ libtivodecode_a_OBJECTS = $(am_libtivodecode_a_OBJECTS)
 PROGRAMS = $(bin_PROGRAMS)
 am_tdcat_OBJECTS = tdcat.$(OBJEXT)
 tdcat_OBJECTS = $(am_tdcat_OBJECTS)
-am_tivodecode_OBJECTS = tivo_decode.$(OBJEXT) \
+am_tivodecode_OBJECTS = tivodecode.$(OBJEXT) \
 	tivo_decoder_base.$(OBJEXT) tivo_decoder_ts.$(OBJEXT) \
 	tivo_decoder_ts_pkt.$(OBJEXT) tivo_decoder_ts_stream.$(OBJEXT) \
 	tivo_decoder_ps.$(OBJEXT) tivo_decoder_mpeg_parser.$(OBJEXT)
@@ -254,7 +254,7 @@ lib_LIBRARIES = libtivodecode.a
 pkginclude_HEADERS = tivo_parse.hxx turing_stream.h Turing.h
 nodist_pkginclude_HEADERS = tdconfig.h
 libtivodecode_a_SOURCES = happyfile.c hexlib.c TuringFast.c sha1.c md5.c cli_common.cxx tivo_parse.cxx turing_stream.c QUTsbox.h TuringMultab.h TuringSbox.h happyfile.h hexlib.h sha1.h md5.h cli_common.hxx
-tivodecode_SOURCES = tivo_decode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx happyfile.h getopt_long.h fseeko.h tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
+tivodecode_SOURCES = tivodecode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx happyfile.h getopt_long.h fseeko.h tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
 tivodecode_LDADD = $(LIBOBJS) -L. -ltivodecode
 tivodecode_DEPENDENCIES = $(LIBOBJS) libtivodecode.a
 tdcat_SOURCES = tdcat.cxx getopt_long.h
@@ -413,7 +413,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/md5.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sha1.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tdcat.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_base.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_mpeg_parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_ps.Po@am__quote@
@@ -421,6 +420,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_ts_pkt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_decoder_ts_stream.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivo_parse.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tivodecode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/turing_stream.Po@am__quote@
 
 .c.o:

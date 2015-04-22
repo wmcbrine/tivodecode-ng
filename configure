@@ -582,7 +582,7 @@ PACKAGE_STRING='tivodecode-ng 0.1'
 PACKAGE_BUGREPORT=''
 PACKAGE_URL=''
 
-ac_unique_file="tivo_decode.cxx"
+ac_unique_file="tivodecode.cxx"
 # Factoring default headers for most tests.
 ac_includes_default="\
 #include <stdio.h>
