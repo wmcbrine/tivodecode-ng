@@ -72,6 +72,7 @@ static void do_help(const char *arg0, int exitval)
 
 int main(int argc, char *argv[])
 {
+    char rawbuf[RAWBUFSIZE];
     int o_no_video = 0;
     int o_dump_metadata = 0;
     int makgiven = 0;
@@ -202,6 +203,8 @@ int main(int argc, char *argv[])
             return 7;
         }
     }
+
+    setvbuf(ofh, rawbuf, _IOFBF, RAWBUFSIZE);
 
     PRINT_QUALCOMM_MSG();
 
