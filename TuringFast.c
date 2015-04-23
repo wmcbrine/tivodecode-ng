@@ -301,9 +301,7 @@ TuringGen(void * internal, BYTE *buf)
 
 void * TuringAlloc()
 {
-    void *pVoid = malloc(sizeof(struct turing_internal));
-    memset(pVoid, 0, sizeof(struct turing_internal));
-    return pVoid;
+    return calloc(1, sizeof(struct turing_internal));
 }
 
 void TuringFree(void * internal)
