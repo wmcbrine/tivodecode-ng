@@ -9,6 +9,7 @@
 #endif
 
 #include <stdio.h>
+#include <iostream>
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -25,16 +26,6 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
-#ifdef HAVE_CTYPE_H
-#include <ctype.h>
-#endif
-
-#include <iostream>
 
 #include "getopt_long.h"
 
