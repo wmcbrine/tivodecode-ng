@@ -44,12 +44,12 @@ int get_mak_from_conf_file(char *mak)
         }
         else if (std::ferror(mak_file))
         {
-            perror("reading mak config file");
+            std::perror("reading mak config file");
             goto fail;
         }
         else
         {
-            std::fprintf(stderr, "mak too short in mak config file\n");
+            std::cerr << "mak too short in mak config file\n";
             goto fail;
         }
 
