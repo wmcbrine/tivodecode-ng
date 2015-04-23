@@ -36,7 +36,7 @@
     int retval = hread((bytes) + looked_ahead, (n) - looked_ahead, fh);\
     if ( retval == 0 )\
     {\
-        return(0);  \
+        return 0;  \
     }\
     else if ( retval != (n) - looked_ahead) { \
         perror ("read"); \

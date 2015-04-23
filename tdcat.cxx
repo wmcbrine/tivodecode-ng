@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 
     if(FALSE==header.read(hfh))
     {
-        return(8);
+        return 8;
     }
 
     header.dump();
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
     if(NULL == pChunks)
     {
         perror("allocate TiVoStreamChunks");
-        return(9);
+        return 9;
     }
 
     for(INT32 i=0; i<header.chunks; i++)
@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
         if(FALSE==pChunks[i].read(hfh))
         {
             perror("chunk read fail");
-            return(8);
+            return 8;
         }
 
         if(TIVO_CHUNK_PLAINTEXT_XML==pChunks[i].type)
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
         else
         {
             perror("Unknown chunk type");
-            return(8);
+            return 8;
         }
 
         if ((o_chunk_1 && pChunks[i].id == 1) ||

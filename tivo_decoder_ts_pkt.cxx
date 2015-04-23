@@ -66,7 +66,7 @@ int TiVoDecoderTsPacket::read(happy_file * pInfile)
     if(!pInfile)
     {
         perror("bad parameter");
-        return(-1);
+        return -1;
     }
 
     if (globalBufferLen > TS_FRAME_SIZE)
@@ -93,7 +93,7 @@ int TiVoDecoderTsPacket::read(happy_file * pInfile)
     {
         VERBOSE("End of file\n");
         isValid = TRUE;
-        return(size);
+        return size;
     }
     else if(TS_FRAME_SIZE != size)
     {
@@ -177,7 +177,7 @@ int TiVoDecoderTsPacket::read(happy_file * pInfile)
         if (globalBufferLen != (3 * TS_FRAME_SIZE))
         {
             fprintf(stderr, "ERROR: globalBufferLen != (3 * TS_FRAME_SIZE)\n");
-                return 0;  // indicate EOF on partial packet
+            return 0;  // indicate EOF on partial packet
         }
 
         if (globalBuffer[0] == 'G' && globalBuffer[TS_FRAME_SIZE] == 'G' &&
@@ -192,7 +192,7 @@ int TiVoDecoderTsPacket::read(happy_file * pInfile)
     }
 
     isValid = TRUE;
-    return(size);
+    return size;
 }
 
 
@@ -201,7 +201,7 @@ BOOL TiVoDecoderTsPacket::decode()
     if(FALSE==isValid)
     {
         perror("Packet not valid");
-        return(FALSE);  
+        return FALSE;
     }
     
     // TS packet streams are big endian, and we may be running on little endian platform.
@@ -226,7 +226,7 @@ BOOL TiVoDecoderTsPacket::decode()
     {
         perror("invalid ts pkt header");
         isValid = FALSE;
-        return(FALSE);
+        return FALSE;
     }
 
     for (int i = 0; ts_packet_tags[i].ts_packet != TS_PID_TYPE_NONE; i++)
@@ -260,7 +260,7 @@ BOOL TiVoDecoderTsPacket::decode()
         payloadOffset += (tsAdaptation.adaptation_field_length);
     }
         
-    return(TRUE);
+    return TRUE;
 }
 
 void TiVoDecoderTsPacket::dump()
@@ -417,7 +417,7 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
     if ( !pParent )
     {
         perror("Stream does not have a parent decoder");
-        return(FALSE);
+        return FALSE;
     }
 
     if(IS_VVVERBOSE)
@@ -431,7 +431,7 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
             &(turing_stuff.crypted), NULL, NULL) )
     {
         perror("do_header did not return 0!\n");
-        return(FALSE);
+        return FALSE;
     }
 
     if(IS_VVVERBOSE)
@@ -465,7 +465,7 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
     if (IS_VVVERBOSE)
         hexbulk( pBuffer, bufferLen );
 
-    return(TRUE);
+    return TRUE;
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

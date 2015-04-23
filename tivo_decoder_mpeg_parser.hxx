@@ -84,9 +84,9 @@ class TiVoDecoder_MPEG2_Parser
         TiVoDecoder_MPEG2_Parser( UINT8 * pBuffer, UINT16 bufLen );
         void    setBuffer(UINT8 * pBuffer, UINT16 bufLen );
 
-        inline BOOL    isEndOfFile() { return(_end_of_file); }
-        inline UINT16  getReadPos()  { return(_bit_ptr / 8); }
-        inline void    clear()       { hdr_len = 0;          }
+        inline BOOL    isEndOfFile() { return _end_of_file; }
+        inline UINT16  getReadPos()  { return _bit_ptr / 8; }
+        inline void    clear()       { hdr_len = 0;         }
 
         BOOL    byteAligned();
         void    advanceBits(UINT32 n);

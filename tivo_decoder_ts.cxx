@@ -137,7 +137,7 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
     if ( !pPkt )
     {
         perror("Invalid handlePkt_PAT argument");
-        return(-1);
+        return -1;
     }
 
     pPtr = &pPkt->buffer[pPkt->payloadOffset];
@@ -150,7 +150,7 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
     if ( *pPtr != 0x00 )
     {
         perror("PAT Table ID must be 0x00");
-        return(-1);
+        return -1;
     }
     else
     {
@@ -164,13 +164,13 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
     if ( (pat_field & 0xC000) != 0x8000 )
     {
         perror("Failed to validate PAT Misc field");
-        return(-1);
+        return -1;
     }
 
     if ( (pat_field & 0x0C00) != 0x0000 )
     {
         perror("Failed to validate PAT MBZ of section length");
-        return(-1);
+        return -1;
     }
 
     transport_stream_id = portable_ntohs( pPtr );
@@ -231,7 +231,7 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
         section_length -= 2;
     }
 
-    return(0);
+    return 0;
 }
 
 int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
@@ -244,7 +244,7 @@ int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
     if ( !pPkt )
     {
         perror("Invalid handlePkt_PMT argument");
-        return(-1);
+        return -1;
     }
 
     pPtr = &pPkt->buffer[pPkt->payloadOffset];
@@ -344,7 +344,7 @@ int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
         }
     }
 
-    return(0);
+    return 0;
 }
 
 int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
@@ -361,7 +361,7 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
     if ( !pPkt )
     {
         perror("Invalid handlePkt_TiVo argument");
-        return(-1);
+        return -1;
     }
 
     pPtr = &pPkt->buffer[pPkt->payloadOffset];
@@ -383,7 +383,7 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
     if ( validator != 0x5469566f )
     {
         perror("Invalid TiVo private data validator");
-        return(-1);
+        return -1;
     }
 
     VERBOSE("%-15s : %-25.25s : 0x%08x (%c%c%c%c)\n",   "TiVo Private",
@@ -423,7 +423,7 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
         if( stream_iter == streams.end() )
         {
             VERBOSE("TiVo private data : No such PID 0x%04x\n", pid );
-            return(-1);
+            return -1;
         }
         else
         {
@@ -462,14 +462,12 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
         stream_bytes -= 16;
     }
 
-    return(0);
-
-
+    return 0;
 }
 
 int TiVoDecoderTS::handlePkt_AudioVideo( TiVoDecoderTsPacket * pPkt )
 {
-    return(0);
+    return 0;
 }
 
 
@@ -485,7 +483,7 @@ BOOL TiVoDecoderTS::process()
     if(FALSE==isValid)
     {
         VERBOSE("TS Process : not valid\n");
-        return(FALSE);
+        return FALSE;
     }
 
     while( running )
@@ -621,7 +619,7 @@ BOOL TiVoDecoderTS::process()
         }
     }
 
-    return(TRUE);
+    return TRUE;
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

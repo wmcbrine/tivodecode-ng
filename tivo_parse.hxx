@@ -91,7 +91,7 @@ class TiVoStreamHeader
         TiVoFormatType  getFormatType();
         BOOL            read(happy_file * file);
         void            dump(UINT8 dbgLevel=0);
-        UINT16          size() { return(sizeof(TiVoStreamHeader)); };
+        UINT16          size() { return sizeof(TiVoStreamHeader); };
     
         TiVoStreamHeader();
         
@@ -111,7 +111,7 @@ class TiVoStreamChunk
         BOOL   read(happy_file * file);       
         BOOL   write(FILE * file); 
         void   dump(UINT8 dbgLevel=0);
-        UINT16 size() { return(sizeof(TiVoStreamChunk)-sizeof(UINT8*)); };
+        UINT16 size() { return sizeof(TiVoStreamChunk) - sizeof(UINT8*); };
         
         void   setupTuringKey(turing_state * pTuring, UINT8 * pMAK);
         void   setupMetadataKey(turing_state * pTuring, UINT8 * pMAK);

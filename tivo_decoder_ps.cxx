@@ -86,7 +86,7 @@ BOOL TiVoDecoderPS::process()
     if(FALSE==isValid)
     {
         VERBOSE("PS Process : not valid\n");
-        return(FALSE);
+        return FALSE;
     }
 
     BOOL first   = TRUE;
@@ -134,7 +134,7 @@ BOOL TiVoDecoderPS::process()
     }    
 
     VERBOSE("PS Process\n");
-    return(TRUE);    
+    return TRUE;
 }
 
 

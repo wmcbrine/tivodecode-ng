@@ -297,27 +297,28 @@ class TiVoDecoderTsPacket
         inline void   setTiVoPkt(BOOL isTiVoPkt)
             { isTiVo = isTiVoPkt; }
         inline BOOL   isTiVoPkt()
-            { return(isTiVo); }
+            { return isTiVo; }
         inline void   setPmtPkt(BOOL isPmtPkt)
             { isPmt = isPmtPkt; }
         inline BOOL   isPmtPkt()
-            { return(isPmt); }
+            { return isPmt; }
             
         inline BOOL   isTsPacket()
-            { return( (buffer[0] == 0x47) ? TRUE : FALSE);  }
+            { return (buffer[0] == 0x47) ? TRUE : FALSE;  }
         inline UINT16 getPID()
-            { UINT16 val = portable_ntohs(&buffer[1]); return(val&0x1FFF); }
+            { UINT16 val = portable_ntohs(&buffer[1]); return val & 0x1FFF; }
         inline BOOL   getPayloadStartIndicator()
-            { UINT16 val = portable_ntohs(&buffer[1]); return((val&0x4000) ? TRUE: FALSE); }
+            { UINT16 val = portable_ntohs(&buffer[1]); return (val & 0x4000) ?
+              TRUE: FALSE; }
         inline BOOL   getScramblingControl()
-            { return( (buffer[3] &  0xC0) ? TRUE : FALSE ); }
+            { return (buffer[3] &  0xC0) ? TRUE : FALSE; }
         inline void   clrScramblingControl()
             { buffer[3] &= ~(0xC0); }
         inline BOOL  getPayloadExists()
-            { return( (buffer[3] &  0x10) ? TRUE : FALSE ); }
+            { return (buffer[3] &  0x10) ? TRUE : FALSE; }
         inline BOOL  getAdaptHdrExists()
-            { return( (buffer[3] &  0x20) ? TRUE : FALSE ); }                         
-                            
+            { return (buffer[3] &  0x20) ? TRUE : FALSE; }
+
         TiVoDecoderTsPacket();
 };
 

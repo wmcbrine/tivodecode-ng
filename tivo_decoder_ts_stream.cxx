@@ -64,7 +64,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
     if(!pPkt)
     {
         perror("bad parameter");
-        return(FALSE);
+        return FALSE;
     }
 
     pPkt->setStream(this);
@@ -116,7 +116,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         {
             fprintf(stderr,"failed to parse PES headers : pktID %d\n", 
                 pPkt->packetId);
-            return(FALSE);
+            return FALSE;
         }
         
         for(len_iter=pesHdrLengths.begin(); len_iter!=pesHdrLengths.end(); len_iter++ )
@@ -238,7 +238,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
                 if( FALSE == decrypt( &pPkt2->buffer[decryptOffset], decryptLen ) )
                 {
                     perror("Packet decrypt fails");
-                    return(FALSE);
+                    return FALSE;
                 }
             }
         
@@ -266,9 +266,8 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
     {
         VERBOSE("Do NOT flush packets for write\n");        
     }
-        
 
-    return(TRUE);
+    return TRUE;
 }
 
 
@@ -353,7 +352,7 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen)
         else
         {
             VERBOSE("Unhandled PES header : 0x%08x\n", startCode );
-            return(FALSE);
+            return FALSE;
         }
         
         if(len)
@@ -364,7 +363,7 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen)
         }
     }
     
-    return(TRUE);
+    return TRUE;
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

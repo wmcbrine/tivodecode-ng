@@ -159,7 +159,7 @@ void TiVoDecoder_MPEG2_Parser::setBuffer(UINT8 * pBuffer, UINT16 bufLen )
 BOOL TiVoDecoder_MPEG2_Parser::byteAligned()
 {
     UINT32 align_mode = _bit_ptr % 8;
-    return(align_mode == 0);
+    return !align_mode;
 }
 
 void TiVoDecoder_MPEG2_Parser::advanceBits(UINT32 n)
@@ -235,11 +235,11 @@ INT32 TiVoDecoder_MPEG2_Parser::readByte(UINT32 bit_pos, UINT8 & byte)
     if(bit_pos > _buffer_length*8)
     {
         _end_of_file = TRUE;
-        return(-1);
+        return -1;
     }
 
     byte = _pBuffer[bit_pos/8];
-    return(1);
+    return 1;
 }
 
 // =========================================================================

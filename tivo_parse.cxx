@@ -74,8 +74,8 @@ BOOL TiVoStreamHeader::read(happy_file * file)
 {    
     if(hread(this, size(), file) != size())
     {
-        perror ("read header");
-        return(FALSE);
+        perror("read header");
+        return FALSE;
     }    
     
     dummy_0004  = portable_ntohs(dummy_0004);
@@ -87,10 +87,10 @@ BOOL TiVoStreamHeader::read(happy_file * file)
     if( strncmp(fileType,"TiVo", 4 ) )
     {
         perror("Not a TiVo file!");
-        return(FALSE);    
+        return FALSE;    
     }
 
-    return(TRUE);
+    return TRUE;
 }
 
 void TiVoStreamHeader::dump(UINT8 dbgLevel)
@@ -131,11 +131,11 @@ TiVoFormatType TiVoStreamHeader::getFormatType()
 {
     if( dummy_0006 & 0x20 )
     {
-        return(TIVO_FORMAT_TS);
+        return TIVO_FORMAT_TS;
     }
     else
     {
-        return(TIVO_FORMAT_PS);
+        return TIVO_FORMAT_PS;
     }
 }
 
@@ -163,7 +163,7 @@ BOOL TiVoStreamChunk::read(happy_file * file)
     if(hread(this, size(), file) != size())
     {
         perror ("read chunk");
-        return(FALSE);
+        return FALSE;
     }    
     
     chunkSize   = portable_ntohl(chunkSize);
@@ -176,24 +176,24 @@ BOOL TiVoStreamChunk::read(happy_file * file)
     if(NULL == pData)
     {
         perror("chunk data alloc");
-        return(FALSE);    
+        return FALSE;
     }
     
     if(hread(pData, readSize, file) != readSize)
     {
-        perror ("read chunk data");
-        return(FALSE);
+        perror("read chunk data");
+        return FALSE;
     }     
     
-    return(TRUE);
+    return TRUE;
 }
 
 BOOL TiVoStreamChunk::write(FILE * file)
 {
     if(fwrite(pData, 1, dataSize, file) != dataSize)
-        return(FALSE);
+        return FALSE;
         
-    return(TRUE);    
+    return TRUE; 
 }
 
 void TiVoStreamChunk::dump(UINT8 dbgLevel)
