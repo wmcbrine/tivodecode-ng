@@ -162,8 +162,7 @@ static void prepare_frame_helper(turing_state * turing, unsigned char stream_id,
 
 #define CREATE_TURING_LISTITM(turing, nxt, stream_id, block_id) \
     do { \
-        (turing)->active = (turing_state_stream*)malloc(sizeof(turing_state_stream)); \
-        memset((turing)->active, 0, sizeof(turing_state_stream)); \
+        (turing)->active = (turing_state_stream*)calloc(1, sizeof(turing_state_stream)); \
         (turing)->active->next = (nxt); \
         (nxt) = (turing)->active; \
         (turing)->active->internal = TuringAlloc(); \
