@@ -30,6 +30,10 @@ extern "C" {
 # include <io.h>
 #endif
 
+#ifndef RAWBUFSIZE
+#define RAWBUFSIZE 65536
+#endif
+
 #ifndef BUFFERSIZE
 #define BUFFERSIZE 4096
 #endif
@@ -52,6 +56,7 @@ typedef struct
 	hoff_t  buffer_start;
 	hoff_t  buffer_fill;
 
+	char rawbuf[RAWBUFSIZE];
 	char buffer[BUFFERSIZE];
 } happy_file;
 
