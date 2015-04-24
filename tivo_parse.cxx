@@ -211,45 +211,18 @@ void TiVoStreamChunk::dump(UINT8 dbgLevel)
 
 void TiVoStreamChunk::setupTuringKey(turing_state * pTuring, UINT8 * pMAK)
 {
-    SHA1_CTX context;
-    
     if(NULL==pTuring || NULL==pMAK)
     {
         perror("bad param");
         return;
     }
-    
-    sha1_init(&context);
-    sha1_update(&context, (UINT8 *)pMAK, strlen((const char *)pMAK));
-    sha1_update(&context, pData, dataSize);
-    sha1_final(pTuring->turingkey, &context);
+
+    setup_turing_key(pTuring, pData, dataSize, (char *)pMAK);
 }
 
 void TiVoStreamChunk::setupMetadataKey(turing_state * pTuring, UINT8 * pMAK)
 {
-    static const char lookup[] = "0123456789abcdef";
-    static const unsigned char media_mak_prefix[] = "tivo:TiVo DVR:";
-    MD5_CTX  md5;
-    int i;
-    UINT8 md5result[16];
-    UINT8 metakey[33];
-
-    MD5Init(&md5);
-    MD5Update(&md5, media_mak_prefix, static_strlen(media_mak_prefix));
-    MD5Update(&md5, (UINT8 *)pMAK, strlen((const char *)pMAK));
-    MD5Final(md5result, &md5);
-
-    for (i = 0; i < 16; ++i)
-    {
-        metakey[2*i + 0] = lookup[(md5result[i] >> 4) & 0xf];
-        metakey[2*i + 1] = lookup[ md5result[i]       & 0xf];
-    }
-    metakey[32] = '\0';
-
-    /* this is done the same as the normal one, only replacing the mak
-     * with the metakey
-     */
-    setupTuringKey(pTuring, metakey);
+    setup_metadata_key(pTuring, pData, dataSize, (char *)pMAK);
 
 //    fprintf(stderr,"METADATA TURING DUMP : INIT\n");    
 //    dump_turing(pTuring);
