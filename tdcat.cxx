@@ -46,17 +46,17 @@ static struct option long_options[] = {
 
 static void do_help(const char *arg0, int exitval)
 {
-    std::cerr << "Usage: " << arg0 << " [--help] {--mak|-m} mak [--chunk-1|-1]";
-    std::cerr << " [--chunk-2|-2][{--out|-o} outfile] <tivofile>\n\n";
-    std::cerr << " -m, --mak         media access key (required)\n";
-    std::cerr << " -o, --out,        output file (default stdout)\n";
-    std::cerr << " -V, --version,    print the version information and exit\n";
-    std::cerr << " -h, --help,       print this help and exit\n\n";
-    std::cerr << " -1, --chunk-1     output chunk 1 (default if unspecified)\n";
-    std::cerr << " -2, --chunk-2     output chunk 2\n";
-    std::cerr << "The file names specified for the output file or the tivo ";
-    std::cerr << "file may be -, which\n";
-    std::cerr << "means stdout or stdin respectively\n\n";
+    std::cerr << "Usage: " << arg0 << " [--help] {--mak|-m} mak [--chunk-1|-1]"
+        " [--chunk-2|-2][{--out|-o} outfile] <tivofile>\n\n"
+        " -m, --mak         media access key (required)\n"
+        " -o, --out,        output file (default stdout)\n"
+        " -V, --version,    print the version information and exit\n"
+        " -h, --help,       print this help and exit\n\n"
+        " -1, --chunk-1     output chunk 1 (default if unspecified)\n"
+        " -2, --chunk-2     output chunk 2\n\n"
+        "The file names specified for the output file or the tivo "
+        "file may be -, which\n"
+        "means stdout or stdin respectively\n\n";
     exit(exitval);
 }
 

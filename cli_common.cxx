@@ -68,11 +68,10 @@ fail:
 
 void do_version(int exitval)
 {
-    std::cerr << PACKAGE_STRING "\n";
-    std::cerr << "Copyright 2006-2015, Jeremy Drake et al.\n";
-    std::cerr << "See COPYING file in distribution for details\n\n";
+    std::cerr << PACKAGE_STRING "\n"
+        "Copyright 2006-2015, Jeremy Drake et al.\n"
+        "See COPYING file in distribution for details\n\n";
     PRINT_QUALCOMM_MSG();
-
     std::exit(exitval);
 }
 

@@ -51,22 +51,21 @@ static struct option long_options[] = {
 
 static void do_help(const char *arg0, int exitval)
 {
-    std::cerr << "Usage: " << arg0 << " [--help] [--verbose|-v] ";
-    std::cerr << "[--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak ";
-    std::cerr << "[--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n";
-    std::cerr << " -m, --mak         media access key (required)\n";
-    std::cerr << " -o, --out,        output file (default stdout)\n";
-    std::cerr << " -v, --verbose,    verbose\n";
-    std::cerr << " -p, --pkt-dump,   verbose logging for specific TS ";
-    std::cerr << "packet number\n";
-    std::cerr << " -D, --metadata,   dump TiVo recording metadata\n";
-    std::cerr << " -n, --no-verify,  do not verify MAK while decoding\n";
-    std::cerr << " -x, --no-video,   don't decode video, exit after metadata\n";
-    std::cerr << " -V, --version,    print the version information and exit\n";
-    std::cerr << " -h, --help,       print this help and exit\n\n";
-    std::cerr << "The file names specified for the output file or the ";
-    std::cerr << "tivo file may be -, which\n";
-    std::cerr << "means stdout or stdin respectively\n\n";
+    std::cerr << "Usage: " << arg0 << " [--help] [--verbose|-v] "
+        "[--no-verify|-n] [--pkt-dump|-p] pkt_num {--mak|-m} mak "
+        "[--metadata|-D] [{--out|-o} outfile] <tivofile>\n\n"
+        " -m, --mak         media access key (required)\n"
+        " -o, --out,        output file (default stdout)\n"
+        " -v, --verbose,    verbose\n"
+        " -p, --pkt-dump,   verbose logging for specific TS packet number\n"
+        " -D, --metadata,   dump TiVo recording metadata\n"
+        " -n, --no-verify,  do not verify MAK while decoding\n"
+        " -x, --no-video,   don't decode video, exit after metadata\n"
+        " -V, --version,    print the version information and exit\n"
+        " -h, --help,       print this help and exit\n\n"
+        "The file names specified for the output file or the "
+        "tivo file may be -, which\n"
+        "means stdout or stdin respectively\n\n";
     exit(exitval);
 }
 
