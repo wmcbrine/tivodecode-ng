@@ -55,8 +55,8 @@ subdir = .
 DIST_COMMON = README $(am__configure_deps) $(pkginclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/tdconfig.h.in $(top_srcdir)/configure AUTHORS \
-	COPYING ChangeLog INSTALL NEWS depcomp fseeko.c getopt.c \
-	getopt_long.c install-sh missing
+	COPYING ChangeLog INSTALL NEWS depcomp fseeko.c getopt_long.c \
+	install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -251,9 +251,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LIBRARIES = libtivodecode.a
-pkginclude_HEADERS = tivo_parse.hxx turing_stream.h Turing.h
+pkginclude_HEADERS = tivo_parse.hxx turing_stream.hxx Turing.h
 nodist_pkginclude_HEADERS = tdconfig.h
-libtivodecode_a_SOURCES = happyfile.c hexlib.c TuringFast.c sha1.c md5.c cli_common.cxx tivo_parse.cxx turing_stream.c QUTsbox.h TuringMultab.h TuringSbox.h happyfile.h hexlib.h sha1.h md5.h cli_common.hxx
+libtivodecode_a_SOURCES = happyfile.c hexlib.c TuringFast.c sha1.c md5.c cli_common.cxx tivo_parse.cxx turing_stream.cxx QUTsbox.h TuringMultab.h TuringSbox.h happyfile.h hexlib.h sha1.h md5.h cli_common.hxx
 tivodecode_SOURCES = tivodecode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx happyfile.h getopt_long.h fseeko.h tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
 tivodecode_LDADD = $(LIBOBJS) -L. -ltivodecode
 tivodecode_DEPENDENCIES = $(LIBOBJS) libtivodecode.a
@@ -404,7 +404,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/fseeko.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/getopt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/getopt_long.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TuringFast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cli_common.Po@am__quote@

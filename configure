@@ -5983,19 +5983,6 @@ $as_echo "#define HAVE_INT_OPTRESET 1" >>confdefs.h
 
 fi
 
-ac_fn_c_check_func "$LINENO" "getopt" "ac_cv_func_getopt"
-if test "x$ac_cv_func_getopt" = xyes; then :
-  $as_echo "#define HAVE_GETOPT 1" >>confdefs.h
-
-else
-  case " $LIBOBJS " in
-  *" getopt.$ac_objext "* ) ;;
-  *) LIBOBJS="$LIBOBJS getopt.$ac_objext"
- ;;
-esac
-
-fi
-
 ac_fn_c_check_func "$LINENO" "fseeko" "ac_cv_func_fseeko"
 if test "x$ac_cv_func_fseeko" = xyes; then :
   $as_echo "#define HAVE_FSEEKO 1" >>confdefs.h

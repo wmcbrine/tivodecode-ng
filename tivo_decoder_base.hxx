@@ -29,7 +29,7 @@
 
 #include "tivo_types.hxx"
 #include "tivo_parse.hxx"
-#include "turing_stream.h"
+#include "turing_stream.hxx"
 
 
 #define LOOK_AHEAD(fh, bytes, n) do {\

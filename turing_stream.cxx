@@ -74,15 +74,16 @@ product or in the associated documentation.
 #ifdef HAVE_STDLIB_H
 # include <stdlib.h>
 #endif
-#include <stdio.h>
 #ifdef HAVE_STRING_H
 # include <string.h>
 #endif
-//#include <time.h>
+
+#include <iostream>
+
 #include "hexlib.h"
 #include "md5.h"
 #include "sha1.h"
-#include "turing_stream.h"
+#include "turing_stream.hxx"
 
 
 void setup_turing_key(turing_state * turing, unsigned char * buffer, size_t buffer_length, char * mak)
@@ -255,31 +256,30 @@ void destruct_turing(turing_state * turing)
     turing->active = NULL;
 }
 
-void dump_turing(turing_state * turing)
+void dump_turing(turing_state *turing)
 {
-    fprintf(stderr, "turing dump : %p\n", turing);
-    if(!turing)
+    std::cerr << "turing dump : " << &turing << "\n";
+    if (!turing)
         return;
-        
-    fprintf(stderr,"turingKey   :\n");
-    hexbulk(turing->turingkey, 20);
-    
-    fprintf(stderr,"active      : %p\n", turing->active);
 
-    if(turing->active)
+    std::cerr << "turingKey   :\n";
+    hexbulk(turing->turingkey, 20);
+
+    std::cerr << "active      : " << &(turing->active) << "\n";
+
+    if (turing->active)
     {
-        fprintf(stderr,"cipher_pos  : %d\n", turing->active->cipher_pos);
-        fprintf(stderr,"cipher_len  : %d\n", turing->active->cipher_len);
-        fprintf(stderr,"block_id    : %d\n", turing->active->block_id);
-        fprintf(stderr,"stream_id   : %d\n", turing->active->stream_id);
-        fprintf(stderr,"next        : %p\n", turing->active->next);
-        fprintf(stderr,"internal    : %p\n", turing->active->internal);
-    
-        fprintf(stderr,"cipher_data :\n");    
+        std::cerr << "cipher_pos  : " << turing->active->cipher_pos << "\n"
+            "cipher_len  : " << turing->active->cipher_len << "\n"
+            "block_id    : " << turing->active->block_id << "\n"
+            "stream_id   : " << turing->active->stream_id << "\n"
+            "next        : " << turing->active->next << "\n"
+            "internal    : " << turing->active->internal << "\n"
+            "cipher_data :\n";
         hexbulk(turing->active->cipher_data, MAXSTREAM + sizeof(td_uint64_t));
     }
 
-    fprintf(stderr,"\n\n");
+    std::cerr << "\n\n";
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

@@ -1,8 +1,8 @@
 bin_PROGRAMS = tivodecode tdcat
 lib_LIBRARIES = libtivodecode.a
-pkginclude_HEADERS = tivo_parse.hxx turing_stream.h Turing.h
+pkginclude_HEADERS = tivo_parse.hxx turing_stream.hxx Turing.h
 nodist_pkginclude_HEADERS = tdconfig.h
-libtivodecode_a_SOURCES=happyfile.c hexlib.c TuringFast.c sha1.c md5.c cli_common.cxx tivo_parse.cxx turing_stream.c QUTsbox.h TuringMultab.h TuringSbox.h happyfile.h hexlib.h sha1.h md5.h cli_common.hxx
+libtivodecode_a_SOURCES=happyfile.c hexlib.c TuringFast.c sha1.c md5.c cli_common.cxx tivo_parse.cxx turing_stream.cxx QUTsbox.h TuringMultab.h TuringSbox.h happyfile.h hexlib.h sha1.h md5.h cli_common.hxx
 tivodecode_SOURCES=tivodecode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx happyfile.h getopt_long.h fseeko.h tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
 tivodecode_LDADD=$(LIBOBJS) -L. -ltivodecode
 tivodecode_DEPENDENCIES=$(LIBOBJS) libtivodecode.a

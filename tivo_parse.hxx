@@ -34,7 +34,7 @@
 
 #include "happyfile.h"
 #include "tivo_types.hxx"
-#include "turing_stream.h"
+#include "turing_stream.hxx"
 
 extern UINT16 portable_ntohs( UINT8 * pVal );
 extern UINT32 portable_ntohl( UINT8 * pVal );

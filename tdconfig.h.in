@@ -9,9 +9,6 @@
 /* Define to 1 if you have the `fseeko' function. */
 #undef HAVE_FSEEKO
 
-/* Define to 1 if you have the `getopt' function. */
-#undef HAVE_GETOPT
-
 /* Define to 1 if you have the <getopt.h> header file. */
 #undef HAVE_GETOPT_H
 
