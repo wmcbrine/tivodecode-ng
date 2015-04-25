@@ -73,8 +73,8 @@ product or in the associated documentation.
 #include <cstring>
 
 #include "hexlib.h"
-#include "md5.h"
 
+#include "md5.hxx"
 #include "sha1.hxx"
 #include "Turing.hxx"		/* interface definitions */
 #include "turing_stream.hxx"
@@ -97,15 +97,17 @@ void TuringState::setup_metadata_key(unsigned char *buffer,
 {
     static const char lookup[] = "0123456789abcdef";
     static const unsigned char media_mak_prefix[] = "tivo:TiVo DVR:";
-    MD5_CTX  md5;
+    MD5 md5;
     int i;
     unsigned char md5result[16];
     char metakey[33];
 
-    MD5Init(&md5);
-    MD5Update(&md5, media_mak_prefix, static_strlen(media_mak_prefix));
-    MD5Update(&md5, (unsigned char *)mak, strlen(mak));
-    MD5Final(md5result, &md5);
+    md5.init();
+    md5.loop(media_mak_prefix, static_strlen(media_mak_prefix));
+    md5.loop((unsigned char *)mak, strlen(mak));
+
+    md5.pad();
+    md5.result(md5result);
 
     for (i = 0; i < 16; ++i)
     {

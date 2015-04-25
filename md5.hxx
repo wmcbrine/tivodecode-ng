@@ -32,58 +32,37 @@
 
 #ifndef _NETINET6_MD5_H_
 #define _NETINET6_MD5_H_
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #define MD5_BUFLEN	64
 
-typedef struct
+class MD5
 {
-	union
-	{
-		unsigned int	md5_state32[4];
-		unsigned char	md5_state8[16];
-	}			md5_st;
+    private:
+        union
+        {
+            unsigned int md5_state32[4];
+            unsigned char md5_state8[16];
+        } md5_st;
 
-#define md5_sta		md5_st.md5_state32[0]
-#define md5_stb		md5_st.md5_state32[1]
-#define md5_stc		md5_st.md5_state32[2]
-#define md5_std		md5_st.md5_state32[3]
-#define md5_st8		md5_st.md5_state8
+        union
+        {
+            struct {
+                unsigned int md5_count32_lsw;
+                unsigned int md5_count32_msw;
+            } md5_count64;
+            unsigned char md5_count8[8];
+        } md5_count;
 
-	union
-	{
-		struct {
-			unsigned int md5_count32_lsw;
-			unsigned int md5_count32_msw;
-		} md5_count64;
-		unsigned char	md5_count8[8];
-	}			md5_count;
-#define md5_nl	md5_count.md5_count64.md5_count32_lsw
-#define md5_nh	md5_count.md5_count64.md5_count32_msw
-#define md5_n8	md5_count.md5_count8
+        unsigned int md5_i;
+        unsigned char md5_buf[MD5_BUFLEN];
 
-	unsigned int	md5_i;
-	unsigned char	md5_buf[MD5_BUFLEN];
-}	md5_ctxt;
+        void calc(unsigned char *);
 
-extern void md5_init(md5_ctxt *);
-extern void md5_loop(md5_ctxt *, const unsigned char *, size_t);
-extern void md5_pad(md5_ctxt *);
-extern void md5_result(unsigned char *, md5_ctxt *);
+    public:
+        void init();
+        void loop(const unsigned char *, size_t);
+        void pad();
+        void result(unsigned char *);
+};
 
-/* compatibility */
-#define MD5_CTX		md5_ctxt
-#define MD5Init(x)	md5_init((x))
-#define MD5Update(x, y, z)	md5_loop((x), (y), (z))
-#define MD5Final(x, y) \
-do {				\
-	md5_pad((y));		\
-	md5_result((x), (y));	\
-} while (0)
-
-#ifdef __cplusplus
-}
-#endif
 #endif   /* ! _NETINET6_MD5_H_ */
