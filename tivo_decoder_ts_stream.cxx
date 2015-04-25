@@ -272,7 +272,6 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 * pBuffer, UINT16 bufLen)
     TiVoDecoder_MPEG2_Parser parser(pBuffer,bufLen);
     
     BOOL   done      = FALSE;
-    UINT8  streamId  = 0;
     UINT32 startCode = 0;
     UINT16 len       = 0;
     

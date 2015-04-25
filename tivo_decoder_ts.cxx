@@ -345,12 +345,10 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
 {
 
     unsigned char * pPtr    = NULL;
-    int stream_loop         = 0;
     unsigned int validator      = 0;
     unsigned short pid          = 0;
     unsigned char  stream_id    = 0;
     unsigned short stream_bytes = 0;
-    unsigned int foundit        = 0;
 
     if ( !pPkt )
     {
