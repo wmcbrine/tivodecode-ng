@@ -62,10 +62,6 @@ product or in the associated documentation.
 #ifndef TURING_H
 #define TURING_H 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 typedef unsigned char	BYTE;
 typedef unsigned long	WORD;
 
@@ -76,11 +72,20 @@ typedef unsigned long	WORD;
 #define OUTLEN	    20 /*bytes*/
 #define POLY	    0x4D	/* x^8 + x^6 + x^3 + x^2 + 1 */
 
-void * TuringAlloc();
-void TuringFree(void * internal);
-void TuringKey(void * internal, const BYTE key[], const int keylength);
-void TuringIV(void * internal, const BYTE iv[], const int ivlength);
-int  TuringGen(void * internal, BYTE *buf);  /* returns number of bytes of mask generated */
+class Turing
+{
+    private:
+        int     keylen;         /* adjusted to count WORDs */
+        WORD    K[MAXKEY/4];    /* storage for mixed key */
+        WORD    R[LFSRLEN];     /* the shift register */
+        /* precalculated S-boxes */
+        WORD    S0[256], S1[256], S2[256], S3[256];
+
+    public:
+        void key(const BYTE key[], const int keylength);
+        void IV(const BYTE iv[], const int ivlength);
+        int  gen(BYTE *buf);  /* returns number of bytes of mask generated */
+};
 
 /* some useful macros -- big-endian */
 #define B(x,i) ((BYTE)(((x) >> (24 - 8*i)) & 0xFF))
@@ -101,7 +106,4 @@ int  TuringGen(void * internal, BYTE *buf);  /* returns number of bytes of mask 
 
 #define ROTL(w,x) (((w) << (x))|((w) >> (32 - (x))))
 
-#ifdef __cplusplus
-}
-#endif
 #endif

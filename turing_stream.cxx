@@ -147,12 +147,12 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
 
     active->cipher_pos = 0;
 
-    TuringKey(active->internal, turkey, 20);
-    TuringIV(active->internal, turiv, 20);
+    active->internal->key(turkey, 20);
+    active->internal->IV(turiv, 20);
 
     std::memset(active->cipher_data, 0, MAXSTREAM);
 
-    active->cipher_len = TuringGen(active->internal, active->cipher_data);
+    active->cipher_len = active->internal->gen(active->cipher_data);
 
     //hexbulk(active->cipher_data, active->cipher_len);
 }
@@ -162,7 +162,7 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
         active = new turing_state_stream; \
         active->next = (nxt); \
         (nxt) = active; \
-        active->internal = TuringAlloc(); \
+        active->internal = new Turing; \
         prepare_frame_helper((stream_id), (block_id)); \
     } while(0)
 
@@ -207,8 +207,7 @@ void TuringState::decrypt_buffer(unsigned char *buffer, size_t buffer_length)
     {
         if (active->cipher_pos >= active->cipher_len)
         {
-            active->cipher_len = TuringGen(active->internal,
-                                           active->cipher_data);
+            active->cipher_len = active->internal->gen(active->cipher_data);
             active->cipher_pos = 0;
             //hexbulk(active->cipher_data, active->cipher_len);
         }
@@ -226,8 +225,7 @@ void TuringState::skip_data(size_t bytes_to_skip)
         do
         {
             bytes_to_skip -= active->cipher_len - active->cipher_pos;
-            active->cipher_len = TuringGen(active->internal,
-                                           active->cipher_data);
+            active->cipher_len = active->internal->gen(active->cipher_data);
             active->cipher_pos = 0;
         } while (bytes_to_skip >= (size_t)active->cipher_len);
 
@@ -243,7 +241,7 @@ void TuringState::destruct()
         do
         {
             turing_state_stream *prev = active;
-            TuringFree(active->internal);
+            delete active->internal;
             active = active->next;
             if (prev)
                 delete prev;

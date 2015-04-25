@@ -31,9 +31,9 @@ typedef struct turing_state_stream
     unsigned int block_id;
     unsigned char stream_id;
 
-    struct turing_state_stream * next;
+    struct turing_state_stream *next;
 
-    void * internal;
+    Turing *internal;
     unsigned char cipher_data[MAXSTREAM + sizeof(td_uint64_t)];
 } turing_state_stream;
 

@@ -33,6 +33,7 @@
 #endif
 
 #include "happyfile.hxx"
+#include "Turing.hxx"
 #include "tivo_types.hxx"
 #include "turing_stream.hxx"
 

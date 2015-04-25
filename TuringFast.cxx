@@ -62,15 +62,7 @@ product or in the associated documentation.
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
+#include <cstdlib>
 
 #include "Turing.hxx"		/* interface definitions */
 
@@ -78,25 +70,16 @@ product or in the associated documentation.
 #include "QUTsbox.h"
 #include "TuringMultab.h"
 
-struct turing_internal
-{
-	int	keylen;		/* adjusted to count WORDs */
-	WORD	K[MAXKEY/4];	/* storage for mixed key */
-	WORD	R[LFSRLEN];	/* the shift register */
-	/* precalculated S-boxes */
-	WORD	S0[256], S1[256], S2[256], S3[256];
-};
-
 /* give correct offset for the current position of the register,
- * where logically turing->R[0] is at position "zero".
+ * where logically R[0] is at position "zero".
  */
 #define OFF(zero, i) (((zero)+(i)) % LFSRLEN)
 
 /* step the LFSR */
 /* After stepping, "zero" moves right one place */
 #define STEP(z) \
-    turing->R[OFF(z,0)] = turing->R[OFF(z,15)] ^ turing->R[OFF(z,4)] ^ \
-	(turing->R[OFF(z,0)] << 8) ^ Multab[(turing->R[OFF(z,0)] >> 24) & 0xFF]
+    R[OFF(z,0)] = R[OFF(z,15)] ^ R[OFF(z,4)] ^ \
+	(R[OFF(z,0)] << 8) ^ Multab[(R[OFF(z,0)] >> 24) & 0xFF]
 
 /*
  * This does a reversible transformation of a word, based on the S-boxes.
@@ -118,10 +101,10 @@ fixedS(WORD w)
 /*
  * Push a word through the keyed S-boxes.
  */
-#define S(w,b) (turing->S0[B((w), ((0+b)&0x3))] \
-		^ turing->S1[B((w), ((1+b)&0x3))] \
-		^ turing->S2[B((w), ((2+b)&0x3))] \
-		^ turing->S3[B((w), ((3+b)&0x3))])
+#define S(w,b) (S0[B((w), ((0+b)&0x3))] \
+		^ S1[B((w), ((1+b)&0x3))] \
+		^ S2[B((w), ((2+b)&0x3))] \
+		^ S3[B((w), ((3+b)&0x3))])
 
 /* two variants of the Pseudo-Hadamard Transform */
 
@@ -155,55 +138,54 @@ mixwords(WORD w[], int n)
  * Then compiles lookup tables for the keyed S-boxes.
  */
 void
-TuringKey(void * internal, const BYTE key[], const int keylength)
+Turing::key(const BYTE key[], const int keylength)
 {
-    struct turing_internal * turing = (struct turing_internal*)internal;
     int i, j, k;
     WORD w;
 
     if ((keylength & 0x03) != 0 || keylength > MAXKEY)
-	abort();
-    turing->keylen = 0;
+	std::abort();
+    keylen = 0;
     for (i = 0; i < keylength; i += 4)
-	turing->K[turing->keylen++] = fixedS(BYTE2WORD(&key[i]));
-    mixwords(turing->K, turing->keylen);
+	K[keylen++] = fixedS(BYTE2WORD(&key[i]));
+    mixwords(K, keylen);
 
     /* build S-box lookup tables */
     for (j = 0; j < 256; ++j) {
 	w = 0;
 	k = j;
-	for (i = 0; i < turing->keylen; ++i) {
-	    k = Sbox[B(turing->K[i], 0) ^ k];
+	for (i = 0; i < keylen; ++i) {
+	    k = Sbox[B(K[i], 0) ^ k];
 	    w ^= ROTL(Qbox[k], i + 0);
 	}
-	turing->S0[j] = (w & 0x00FFFFFFUL) | (k << 24);
+	S0[j] = (w & 0x00FFFFFFUL) | (k << 24);
     }
     for (j = 0; j < 256; ++j) {
 	w = 0;
 	k = j;
-	for (i = 0; i < turing->keylen; ++i) {
-	    k = Sbox[B(turing->K[i], 1) ^ k];
+	for (i = 0; i < keylen; ++i) {
+	    k = Sbox[B(K[i], 1) ^ k];
 	    w ^= ROTL(Qbox[k], i + 8);
 	}
-	turing->S1[j] = (w & 0xFF00FFFFUL) | (k << 16);
+	S1[j] = (w & 0xFF00FFFFUL) | (k << 16);
     }
     for (j = 0; j < 256; ++j) {
 	w = 0;
 	k = j;
-	for (i = 0; i < turing->keylen; ++i) {
-	    k = Sbox[B(turing->K[i], 2) ^ k];
+	for (i = 0; i < keylen; ++i) {
+	    k = Sbox[B(K[i], 2) ^ k];
 	    w ^= ROTL(Qbox[k], i + 16);
 	}
-	turing->S2[j] = (w & 0xFFFF00FFUL) | (k << 8);
+	S2[j] = (w & 0xFFFF00FFUL) | (k << 8);
     }
     for (j = 0; j < 256; ++j) {
 	w = 0;
 	k = j;
-	for (i = 0; i < turing->keylen; ++i) {
-	    k = Sbox[B(turing->K[i], 3) ^ k];
+	for (i = 0; i < keylen; ++i) {
+	    k = Sbox[B(K[i], 3) ^ k];
 	    w ^= ROTL(Qbox[k], i + 24);
 	}
-	turing->S3[j] = (w & 0xFFFFFF00UL) | k;
+	S3[j] = (w & 0xFFFFFF00UL) | k;
     }
 }
 
@@ -217,49 +199,48 @@ TuringKey(void * internal, const BYTE key[], const int keylength)
  * can think of any.
  */
 void
-TuringIV(void * internal, const BYTE iv[], const int ivlength)
+Turing::IV(const BYTE iv[], const int ivlength)
 {
-    struct turing_internal * turing = (struct turing_internal*)internal;
     int i, j;
 
     /* check args */
-    if ((ivlength & 0x03) != 0 || (ivlength + 4*turing->keylen) > MAXKIV)
-	abort();
+    if ((ivlength & 0x03) != 0 || (ivlength + 4 * keylen) > MAXKIV)
+	std::abort();
     /* first copy in the IV, mixing as we go */
     for (i = j = 0; j < ivlength; j +=4)
-	turing->R[i++] = fixedS(BYTE2WORD(&iv[j]));
+	R[i++] = fixedS(BYTE2WORD(&iv[j]));
     /* now continue with the premixed key */
-    for (j = 0 /* i continues */; j < turing->keylen; ++j)
-	turing->R[i++] = turing->K[j];
+    for (j = 0 /* i continues */; j < keylen; ++j)
+	R[i++] = K[j];
     /* now the length-dependent word */
-    turing->R[i++] = (turing->keylen << 4) | (ivlength >> 2) | 0x01020300UL;
+    R[i++] = (keylen << 4) | (ivlength >> 2) | 0x01020300UL;
     /* ... and fill the rest of the register */
     for (j = 0 /* i continues */; i < LFSRLEN; ++i, ++j)
-	turing->R[i] = S(turing->R[j] + turing->R[i-1], 0);
+	R[i] = S(R[j] + R[i-1], 0);
     /* finally mix all the words */
-    mixwords(turing->R, LFSRLEN);
+    mixwords(R, LFSRLEN);
 }
 
 /* a single round */
 #define ROUND(z,b) \
 { \
     STEP(z); \
-    A = turing->R[OFF(z+1,16)]; \
-		B = turing->R[OFF(z+1,13)]; \
-			    C = turing->R[OFF(z+1,6)]; \
-					D = turing->R[OFF(z+1,1)]; \
-						    E = turing->R[OFF(z+1,0)]; \
+    A = R[OFF(z+1,16)]; \
+		B = R[OFF(z+1,13)]; \
+			    C = R[OFF(z+1,6)]; \
+					D = R[OFF(z+1,1)]; \
+						    E = R[OFF(z+1,0)]; \
     PHT(A,	B,	    C,		D,	    E); \
     A = S(A,0);	B = S(B,1); C = S(C,2);	D = S(D,3); E = S(E,0); \
     PHT(A,	B,	    C,		D,	    E); \
     STEP(z+1); \
     STEP(z+2); \
     STEP(z+3); \
-    A += turing->R[OFF(z+4,14)]; \
-		B += turing->R[OFF(z+4,12)]; \
-			    C += turing->R[OFF(z+4,8)]; \
-					D += turing->R[OFF(z+4,1)]; \
-						    E += turing->R[OFF(z+4,0)]; \
+    A += R[OFF(z+4,14)]; \
+		B += R[OFF(z+4,12)]; \
+			    C += R[OFF(z+4,8)]; \
+					D += R[OFF(z+4,1)]; \
+						    E += R[OFF(z+4,0)]; \
     WORD2BYTE(A, b); \
 		WORD2BYTE(B, b+4); \
 			    WORD2BYTE(C, b+8); \
@@ -275,9 +256,8 @@ TuringIV(void * internal, const BYTE iv[], const int ivlength)
  * Returns the number of bytes of stream generated.
  */
 int
-TuringGen(void * internal, BYTE *buf)
+Turing::gen(BYTE *buf)
 {
-    struct turing_internal * turing = (struct turing_internal*)internal;
     WORD	    A, B, C, D, E;
 
     ROUND(0,buf);
@@ -298,15 +278,4 @@ TuringGen(void * internal, BYTE *buf)
     ROUND(7,buf+300);
     ROUND(12,buf+320);
     return 17*20;
-}
-
-void * TuringAlloc()
-{
-    return calloc(1, sizeof(struct turing_internal));
-}
-
-void TuringFree(void * internal)
-{
-    if(internal)
-    	free(internal);
 }
