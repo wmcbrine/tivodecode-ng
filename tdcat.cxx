@@ -8,20 +8,12 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <iostream>
 
@@ -55,7 +47,7 @@ static void do_help(const char *arg0, int exitval)
         "The file names specified for the output file or the tivo "
         "file may be -, which\n"
         "means stdout or stdin respectively\n\n";
-    exit(exitval);
+    std::exit(exitval);
 }
 
 int main(int argc, char *argv[])
@@ -93,14 +85,14 @@ int main(int argc, char *argv[])
         switch(c)
         {
             case 'm':
-                strncpy(mak, optarg, 11);
+                std::strncpy(mak, optarg, 11);
                 mak[11] = '\0';
                 makgiven = 1;
                 break;
             case 'o':
                 //if the output file is to be stdout then the argv
                 //will be null and the next argc will be "-"
-                if (optarg == NULL && !strcmp(argv[optind+1], "-"))
+                if (optarg == NULL && !std::strcmp(argv[optind + 1], "-"))
                 {
                     outfile = "-";
                     optind++;
@@ -148,13 +140,13 @@ int main(int argc, char *argv[])
 
     hfh = new HappyFile;
 
-    if(!strcmp(tivofile, "-"))
+    if (!std::strcmp(tivofile, "-"))
     {
 // JKOZEE-Make sure stdin is set to binary on Windows
 #ifdef WIN32
         int result = _setmode(_fileno(stdin), _O_BINARY );
         if( result == -1 ) {
-           perror( "Cannot set stdin to binary mode" );
+           std::perror("Cannot set stdin to binary mode");
            return 10;
         }
 #endif
@@ -164,19 +156,19 @@ int main(int argc, char *argv[])
     {
         if (!hfh->open(tivofile, "rb"))
         {
-            perror(tivofile);
+            std::perror(tivofile);
             return 6;
         }
     }
 
 
-    if (!outfile || !strcmp(outfile, "-"))
+    if (!outfile || !std::strcmp(outfile, "-"))
     {
         // JKOZEE-Make sure stdout is set to binary on Windows
         #ifdef WIN32
         int result = _setmode(_fileno(stdout), _O_BINARY );
         if( result == -1 ) {
-           perror( "Cannot set stdout to binary mode" );
+           std::perror("Cannot set stdout to binary mode");
            return 10;
         }
         #endif
@@ -184,9 +176,9 @@ int main(int argc, char *argv[])
     }
     else
     {
-        if (!(ofh = fopen(outfile, "wb")))
+        if (!(ofh = std::fopen(outfile, "wb")))
         {
-            perror("opening output file");
+            std::perror("opening output file");
             return 7;
         }
     }
@@ -206,7 +198,7 @@ int main(int argc, char *argv[])
     TiVoStreamChunk * pChunks = new TiVoStreamChunk[header.chunks];
     if(NULL == pChunks)
     {
-        perror("allocate TiVoStreamChunks");
+        std::perror("allocate TiVoStreamChunks");
         return 9;
     }
 
@@ -216,7 +208,7 @@ int main(int argc, char *argv[])
 
         if(FALSE==pChunks[i].read(hfh))
         {
-            perror("chunk read fail");
+            std::perror("chunk read fail");
             return 8;
         }
 
@@ -233,7 +225,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            perror("Unknown chunk type");
+            std::perror("Unknown chunk type");
             return 8;
         }
 
@@ -243,7 +235,7 @@ int main(int argc, char *argv[])
             pChunks[i].dump();
             if(FALSE==pChunks[i].write(ofh))
             {
-                perror("write chunk");
+                std::perror("write chunk");
                 return 8;
             }
         }
@@ -255,7 +247,7 @@ int main(int argc, char *argv[])
     delete hfh;
 
     if (ofh != stdout)
-        fclose(ofh);
+        std::fclose(ofh);
 
     return 0;
 }

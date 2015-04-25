@@ -8,24 +8,14 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-#include <iostream>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
 #ifdef WIN32
 #include <windows.h>
 #endif
 
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
 
 #include "getopt_long.h"
 
@@ -66,7 +56,7 @@ static void do_help(const char *arg0, int exitval)
         "The file names specified for the output file or the "
         "tivo file may be -, which\n"
         "means stdout or stdin respectively\n\n";
-    exit(exitval);
+    std::exit(exitval);
 }
 
 int main(int argc, char *argv[])
@@ -81,13 +71,13 @@ int main(int argc, char *argv[])
     const char * outfile  = NULL;
 
     CHAR mak[12];
-    memset(mak, 0, sizeof(mak));
+    std::memset(mak, 0, sizeof(mak));
 
     TuringState turing;
-    memset(&turing, 0, sizeof(turing));
+    std::memset(&turing, 0, sizeof(turing));
 
     TuringState metaturing;
-    memset(&metaturing, 0, sizeof(metaturing));
+    std::memset(&metaturing, 0, sizeof(metaturing));
     hoff_t current_meta_stream_pos = 0;
 
     FILE * ofh = NULL;
@@ -106,12 +96,12 @@ int main(int argc, char *argv[])
         switch(c)
         {
             case 'm':
-                strncpy(mak, optarg, 11);
+                std::strncpy(mak, optarg, 11);
                 mak[11] = '\0';
                 makgiven = 1;
                 break;
             case 'p':
-                sscanf(optarg, "%d", &pktDump);
+                std::sscanf(optarg, "%d", &pktDump);
                 pktDumpMap[pktDump] = TRUE;
                 break;
             case 'o':
@@ -161,14 +151,14 @@ int main(int argc, char *argv[])
 
     hfh = new HappyFile;
 
-    if(!strcmp(tivofile, "-"))
+    if (!std::strcmp(tivofile, "-"))
     {
 // JKOZEE-Make sure stdin is set to binary on Windows
 #ifdef WIN32
         int result = _setmode(_fileno(stdin), _O_BINARY );
         if( result == -1 ) {
-           perror( "Cannot set stdin to binary mode" );
-           return 10;
+            std::perror("Cannot set stdin to binary mode");
+            return 10;
         }
 #endif
         hfh->attach(stdin);
@@ -177,34 +167,34 @@ int main(int argc, char *argv[])
     {
         if (!hfh->open(tivofile, "rb"))
         {
-            perror(tivofile);
+            std::perror(tivofile);
             return 6;
         }
     }
 
-    if(!outfile || !strcmp(outfile, "-"))
+    if (!outfile || !std::strcmp(outfile, "-"))
     {
 // JKOZEE-Make sure stdout is set to binary on Windows
 #ifdef WIN32
         int result = _setmode(_fileno(stdout), _O_BINARY );
         if( result == -1 ) {
-           perror( "Cannot set stdout to binary mode" );
-           return 10;
+            std::perror("Cannot set stdout to binary mode");
+            return 10;
         }
 #endif
         ofh = stdout;
     }
     else
     {
-        ofh = fopen(outfile, "wb");
+        ofh = std::fopen(outfile, "wb");
         if(NULL==ofh)
         {
-            perror("opening output file");
+            std::perror("opening output file");
             return 7;
         }
     }
 
-    setvbuf(ofh, rawbuf, _IOFBF, RAWBUFSIZE);
+    std::setvbuf(ofh, rawbuf, _IOFBF, RAWBUFSIZE);
 
     PRINT_QUALCOMM_MSG();
 
@@ -218,7 +208,7 @@ int main(int argc, char *argv[])
     TiVoStreamChunk * pChunks = new TiVoStreamChunk[header.chunks];
     if(NULL == pChunks)
     {
-        perror("allocate TiVoStreamChunks");
+        std::perror("allocate TiVoStreamChunks");
         return(9);
     }
 
@@ -228,7 +218,7 @@ int main(int argc, char *argv[])
 
         if(FALSE==pChunks[i].read(hfh))
         {
-            perror("chunk read fail");
+            std::perror("chunk read fail");
             return(8);
         }
 
@@ -245,42 +235,42 @@ int main(int argc, char *argv[])
         }
         else
         {
-            perror("Unknown chunk type");
+            std::perror("Unknown chunk type");
             return(8);
         }
 
         if( o_dump_metadata )
         {
             CHAR buf[25];
-            sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, pChunks[i].id);
+            std::sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, pChunks[i].id);
 
-            FILE * chunkfh = fopen(buf, "wb");
+            FILE * chunkfh = std::fopen(buf, "wb");
             if(!chunkfh)
             {
-                perror("create metadata file");
+                std::perror("create metadata file");
                 return 8;
             }
 
             pChunks[i].dump();
             if(FALSE==pChunks[i].write(chunkfh))
             {
-                perror("write chunk");
+                std::perror("write chunk");
                 return 8;
             }
 
-            fclose(chunkfh);
+            std::fclose(chunkfh);
         }
     }
 
 //    metaturing.destruct();
 
     if(o_no_video)
-        exit(0);
+        std::exit(0);
 
     if ((hfh->tell() > header.mpeg_offset) ||
         (hfh->seek(header.mpeg_offset) < 0))
     {
-        perror("Error reading header");
+        std::perror("Error reading header");
         return 8; // I dunno       
     }
 
@@ -296,13 +286,13 @@ int main(int argc, char *argv[])
 
     if(NULL==pDecoder)
     {
-        perror("Unable to create TiVo Decoder");
+        std::perror("Unable to create TiVo Decoder");
         return 9;
     }
     
     if(FALSE == pDecoder->process())
     {
-        perror("Failed to process file");
+        std::perror("Failed to process file");
         return 9;
     }
 
@@ -312,7 +302,7 @@ int main(int argc, char *argv[])
     delete hfh;
 
     if(ofh != stdout)
-        fclose(ofh);
+        std::fclose(ofh);
 
     return 0;
 }
