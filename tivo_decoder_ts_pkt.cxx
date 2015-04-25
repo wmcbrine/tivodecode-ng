@@ -58,7 +58,7 @@ void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream * pStream)
     pParent = pStream;
 }
 
-int TiVoDecoderTsPacket::read(happy_file * pInfile)
+int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 {
     int size = 0;
     int loss_of_sync = 0;
@@ -83,7 +83,7 @@ int TiVoDecoderTsPacket::read(happy_file * pInfile)
     }
     else
     {
-        size = hread(buffer, TS_FRAME_SIZE, pInfile);
+        size = pInfile->read(buffer, TS_FRAME_SIZE);
         globalBufferLen = 0;
 
         VVERBOSE("Read handler : size %d\n", size);
@@ -137,7 +137,7 @@ int TiVoDecoderTsPacket::read(happy_file * pInfile)
             }
             else
             {
-                size = hread(globalBuffer, TS_FRAME_SIZE*3, pInfile);
+                size = pInfile->read(globalBuffer, TS_FRAME_SIZE * 3);
 
                 VVERBOSE("Read handler : size %d\n", size);
 
@@ -164,8 +164,8 @@ int TiVoDecoderTsPacket::read(happy_file * pInfile)
             }
         }
 
-        size = hread(globalBuffer + globalBufferLen,
-                     (3 * TS_FRAME_SIZE) - globalBufferLen, pInfile);
+        size = pInfile->read(globalBuffer + globalBufferLen,
+                             (3 * TS_FRAME_SIZE) - globalBufferLen);
         if (size < 0)
         {
             fprintf(stderr, "ERROR: size=%d\n", size);

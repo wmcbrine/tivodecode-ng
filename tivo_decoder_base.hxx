@@ -33,7 +33,7 @@
 
 
 #define LOOK_AHEAD(fh, bytes, n) do {\
-    int retval = hread((bytes) + looked_ahead, (n) - looked_ahead, fh);\
+    int retval = fh->read((bytes) + looked_ahead, (n) - looked_ahead);\
     if ( retval == 0 )\
     {\
         return 0;  \
@@ -55,14 +55,14 @@ class TiVoDecoder
         BOOL           running;
         BOOL           isValid;
         TuringState  * pTuring;
-        happy_file   * pFileIn;
+        HappyFile    * pFileIn;
         FILE         * pFileOut;
         
         int do_header(UINT8 * arg_0, int * block_no, int * arg_8, int * crypted, int * arg_10, int * arg_14);
         
         virtual BOOL process() = 0;
                 
-        TiVoDecoder(TuringState *pTuringState, happy_file *pInfile,
+        TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
                     hoff_t fileOffset, FILE *pOutfile);
         virtual ~TiVoDecoder();
         

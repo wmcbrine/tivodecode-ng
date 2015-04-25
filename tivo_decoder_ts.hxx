@@ -234,7 +234,7 @@ class TiVoDecoderTS : public TiVoDecoder
         int handlePkt_AudioVideo( TiVoDecoderTsPacket * pPkt );
 
         virtual BOOL process();
-        TiVoDecoderTS(TuringState *pTuringState, happy_file *pInfile,
+        TiVoDecoderTS(TuringState *pTuringState, HappyFile *pInfile,
                       hoff_t fileOffset, FILE *pOutfile);
         ~TiVoDecoderTS();
 
@@ -290,7 +290,7 @@ class TiVoDecoderTsPacket
         TS_Adaptation_Field tsAdaptation;
         ts_packet_pid_types ts_packet_type;
 
-        int           read(happy_file * pInfile);
+        int           read(HappyFile *pInfile);
         BOOL          decode();
         void          dump();
         void          setStream(TiVoDecoderTsStream * pStream);

@@ -89,7 +89,7 @@ class TiVoStreamHeader
         UINT16      chunks;         /* Number of metadata chunks */
         
         TiVoFormatType  getFormatType();
-        BOOL            read(happy_file * file);
+        BOOL            read(HappyFile *file);
         void            dump(UINT8 dbgLevel=0);
         UINT16          size() { return sizeof(TiVoStreamHeader); };
     
@@ -108,7 +108,7 @@ class TiVoStreamChunk
         UINT16      type;       /* Subtype */
         UINT8       * pData;    /* Variable length data */
         
-        BOOL   read(happy_file * file);       
+        BOOL   read(HappyFile *file);       
         BOOL   write(FILE * file); 
         void   dump(UINT8 dbgLevel=0);
         UINT16 size() { return sizeof(TiVoStreamChunk) - sizeof(UINT8*); };

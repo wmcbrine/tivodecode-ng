@@ -100,7 +100,7 @@ ts_pmt_stream_type_info ts_pmt_stream_tags[] = {
 
 TiVoDecoderTS::TiVoDecoderTS(
         TuringState *pTuringState,
-        happy_file *pInfile,
+        HappyFile *pInfile,
         hoff_t fileOffset,
         FILE *pOutfile) :
     TiVoDecoder(pTuringState,
@@ -489,7 +489,7 @@ BOOL TiVoDecoderTS::process()
     while( running )
     {
         err      = 0;
-        position = htell(pFileIn);
+        position = pFileIn->tell();
         pid      = 0;
 
         pktCounter++;

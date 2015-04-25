@@ -32,7 +32,7 @@
 #include "tivo_decoder_base.hxx"
 
 
-TiVoDecoder::TiVoDecoder(TuringState *pTuringState, happy_file *pInfile,
+TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
                          hoff_t fileOffset, FILE *pOutfile)
 {
     isValid = FALSE;
@@ -40,7 +40,7 @@ TiVoDecoder::TiVoDecoder(TuringState *pTuringState, happy_file *pInfile,
     if(!pTuringState || !pInfile || !pOutfile )
         return;
         
-    if(hseek(pInfile, fileOffset, SEEK_SET) < 0)
+    if (pInfile->seek(fileOffset, SEEK_SET) < 0)
     {
         perror("seek");
         return;

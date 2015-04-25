@@ -21,134 +21,128 @@
 #include "happyfile.hxx"
 
 #if defined HAVE_FSEEKO
-#	define hfseek(a, b, c) fseeko(a, b, c)
+# define hfseek(a, b, c) fseeko(a, b, c)
 #else
-#	define hfseek(a, b, c) fseek(a, b, c)
-#	warning Large file support is questionable on this platform
+# define hfseek(a, b, c) fseek(a, b, c)
+# warning Large file support is questionable on this platform
 #endif
 
-static void init(happy_file *fh)
+void HappyFile::init()
 {
-	setvbuf(fh->fh, fh->rawbuf, _IOFBF, RAWBUFSIZE);
-	fh->pos = 0;
-	fh->buffer_start = 0;
-	fh->buffer_fill = 0;
+    setvbuf(fh, rawbuf, _IOFBF, RAWBUFSIZE);
+    pos = 0;
+    buffer_start = 0;
+    buffer_fill = 0;
 }
 
-happy_file * hopen (const char * filename, const char * mode)
+int HappyFile::open(const char *filename, const char *mode)
 {
-	happy_file * fh = (happy_file*) malloc (sizeof (happy_file));
-	fh->fh = fopen (filename, mode);
-	if (!fh->fh)
-	{
-		free (fh);
-		return NULL;
-	}
-	init(fh);
-	return fh;
+    fh = fopen(filename, mode);
+    if (!fh)
+        return 0;
+    init();
+    return 1;
 }
 
-happy_file * hattach (FILE * fh)
+int HappyFile::attach(FILE *infile)
 {
-	happy_file * hfh = (happy_file*) malloc (sizeof (happy_file));
-	hfh->fh = fh;
-	init(hfh);
-	return hfh;
+    fh = infile;
+    init();
+    return 1;
 }
 
-int hclose(happy_file * fh)
+int HappyFile::close()
 {
-	int x = fclose (fh->fh);
-	free (fh);
-	return x;
+    if (fh != stdin)
+        return fclose(fh);
+    else
+        return 0;
 }
 
-int hdetach(happy_file * fh)
+size_t HappyFile::read(void *ptr, size_t size)
 {
-	free(fh);
-	return 0;
+    size_t nbytes = 0;
+
+    if (size == 0)
+        return 0;
+
+    if ((pos + (hoff_t)size) - buffer_start <= buffer_fill)
+    {
+        memcpy(ptr, buffer + (pos - buffer_start), size);
+        pos += (hoff_t)size;
+        return size;
+    }
+    else if (pos < buffer_start + buffer_fill)
+    {
+        memcpy(ptr, buffer + (pos - buffer_start),
+               (size_t)(buffer_fill - (pos - buffer_start)));
+        nbytes += (size_t)(buffer_fill - (pos - buffer_start));
+    }
+
+    do
+    {
+        buffer_start += buffer_fill;
+        buffer_fill = (hoff_t)fread(buffer, 1, BUFFERSIZE, fh);
+
+        if (buffer_fill == 0)
+            break;
+
+        memcpy((char *)ptr + nbytes, buffer,
+               (hoff_t)(size - nbytes) < buffer_fill ?
+               (size - nbytes) : (size_t)buffer_fill);
+        nbytes += (hoff_t)(size - nbytes) < buffer_fill ?
+                  (size - nbytes) : (size_t)buffer_fill;
+    } while (nbytes < size);
+
+    pos += (hoff_t)nbytes;
+    return nbytes;
 }
 
-size_t hread (void * ptr, size_t size, happy_file * fh)
+hoff_t HappyFile::tell()
 {
-	size_t nbytes = 0;
-
-	if (size == 0)
-		return 0;
-
-	if ((fh->pos + (hoff_t)size) - fh->buffer_start <= fh->buffer_fill)
-	{
-		memcpy (ptr, fh->buffer + (fh->pos - fh->buffer_start), size);
-		fh->pos += (hoff_t)size;
-		return size;
-	}
-	else if (fh->pos < fh->buffer_start + fh->buffer_fill)
-	{
-		memcpy (ptr, fh->buffer + (fh->pos - fh->buffer_start), (size_t)(fh->buffer_fill - (fh->pos - fh->buffer_start)));
-		nbytes += (size_t)(fh->buffer_fill - (fh->pos - fh->buffer_start));
-	}
-
-	do
-	{
-		fh->buffer_start += fh->buffer_fill;
-		fh->buffer_fill = (hoff_t)fread (fh->buffer, 1, BUFFERSIZE, fh->fh);
-
-		if (fh->buffer_fill == 0)
-			break;
-
-		memcpy((char *)ptr + nbytes, fh->buffer, ((hoff_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : (size_t)fh->buffer_fill));
-		nbytes += ((hoff_t)(size - nbytes) < fh->buffer_fill ? (size - nbytes) : (size_t)fh->buffer_fill);
-	} while (nbytes < size);
-
-	fh->pos += (hoff_t)nbytes;
-	return nbytes;
+    return pos;
 }
 
-hoff_t htell (happy_file * fh)
+int HappyFile::seek(hoff_t offset, int whence)
 {
-	return fh->pos;
-}
+    static char junk_buf[4096];
 
-int hseek (happy_file * fh, hoff_t offset, int whence)
-{
-	static char junk_buf[4096];
+    int r;
 
-	int r;
+    switch (whence)
+    {
+        case SEEK_SET:
+            if (offset < pos)
+            {
+                r = hfseek(fh, offset, SEEK_SET);
+                if (r < 0)
+                    return r;
+                pos = offset;
+                buffer_start = pos;
+                buffer_fill = 0;
+                return r;
+            }
+            else
+            {
+                int t = (int)((offset - pos) & 0xfff);
+                hoff_t u = (offset - pos) >> 12;
+                hoff_t s;
+                for (s = 0; s < u; s++)
+                {
+                    if (read(junk_buf, 4096) != 4096)
+                        return -1;
+                }
 
-	switch (whence)
-	{
-		case SEEK_SET:
-			if (offset < fh->pos)
-			{
-				r = hfseek (fh->fh, offset, SEEK_SET);
-				if (r < 0)
-					return r;
-				fh->pos = offset;
-				fh->buffer_start = fh->pos;
-				fh->buffer_fill = 0;
-				return r;
-			}
-			else
-			{
-				int t = (int)((offset - fh->pos) & 0xfff);
-				hoff_t u = (offset - fh->pos) >> 12;
-				hoff_t s;
-				for (s=0; s < u; s++)
-				{
-					if (hread(junk_buf, 4096, fh) != 4096)
-						return -1;
-				}
+                if (read(junk_buf, t) != (size_t)t)
+                {
+                    return -1;
+                }
 
-				if (hread(junk_buf, t, fh) != (size_t)t)
-				{
-					return -1;
-				}
-
-				return 0;
-			}
-			break;
-		default:
-			errno=EINVAL;
-			return -1;
-	}
+                return 0;
+            }
+            break;
+        default:
+            errno = EINVAL;
+            return -1;
+    }
 }

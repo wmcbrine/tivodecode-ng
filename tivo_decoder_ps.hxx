@@ -70,7 +70,7 @@ class TiVoDecoderPS : public TiVoDecoder
         virtual BOOL process();
         int process_frame(UINT8 code, hoff_t packet_start);
     
-        TiVoDecoderPS(TuringState *pTuringState, happy_file *pInfile,
+        TiVoDecoderPS(TuringState *pTuringState, HappyFile *pInfile,
                       hoff_t fileOffset, FILE *pOutfile);
         ~TiVoDecoderPS();
         

@@ -68,9 +68,9 @@ TiVoStreamHeader::TiVoStreamHeader()
     chunks      = 0;
 }
 
-BOOL TiVoStreamHeader::read(happy_file * file)
+BOOL TiVoStreamHeader::read(HappyFile *file)
 {    
-    if(hread(this, size(), file) != size())
+    if (file->read(this, size()) != size())
     {
         perror("read header");
         return FALSE;
@@ -156,9 +156,9 @@ TiVoStreamChunk::~TiVoStreamChunk()
     }
 }
 
-BOOL TiVoStreamChunk::read(happy_file * file)
+BOOL TiVoStreamChunk::read(HappyFile *file)
 {    
-    if(hread(this, size(), file) != size())
+    if (file->read(this, size()) != size())
     {
         perror ("read chunk");
         return FALSE;
@@ -177,7 +177,7 @@ BOOL TiVoStreamChunk::read(happy_file * file)
         return FALSE;
     }
     
-    if(hread(pData, readSize, file) != readSize)
+    if (file->read(pData, readSize) != readSize)
     {
         perror("read chunk data");
         return FALSE;

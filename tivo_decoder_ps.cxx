@@ -63,7 +63,7 @@ static packet_tag_info packet_tags[] = {
 
 TiVoDecoderPS::TiVoDecoderPS(
         TuringState *pTuringState, 
-        happy_file *pInfile, 
+        HappyFile *pInfile, 
         hoff_t fileOffset, 
         FILE *pOutfile) :
     TiVoDecoder(pTuringState, 
@@ -96,7 +96,7 @@ BOOL TiVoDecoderPS::process()
     {
         if((marker & 0xFFFFFF00) == 0x100)
         {
-            hoff_t position = htell(pFileIn);           
+            hoff_t position = pFileIn->tell();
             int ret = process_frame(byte, position);
 
             if(ret == 1)
@@ -117,10 +117,10 @@ BOOL TiVoDecoderPS::process()
         {
             fwrite(&byte, 1, 1, pFileOut);
         }
-        
+
         marker <<= 8;
-        
-        if(hread(&byte, 1, pFileIn) == 0)
+
+        if (pFileIn->read(&byte, 1) == 0)
         {
             VERBOSE( "End of File\n");
             running = FALSE;
@@ -129,7 +129,7 @@ BOOL TiVoDecoderPS::process()
         {
             marker |= byte;
         }
-        
+
         first = FALSE;
     }    
 

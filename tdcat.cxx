@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     hoff_t current_meta_stream_pos = 0;
 
     FILE * ofh = NULL;
-    happy_file * hfh=NULL;
+    HappyFile *hfh = NULL;
 
     TiVoStreamHeader header;
 
@@ -148,6 +148,8 @@ int main(int argc, char *argv[])
         do_help(argv[0], 5);
     }
 
+    hfh = new HappyFile;
+
     if(!strcmp(tivofile, "-"))
     {
 // JKOZEE-Make sure stdin is set to binary on Windows
@@ -158,12 +160,11 @@ int main(int argc, char *argv[])
            return 10;
         }
 #endif
-        hfh=hattach(stdin);
+        hfh->attach(stdin);
     }
     else
     {
-        hfh=hopen(tivofile, "rb");
-        if(NULL==hfh)
+        if (!hfh->open(tivofile, "rb"))
         {
             perror(tivofile);
             return 6;
@@ -213,7 +214,7 @@ int main(int argc, char *argv[])
 
     for(INT32 i=0; i<header.chunks; i++)
     {
-        hoff_t chunk_start = htell(hfh) + pChunks[i].size();
+        hoff_t chunk_start = hfh->tell() + pChunks[i].size();
 
         if(FALSE==pChunks[i].read(hfh))
         {
@@ -252,10 +253,8 @@ int main(int argc, char *argv[])
 
     metaturing.destruct();
 
-    if (hfh->fh == stdin)
-        hdetach(hfh);
-    else
-        hclose(hfh);
+    hfh->close();
+    delete hfh;
 
     if (ofh != stdout)
         fclose(ofh);

@@ -44,28 +44,31 @@ typedef __int64 hoff_t;
 typedef off_t hoff_t;
 #endif
 
-typedef struct
+class HappyFile
 {
-	FILE * fh;
-	hoff_t  pos;
+    private:
+        FILE *fh;
+        hoff_t pos;
 
-	/* buffer stuff */
-	hoff_t  buffer_start;
-	hoff_t  buffer_fill;
+        /* buffer stuff */
+        hoff_t buffer_start;
+        hoff_t buffer_fill;
 
-	char rawbuf[RAWBUFSIZE];
-	char buffer[BUFFERSIZE];
-} happy_file;
+        char rawbuf[RAWBUFSIZE];
+        char buffer[BUFFERSIZE];
 
-happy_file * hopen (const char * filename, const char * mode);
-happy_file * hattach (FILE * fh);
+        void init();
 
-int hclose(happy_file * fh);
-int hdetach(happy_file * fh);
+    public:
+        int open(const char *filename, const char *mode);
+        int attach(FILE *fh);
 
-size_t hread (void * ptr, size_t size, happy_file * fh);
+        int close();
 
-hoff_t htell (happy_file * fh);
-int hseek (happy_file * fh, hoff_t offset, int whence);
+        size_t read(void *ptr, size_t size);
+
+        hoff_t tell();
+        int seek(hoff_t offset, int whence);
+};
 
 #endif
