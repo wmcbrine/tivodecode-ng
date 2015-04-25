@@ -17,7 +17,8 @@
 # include <io.h>
 #endif
 #include "fseeko.h"
-#include "happyfile.h"
+
+#include "happyfile.hxx"
 
 #if defined HAVE_FSEEKO
 #	define hfseek(a, b, c) fseeko(a, b, c)

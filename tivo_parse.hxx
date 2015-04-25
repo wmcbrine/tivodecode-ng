@@ -32,7 +32,7 @@
 #include <netinet/in.h>
 #endif
 
-#include "happyfile.h"
+#include "happyfile.hxx"
 #include "tivo_types.hxx"
 #include "turing_stream.hxx"
 
