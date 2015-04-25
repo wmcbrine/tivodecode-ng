@@ -101,8 +101,8 @@ AR = ar
 ARFLAGS = cru
 libtivodecode_a_AR = $(AR) $(ARFLAGS)
 libtivodecode_a_LIBADD =
-am_libtivodecode_a_OBJECTS = hexlib.$(OBJEXT) TuringFast.$(OBJEXT) \
-	sha1.$(OBJEXT) md5.$(OBJEXT) happyfile.$(OBJEXT) \
+am_libtivodecode_a_OBJECTS = hexlib.$(OBJEXT) sha1.$(OBJEXT) \
+	md5.$(OBJEXT) TuringFast.$(OBJEXT) happyfile.$(OBJEXT) \
 	cli_common.$(OBJEXT) tivo_parse.$(OBJEXT) \
 	turing_stream.$(OBJEXT)
 libtivodecode_a_OBJECTS = $(am_libtivodecode_a_OBJECTS)
@@ -251,9 +251,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 lib_LIBRARIES = libtivodecode.a
-pkginclude_HEADERS = tivo_parse.hxx turing_stream.hxx Turing.h
+pkginclude_HEADERS = tivo_parse.hxx turing_stream.hxx Turing.hxx
 nodist_pkginclude_HEADERS = tdconfig.h
-libtivodecode_a_SOURCES = hexlib.c TuringFast.c sha1.c md5.c happyfile.cxx cli_common.cxx tivo_parse.cxx turing_stream.cxx QUTsbox.h TuringMultab.h TuringSbox.h hexlib.h sha1.h md5.h happyfile.hxx cli_common.hxx
+libtivodecode_a_SOURCES = hexlib.c sha1.c md5.c TuringFast.cxx happyfile.cxx cli_common.cxx tivo_parse.cxx turing_stream.cxx QUTsbox.h TuringMultab.h TuringSbox.h hexlib.h sha1.h md5.h happyfile.hxx cli_common.hxx
 tivodecode_SOURCES = tivodecode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx getopt_long.h fseeko.h happyfile.hxx tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
 tivodecode_LDADD = $(LIBOBJS) -L. -ltivodecode
 tivodecode_DEPENDENCIES = $(LIBOBJS) libtivodecode.a

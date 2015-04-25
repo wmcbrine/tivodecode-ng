@@ -68,17 +68,15 @@ product or in the associated documentation.
 #ifdef HAVE_CONFIG_H
 # include "tdconfig.h"
 #endif
-#include "Turing.h"		/* interface definitions */
-
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
 
 #include <iostream>
+#include <cstring>
 
 #include "hexlib.h"
 #include "md5.h"
 #include "sha1.h"
+
+#include "Turing.hxx"		/* interface definitions */
 #include "turing_stream.hxx"
 
 
@@ -152,7 +150,7 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
     TuringKey(active->internal, turkey, 20);
     TuringIV(active->internal, turiv, 20);
 
-    memset(active->cipher_data, 0, MAXSTREAM);
+    std::memset(active->cipher_data, 0, MAXSTREAM);
 
     active->cipher_len = TuringGen(active->internal, active->cipher_data);
 

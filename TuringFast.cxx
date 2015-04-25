@@ -72,7 +72,8 @@ product or in the associated documentation.
 #include <string.h>
 #endif
 
-#include "Turing.h"		/* interface definitions */
+#include "Turing.hxx"		/* interface definitions */
+
 #include "TuringSbox.h"
 #include "QUTsbox.h"
 #include "TuringMultab.h"
