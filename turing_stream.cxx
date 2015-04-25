@@ -72,8 +72,7 @@ product or in the associated documentation.
 #include <iostream>
 #include <cstring>
 
-#include "hexlib.h"
-
+#include "hexlib.hxx"
 #include "md5.hxx"
 #include "sha1.hxx"
 #include "Turing.hxx"		/* interface definitions */

@@ -28,7 +28,7 @@
 #include <netinet/in.h>
 #endif
 
-#include "hexlib.h"
+#include "hexlib.hxx"
 #include "tivo_parse.hxx"
 
 int o_verbose;

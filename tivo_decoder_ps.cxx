@@ -26,8 +26,7 @@
 
 #include <cstring>
 
-#include "hexlib.h"
-
+#include "hexlib.hxx"
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ps.hxx"
 
