@@ -163,7 +163,7 @@ static void prepare_frame_helper(turing_state * turing, unsigned char stream_id,
 
 #define CREATE_TURING_LISTITM(turing, nxt, stream_id, block_id) \
     do { \
-        (turing)->active = (turing_state_stream*)calloc(1, sizeof(turing_state_stream)); \
+        (turing)->active = new turing_state_stream; \
         (turing)->active->next = (nxt); \
         (nxt) = (turing)->active; \
         (turing)->active->internal = TuringAlloc(); \
@@ -248,7 +248,7 @@ void destruct_turing(turing_state * turing)
             TuringFree(turing->active->internal);
             turing->active = turing->active->next;
             if(prev)
-                free (prev);
+                delete prev;
         }
         while (turing->active != start);
     }
