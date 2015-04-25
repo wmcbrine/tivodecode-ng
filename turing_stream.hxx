@@ -39,10 +39,11 @@ typedef struct turing_state_stream
 
 class TuringState
 {
-    public:
+    private:
         unsigned char turingkey[20];
         turing_state_stream *active;
 
+    public:
         void setup_key(unsigned char *buffer, size_t buffer_length, char *mak);
         void setup_metadata_key(unsigned char *buffer, size_t buffer_length,
                                 char *mak);
