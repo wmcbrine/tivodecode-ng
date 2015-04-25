@@ -9,14 +9,9 @@
 #endif
 
 #include <stdio.h>
-#include <iostream>
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
 #endif
 
 #ifdef WIN32
@@ -26,6 +21,9 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
+
+#include <cstring>
+#include <iostream>
 
 #include "getopt_long.h"
 
@@ -71,13 +69,13 @@ int main(int argc, char *argv[])
     const char * outfile  = NULL;
 
     CHAR mak[12];
-    memset(mak, 0, sizeof(mak));
+    std::memset(mak, 0, sizeof(mak));
 
     TuringState turing;
-    memset(&turing, 0, sizeof(turing));
+    std::memset(&turing, 0, sizeof(turing));
 
     TuringState metaturing;
-    memset(&metaturing, 0, sizeof(metaturing));
+    std::memset(&metaturing, 0, sizeof(metaturing));
     hoff_t current_meta_stream_pos = 0;
 
     FILE * ofh = NULL;

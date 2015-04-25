@@ -12,10 +12,6 @@
 #include <stdlib.h>
 #endif
 
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -27,6 +23,8 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
+
+#include <cstring>
 
 #include "sha1.h"
 #include "hexlib.h"
@@ -153,7 +151,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
     unsigned int header_len = 0;
     unsigned int length;
 
-    memset( bytes, 0, 32 );
+    std::memset(bytes, 0, 32);
 
     for (i = 0; packet_tags[i].packet != PACK_NONE; i++)
     {
@@ -266,7 +264,8 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
 
                 length = bytes[1] | (bytes[0] << 8);
 
-                memcpy (aligned_buf.packet_buffer + sizeof(td_uint64_t), bytes, looked_ahead);
+                std::memcpy(aligned_buf.packet_buffer + sizeof(td_uint64_t),
+                            bytes, looked_ahead);
 
                 LOOK_AHEAD (pFileIn, aligned_buf.packet_buffer + sizeof(td_uint64_t), length + 2);
                 {

@@ -12,10 +12,6 @@
 #include <stdlib.h>
 #endif
 
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -27,6 +23,8 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
+
+#include <cstring>
 
 #include "sha1.h"
 #include "hexlib.h"
@@ -45,7 +43,7 @@ TiVoDecoderTsStream::TiVoDecoderTsStream(UINT16 pid)
     stream_id       = 0;
     stream_type     = TS_STREAM_TYPE_NONE;
 
-    memset(&turing_stuff, 0, sizeof(TS_Turing_Stuff) );
+    std::memset(&turing_stuff, 0, sizeof(TS_Turing_Stuff));
 
 }
 
@@ -87,15 +85,15 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
 
         // Form one contiguous buffer containing all buffered packet payloads
         UINT16 pesDecodeBufferLen = 0;
-        memset( pesDecodeBuffer, 0, 10 * TS_FRAME_SIZE);
+        std::memset(pesDecodeBuffer, 0, 10 * TS_FRAME_SIZE);
         for(pkt_iter=packets.begin(); pkt_iter!=packets.end(); pkt_iter++)
         {
             pPkt2 = *pkt_iter;
             VERBOSE("DEQUE : PktID %d from PID 0x%04x\n", pPkt2->packetId, stream_pid );
 
-            memcpy( &pesDecodeBuffer[pesDecodeBufferLen],
-                    &pPkt2->buffer[pPkt2->payloadOffset],
-                    TS_FRAME_SIZE - pPkt2->payloadOffset);
+            std::memcpy(&pesDecodeBuffer[pesDecodeBufferLen],
+                        &pPkt2->buffer[pPkt2->payloadOffset],
+                        TS_FRAME_SIZE - pPkt2->payloadOffset);
             pesDecodeBufferLen += (TS_FRAME_SIZE - pPkt2->payloadOffset);
         }
         

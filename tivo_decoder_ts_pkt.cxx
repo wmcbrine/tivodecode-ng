@@ -12,10 +12,6 @@
 #include <stdlib.h>
 #endif
 
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -27,6 +23,8 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
+
+#include <cstring>
 
 #include "sha1.h"
 #include "hexlib.h"
@@ -48,9 +46,9 @@ TiVoDecoderTsPacket::TiVoDecoderTsPacket()
     ts_packet_type  = TS_PID_TYPE_NONE;
     packetId        = 0;
     
-    memset(buffer,    0, TS_FRAME_SIZE);
-    memset(&tsHeader, 0, sizeof(TS_Header) );
-    memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field) );
+    std::memset(buffer, 0, TS_FRAME_SIZE);
+    std::memset(&tsHeader, 0, sizeof(TS_Header));
+    std::memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field));
 }
 
 void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream * pStream)
@@ -76,10 +74,11 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
         globalBufferLen -= TS_FRAME_SIZE;
 
-        memmove(globalBuffer, globalBuffer + TS_FRAME_SIZE, globalBufferLen);
+        std::memmove(globalBuffer, globalBuffer + TS_FRAME_SIZE,
+                     globalBufferLen);
 
         size = min(globalBufferLen, TS_FRAME_SIZE);
-        memcpy(buffer, globalBuffer, size);
+        std::memcpy(buffer, globalBuffer, size);
     }
     else
     {
@@ -111,7 +110,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
         if (globalBufferLen == 0)
         {
-            memcpy(globalBuffer, buffer, size);
+            std::memcpy(globalBuffer, buffer, size);
             globalBufferLen = size;
         }
     }
@@ -131,7 +130,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
                     fprintf(stderr, "skipped %d bytes, found a SYNC\n", skip);
 
                     globalBufferLen -= i;
-                    memmove(globalBuffer, globalBuffer + i, globalBufferLen);
+                    std::memmove(globalBuffer, globalBuffer + i,
+                                 globalBufferLen);
                     break;
                 }
             }
@@ -187,7 +187,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             fprintf(stderr, "found 3 syncs in a row, loss_of_sync = 0\n");
 
             size = TS_FRAME_SIZE;
-            memcpy(buffer, globalBuffer, size);
+            std::memcpy(buffer, globalBuffer, size);
         }
     }
 
@@ -204,11 +204,12 @@ BOOL TiVoDecoderTsPacket::decode()
         return FALSE;
     }
     
-    // TS packet streams are big endian, and we may be running on little endian platform.
-    
+    // TS packet streams are big endian, and we may be running on little 
+    // endian platform.
+
     payloadOffset = 0;
-    memset( &tsHeader, 0, sizeof(TS_Header) );
-    
+    std::memset(&tsHeader, 0, sizeof(TS_Header));
+
     UINT32 ts_hdr_val  = portable_ntohl( &buffer[payloadOffset] );
     payloadOffset += 4;
 
@@ -241,7 +242,7 @@ BOOL TiVoDecoderTsPacket::decode()
 
     if ( tsHeader.adaptation_field_exists )
     {
-        memset( &tsAdaptation, 0, sizeof(TS_Adaptation_Field) );
+        std::memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field));
 
         tsAdaptation.adaptation_field_length = buffer[payloadOffset];
         payloadOffset++;

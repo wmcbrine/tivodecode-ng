@@ -12,10 +12,6 @@
 #include <stdlib.h>
 #endif
 
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
 #ifdef WIN32
 #include <windows.h>
 #endif
@@ -27,6 +23,8 @@
 #ifdef HAVE_NETINET_IN_H
 #include <netinet/in.h>
 #endif
+
+#include <cstring>
 
 #include "sha1.h"
 #include "hexlib.h"
@@ -108,10 +106,10 @@ TiVoDecoderTS::TiVoDecoderTS(
         fileOffset,
         pOutfile)
 {
-    pktCounter  = 0;
+    pktCounter = 0;
     streams.clear();
-    memset(&patData, 0, sizeof(TS_PAT_data) );
-    
+    std::memset(&patData, 0, sizeof(TS_PAT_data));
+
     // Create stream for PAT
     VERBOSE("Creating new stream for PID (0x%04x)\n", 0 );
     TiVoDecoderTsStream * pStream = new TiVoDecoderTsStream(0);
@@ -432,14 +430,14 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
 
             pStream->stream_id = stream_id;
 
-            if ( memcmp( &pStream->turing_stuff.key[0], pPtr, 16 ) )
+            if (std::memcmp(&pStream->turing_stuff.key[0], pPtr, 16))
             {
                 VERBOSE( "\nUpdating PID 0x%04x Type 0x%02x Turing Key\n", pid, stream_id );
                 if( IS_VERBOSE )
                     hexbulk( &pStream->turing_stuff.key[0], 16 );
                 if( IS_VERBOSE )
                     hexbulk( pPtr, 16 );
-                memcpy( &pStream->turing_stuff.key[0], pPtr, 16);
+                std::memcpy(&pStream->turing_stuff.key[0], pPtr, 16);
             }
 
             VERBOSE("%-15s : %-25.25s : %d\n", "TiVo Private", "Block No",
