@@ -68,7 +68,7 @@ class HappyFile
         size_t read(void *ptr, size_t size);
 
         hoff_t tell();
-        int seek(hoff_t offset, int whence);
+        int seek(hoff_t offset);
 };
 
 #endif

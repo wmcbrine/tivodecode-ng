@@ -33,19 +33,13 @@
 
 
 TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
-                         hoff_t fileOffset, FILE *pOutfile)
+                         FILE *pOutfile)
 {
     isValid = FALSE;
 
     if(!pTuringState || !pInfile || !pOutfile )
         return;
         
-    if (pInfile->seek(fileOffset, SEEK_SET) < 0)
-    {
-        perror("seek");
-        return;
-    }    
-    
     running       = TRUE;
     pFileIn       = pInfile;
     pFileOut      = pOutfile;

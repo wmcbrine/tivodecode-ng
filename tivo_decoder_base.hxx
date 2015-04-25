@@ -59,13 +59,13 @@ class TiVoDecoder
         FILE         * pFileOut;
         
         int do_header(UINT8 * arg_0, int * block_no, int * arg_8, int * crypted, int * arg_10, int * arg_14);
-        
+
         virtual BOOL process() = 0;
-                
+
         TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
-                    hoff_t fileOffset, FILE *pOutfile);
+                    FILE *pOutfile);
         virtual ~TiVoDecoder();
-        
+
 } __attribute__((packed)) ;
 
 

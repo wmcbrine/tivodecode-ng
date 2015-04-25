@@ -60,11 +60,9 @@ static packet_tag_info packet_tags[] = {
 TiVoDecoderPS::TiVoDecoderPS(
         TuringState *pTuringState, 
         HappyFile *pInfile, 
-        hoff_t fileOffset, 
         FILE *pOutfile) :
     TiVoDecoder(pTuringState, 
         pInfile, 
-        fileOffset, 
         pOutfile)
 {
     marker = 0xFFFFFFFF;

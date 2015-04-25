@@ -277,14 +277,21 @@ int main(int argc, char *argv[])
     if(o_no_video)
         exit(0);
 
+    if ((hfh->tell() > header.mpeg_offset) ||
+        (hfh->seek(header.mpeg_offset) < 0))
+    {
+        perror("Error reading header");
+        return 8; // I dunno       
+    }
+
     TiVoDecoder * pDecoder = NULL;
     if( TIVO_FORMAT_PS == header.getFormatType() )
     {
-        pDecoder = new TiVoDecoderPS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh);
+        pDecoder = new TiVoDecoderPS(&turing, hfh, ofh);
     }
     else if ( TIVO_FORMAT_TS == header.getFormatType() )
     {
-        pDecoder = new TiVoDecoderTS(&turing, hfh, (hoff_t)header.mpeg_offset, ofh);
+        pDecoder = new TiVoDecoderTS(&turing, hfh, ofh);
     }
 
     if(NULL==pDecoder)

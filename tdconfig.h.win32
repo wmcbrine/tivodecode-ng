@@ -14,9 +14,6 @@
 /* Define to 1 if you have the <ctype.h> header file. */
 #define HAVE_CTYPE_H 1
 
-/* Define to 1 if you have the `fseeko' function. */
-/* #undef HAVE_FSEEKO */
-
 /* Define to 1 if you have the `getopt' function. */
 //#define HAVE_GETOPT 1
 
@@ -123,12 +120,6 @@
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 /* #undef _FILE_OFFSET_BITS */
-
-/* Define to 1 to make fseeko visible on some hosts (e.g. glibc 2.2). */
-/* #undef _LARGEFILE_SOURCE */
-
-/* Define for large files, on AIX-style hosts. */
-/* #undef _LARGE_FILES */
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */

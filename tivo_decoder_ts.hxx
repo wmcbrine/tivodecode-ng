@@ -235,7 +235,7 @@ class TiVoDecoderTS : public TiVoDecoder
 
         virtual BOOL process();
         TiVoDecoderTS(TuringState *pTuringState, HappyFile *pInfile,
-                      hoff_t fileOffset, FILE *pOutfile);
+                      FILE *pOutfile);
         ~TiVoDecoderTS();
 
 };
