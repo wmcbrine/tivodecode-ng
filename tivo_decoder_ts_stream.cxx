@@ -26,7 +26,6 @@
 
 #include <cstring>
 
-#include "sha1.h"
 #include "hexlib.h"
 #include "md5.h"
 #include "tivo_parse.hxx"

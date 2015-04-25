@@ -74,21 +74,20 @@ product or in the associated documentation.
 
 #include "hexlib.h"
 #include "md5.h"
-#include "sha1.h"
 
+#include "sha1.hxx"
 #include "Turing.hxx"		/* interface definitions */
 #include "turing_stream.hxx"
-
 
 void TuringState::setup_key(unsigned char *buffer, size_t buffer_length,
                             char *mak)
 {
-    SHA1_CTX context;
+    SHA1 context;
 
-    sha1_init(&context);
-    sha1_update(&context, (unsigned char *)mak, strlen(mak));
-    sha1_update(&context, buffer, buffer_length);
-    sha1_final(turingkey, &context);
+    context.init();
+    context.update((unsigned char *)mak, strlen(mak));
+    context.update(buffer, buffer_length);
+    context.final(turingkey);
 }
 
 #define static_strlen(str) (sizeof(str) - 1)
@@ -123,7 +122,7 @@ void TuringState::setup_metadata_key(unsigned char *buffer,
 
 void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
 {
-    SHA1_CTX context;
+    SHA1 context;
     unsigned char turkey[20];
     unsigned char turiv [20];
 
@@ -135,14 +134,14 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
     turingkey[18] = (block_id & 0x00FF00) >> 8;
     turingkey[19] = (block_id & 0x0000FF) >> 0;
 
-    sha1_init(&context);
-    sha1_update(&context, turingkey, 17);
-    sha1_final(turkey, &context);
+    context.init();
+    context.update(turingkey, 17);
+    context.final(turkey);
     //hexbulk(turkey, 20);
 
-    sha1_init(&context);
-    sha1_update(&context, turingkey, 20);
-    sha1_final(turiv, &context);
+    context.init();
+    context.update(turingkey, 20);
+    context.final(turiv);
     //hexbulk(turiv, 20);
 
     active->cipher_pos = 0;
