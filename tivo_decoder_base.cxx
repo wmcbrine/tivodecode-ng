@@ -32,7 +32,8 @@
 #include "tivo_decoder_base.hxx"
 
 
-TiVoDecoder::TiVoDecoder(turing_state * pTuringState, happy_file * pInfile, hoff_t fileOffset, FILE * pOutfile)
+TiVoDecoder::TiVoDecoder(TuringState *pTuringState, happy_file *pInfile,
+                         hoff_t fileOffset, FILE *pOutfile)
 {
     isValid = FALSE;
 

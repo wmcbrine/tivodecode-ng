@@ -37,19 +37,21 @@ typedef struct turing_state_stream
     unsigned char cipher_data[MAXSTREAM + sizeof(td_uint64_t)];
 } turing_state_stream;
 
-typedef struct
+class TuringState
 {
-    unsigned char turingkey[20];
-    turing_state_stream * active;
-} turing_state;
+    public:
+        unsigned char turingkey[20];
+        turing_state_stream *active;
 
-void setup_metadata_key(turing_state * turing, unsigned char * buffer, size_t buffer_length, char * mak);
-void setup_turing_key(turing_state * turing, unsigned char * buffer, size_t buffer_length, char * mak);
-void prepare_frame(turing_state * turing, unsigned char stream_id, int block_id);
-void decrypt_buffer(turing_state * turing, unsigned char * buffer, size_t buffer_length);
-void skip_turing_data(turing_state * turing, size_t bytes_to_skip);
-void destruct_turing(turing_state * turing);
-void dump_turing(turing_state * turing);
+        void setup_key(unsigned char *buffer, size_t buffer_length, char *mak);
+        void setup_metadata_key(unsigned char *buffer, size_t buffer_length,
+                                char *mak);
+        void prepare_frame_helper(unsigned char stream_id, int block_id);
+        void prepare_frame(unsigned char stream_id, int block_id);
+        void decrypt_buffer(unsigned char *buffer, size_t buffer_length);
+        void skip_data(size_t bytes_to_skip);
+        void destruct();
+        void dump();
+};
 
 #endif // TURING_STREAM_H_
-

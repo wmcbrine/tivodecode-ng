@@ -113,9 +113,9 @@ class TiVoStreamChunk
         void   dump(UINT8 dbgLevel=0);
         UINT16 size() { return sizeof(TiVoStreamChunk) - sizeof(UINT8*); };
         
-        void   setupTuringKey(turing_state * pTuring, UINT8 * pMAK);
-        void   setupMetadataKey(turing_state * pTuring, UINT8 * pMAK);
-        void   decryptMetadata(turing_state * pTuring, UINT16 offsetVal);
+        void   setupTuringKey(TuringState *pTuring, UINT8 *pMAK);
+        void   setupMetadataKey(TuringState *pTuring, UINT8 *pMAK);
+        void   decryptMetadata(TuringState *pTuring, UINT16 offsetVal);
         
         TiVoStreamChunk();
         ~TiVoStreamChunk();

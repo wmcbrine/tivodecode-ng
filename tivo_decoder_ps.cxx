@@ -62,10 +62,10 @@ static packet_tag_info packet_tags[] = {
 
 
 TiVoDecoderPS::TiVoDecoderPS(
-        turing_state * pTuringState, 
-        happy_file * pInfile, 
+        TuringState *pTuringState, 
+        happy_file *pInfile, 
         hoff_t fileOffset, 
-        FILE * pOutfile) :
+        FILE *pOutfile) :
     TiVoDecoder(pTuringState, 
         pInfile, 
         fileOffset, 
@@ -230,12 +230,12 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                                     VERBOSE("%zu : stream_no: %x, block_no: %d\n", (size_t)packet_start, code, block_no);
                                     VERBOSE("---Turing : prepare : code 0x%02x block_no %d\n", code, block_no );
 
-                                    prepare_frame(pTuring, code, block_no);
+                                    pTuring->prepare_frame(code, block_no);
 
                                     VERBOSE("CCC : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
                                     VERBOSE("---Turing : decrypt : crypted 0x%08x len %d\n", crypted, 4 );
 
-                                    decrypt_buffer(pTuring, (unsigned char *)&crypted, 4);
+                                    pTuring->decrypt_buffer((unsigned char *)&crypted, 4);
 
                                     VERBOSE("DDD : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
 
@@ -290,7 +290,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                     {
                         VERBOSE("---Turing : decrypt : size %d\n", (int)packet_size );
 
-                        decrypt_buffer(pTuring, packet_ptr, packet_size);
+                        pTuring->decrypt_buffer(packet_ptr, packet_size);
 
                         // turn off scramble bits
                         aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x30;

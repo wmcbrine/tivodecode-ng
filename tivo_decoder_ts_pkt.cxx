@@ -422,10 +422,10 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
 
     if(IS_VVVERBOSE)
         fprintf(stderr, "AAA : dump turing : INIT\n");
-    
+
     if(IS_VVVERBOSE)
-        dump_turing( pParent->pTuring );
-    
+        pParent->pTuring->dump();
+
     if ( pParent->do_header(&turing_stuff.key[0],
             &(turing_stuff.block_no), NULL,
             &(turing_stuff.crypted), NULL, NULL) )
@@ -438,14 +438,14 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
         fprintf(stderr, "BBB : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
             stream_id, turing_stuff.block_no, turing_stuff.crypted );
 
-    prepare_frame( pParent->pTuring, stream_id, turing_stuff.block_no);
+    pParent->pTuring->prepare_frame(stream_id, turing_stuff.block_no);
 
     if(IS_VVVERBOSE)
         fprintf(stderr, "CCC : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
             stream_id, turing_stuff.block_no, turing_stuff.crypted );
 
     // Do not need to do this for TS streams - crypted is zero and apparently not used
-    // decrypt_buffer( turing, (unsigned char *)&pStream->turing_stuff.crypted, 4);
+    // turing->decrypt_buffer((unsigned char *)&pStream->turing_stuff.crypted, 4);
 
     if(IS_VVVERBOSE)
         fprintf(stderr, "DDD : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
@@ -453,11 +453,11 @@ BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
 
     if(IS_VVVERBOSE)
         fprintf(stderr, "ZZZ : dump turing : BEFORE DECRYPT\n");
-    
+
     if(IS_VVVERBOSE)
-        dump_turing( pParent->pTuring );
-                
-    decrypt_buffer( pParent->pTuring, pBuffer, bufferLen );
+        pParent->pTuring->dump();
+
+    pParent->pTuring->decrypt_buffer(pBuffer, bufferLen);
 
     if(IS_VVVERBOSE)
         fprintf(stderr,"---Decrypted transport packet\n");

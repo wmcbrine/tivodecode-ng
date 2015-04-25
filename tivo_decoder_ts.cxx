@@ -99,10 +99,10 @@ ts_pmt_stream_type_info ts_pmt_stream_tags[] = {
 
 
 TiVoDecoderTS::TiVoDecoderTS(
-        turing_state * pTuringState,
-        happy_file * pInfile,
+        TuringState *pTuringState,
+        happy_file *pInfile,
         hoff_t fileOffset,
-        FILE * pOutfile) :
+        FILE *pOutfile) :
     TiVoDecoder(pTuringState,
         pInfile,
         fileOffset,

@@ -207,44 +207,44 @@ void TiVoStreamChunk::dump(UINT8 dbgLevel)
     VERBOSE( "\n\n" );
 }
 
-void TiVoStreamChunk::setupTuringKey(turing_state * pTuring, UINT8 * pMAK)
+void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, UINT8 *pMAK)
 {
-    if(NULL==pTuring || NULL==pMAK)
+    if (NULL == pTuring || NULL == pMAK)
     {
         perror("bad param");
         return;
     }
 
-    setup_turing_key(pTuring, pData, dataSize, (char *)pMAK);
+    pTuring->setup_key(pData, dataSize, (char *)pMAK);
 }
 
-void TiVoStreamChunk::setupMetadataKey(turing_state * pTuring, UINT8 * pMAK)
+void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, UINT8 *pMAK)
 {
-    setup_metadata_key(pTuring, pData, dataSize, (char *)pMAK);
+    pTuring->setup_metadata_key(pData, dataSize, (char *)pMAK);
 
-//    fprintf(stderr,"METADATA TURING DUMP : INIT\n");    
-//    dump_turing(pTuring);
+//    std::cerr << "METADATA TURING DUMP : INIT\n";
+//    pTuring->dump();
 }
 
-void TiVoStreamChunk::decryptMetadata(turing_state * pTuring, UINT16 offsetVal)
+void TiVoStreamChunk::decryptMetadata(TuringState *pTuring, UINT16 offsetVal)
 {
-//    fprintf(stderr,"METADATA TURING DECRYPT : INIT : offsetVal %d\n", offsetVal);
-//    dump_turing(pTuring);
-    
-    prepare_frame(pTuring, 0, 0);
+//    std::cerr << "METADATA TURING DECRYPT : INIT : offsetVal " << offsetVal << "\n";
+//    pTuring->dump();
 
-//    fprintf(stderr,"METADATA TURING DECRYPT : AFTER PREPARE\n");
-//    dump_turing(pTuring);
+    pTuring->prepare_frame(0, 0);
 
-    skip_turing_data(pTuring, offsetVal);
+//    std::cerr << "METADATA TURING DECRYPT : AFTER PREPARE\n";
+//    pTuring->dump();
 
-//    fprintf(stderr,"METADATA TURING DECRYPT : AFTER SKIP\n");
-//    dump_turing(pTuring);
+    pTuring->skip_data(offsetVal);
 
-    decrypt_buffer(pTuring, pData, dataSize);
+//    std::cerr << "METADATA TURING DECRYPT : AFTER SKIP\n";
+//    pTuring->dump(pTuring);
 
-//    fprintf(stderr,"METADATA TURING DECRYPT : AFTER DECRYPT\n");
-//    dump_turing(pTuring);
+    pTuring->decrypt_buffer(pData, dataSize);
+
+//    std::cerr << "METADATA TURING DECRYPT : AFTER DECRYPT\n";
+//    pTuring->dump();
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

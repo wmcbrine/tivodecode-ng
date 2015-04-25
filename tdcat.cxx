@@ -73,10 +73,10 @@ int main(int argc, char *argv[])
     CHAR mak[12];
     memset(mak, 0, sizeof(mak));
 
-    turing_state turing;
+    TuringState turing;
     memset(&turing, 0, sizeof(turing));
 
-    turing_state metaturing;
+    TuringState metaturing;
     memset(&metaturing, 0, sizeof(metaturing));
     hoff_t current_meta_stream_pos = 0;
 
@@ -250,7 +250,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    destruct_turing(&metaturing);
+    metaturing.destruct();
 
     if (hfh->fh == stdin)
         hdetach(hfh);

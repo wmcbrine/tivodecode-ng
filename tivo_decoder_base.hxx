@@ -54,7 +54,7 @@ class TiVoDecoder
 
         BOOL           running;
         BOOL           isValid;
-        turing_state * pTuring;
+        TuringState  * pTuring;
         happy_file   * pFileIn;
         FILE         * pFileOut;
         
@@ -62,7 +62,8 @@ class TiVoDecoder
         
         virtual BOOL process() = 0;
                 
-        TiVoDecoder(turing_state * pTuringState, happy_file * pInfile, hoff_t fileOffset, FILE * pOutfile);
+        TiVoDecoder(TuringState *pTuringState, happy_file *pInfile,
+                    hoff_t fileOffset, FILE *pOutfile);
         virtual ~TiVoDecoder();
         
 } __attribute__((packed)) ;
