@@ -1,35 +1,8 @@
 #ifndef TIVO_PARSE_HXX_
 #define TIVO_PARSE_HXX_
 
-//#include <stddef.h>
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-
 #ifdef HAVE_CONFIG_H
 #include "tdconfig.h"
-#endif
-
-#include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
 #endif
 
 #include "happyfile.hxx"
@@ -52,9 +25,7 @@ extern BOOL o_pkt_dump;
 #define VERBOSE(...)        if ( IS_VERBOSE )   { printf(__VA_ARGS__); }
 #define VVERBOSE(...)       if ( IS_VVERBOSE )  { printf(__VA_ARGS__); }
 #define VVVERBOSE(...)      if ( IS_VVVERBOSE ) { printf(__VA_ARGS__); }
-    
-    
-    
+
 /*
  * Initial header formats lifted from ezrec's posting:
  * http://www.dealdatabase.com/forum/showthread.php?t=41132
@@ -81,7 +52,6 @@ TiVoChunkType;
 class TiVoStreamHeader 
 {
     public:
-
         CHAR        fileType[4];    /* the string 'TiVo' */
         UINT16      dummy_0004;
         UINT16      dummy_0006;
@@ -98,11 +68,9 @@ class TiVoStreamHeader
         
 } __attribute__((packed)) ;
 
-
 class TiVoStreamChunk 
 {
     public:
-        
         UINT32      chunkSize;  /* Size of chunk */
         UINT32      dataSize;   /* Length of the payload */
         UINT16      id;         /* Chunk ID */
@@ -122,6 +90,5 @@ class TiVoStreamChunk
         ~TiVoStreamChunk();
         
 } __attribute__((packed));
-
 
 #endif /* TIVO_PARSE_HXX_ */
