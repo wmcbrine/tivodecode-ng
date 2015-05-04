@@ -199,7 +199,7 @@ Acquiring TiVo TS crypto info
     When a TiVo private data packet is encountered, we must update our 
     session's Turing values (key, block_no) to the newer values.  Each 
     packet stream (i.e. audio, video) within the transport stream will 
-    have it's own Turing session.  So, we must maintain these separate 
+    have its own Turing session.  So, we must maintain these separate 
     Turing sessions across packets.
 
     When an audio/video packet is encountered, we must first verify if 
