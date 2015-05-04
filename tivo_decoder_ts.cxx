@@ -8,22 +8,6 @@
 
 #include <stdio.h>
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
 #include <cstring>
 
 #include "hexlib.hxx"
@@ -267,7 +251,7 @@ int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
     for ( i=0; section_length > 0; i++ )
     {
         unsigned short es_info_length = 0;
-        char strTypeStr[25];
+        const char *strTypeStr;
 
         UINT16 streamPid           = 0;
         UINT8 streamTypeId         = *pPtr;
@@ -283,13 +267,22 @@ int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
             }
         }
 
-        switch( streamType )
+        switch (streamType)
         {
-            case TS_STREAM_TYPE_PRIVATE_DATA : sprintf(strTypeStr,"PrivateData"); break;
-            case TS_STREAM_TYPE_AUDIO        : sprintf(strTypeStr,"Audio"); break;
-            case TS_STREAM_TYPE_VIDEO        : sprintf(strTypeStr,"Video"); break;
-            case TS_STREAM_TYPE_OTHER        : sprintf(strTypeStr,"Other"); break;
-            default                          : sprintf(strTypeStr,"Unknown"); break;
+            case TS_STREAM_TYPE_PRIVATE_DATA:
+                strTypeStr = "PrivateData";
+                break;
+            case TS_STREAM_TYPE_AUDIO:
+                strTypeStr = "Audio";
+                break;
+            case TS_STREAM_TYPE_VIDEO:
+                strTypeStr = "Video";
+                break;
+            case TS_STREAM_TYPE_OTHER:
+                strTypeStr = "Other";
+                break;
+            default:
+                strTypeStr = "Unknown";
         }
 
         // advance past stream_type field
