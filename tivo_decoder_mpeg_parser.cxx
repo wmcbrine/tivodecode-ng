@@ -6,61 +6,7 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
 #include "tivo_decoder_mpeg_parser.hxx"
-
-
-//
-//UINT8 buffer[] = { 0x12, 0x23, 0x34, 0x45, 0x56, 0x00, 0x00, 0x01, 0xFF };
-//UINT16 bufLen  = 9;
-//
-//main()
-//{
-//    TiVoDecoder_MPEG2_Parser parser(buffer, bufLen);
-//
-//    UINT32 nextbits = 0;
-//
-//    nextbits = parser.nextbits(8);
-//    fprintf(stderr, "nextbits = 0x%08x\n", nextbits);
-//
-//    parser.advanceBits(3);
-//
-//    nextbits = parser.nextbits(8);
-//    fprintf(stderr, "nextbits = 0x%08x\n", nextbits);
-//
-//    nextbits = parser.nextbits(32);
-//    fprintf(stderr, "nextbits = 0x%08x\n", nextbits);
-//
-//    nextbits = parser.nextbits(36);
-//    fprintf(stderr, "nextbits = 0x%08x\n", nextbits);
-//
-//    parser.next_start_code();
-//
-//    nextbits = parser.nextbits(32);
-//    fprintf(stderr, "nextbits = 0x%08x\n", nextbits);
-//}
-
 
 TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser()
 {

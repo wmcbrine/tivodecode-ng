@@ -1,37 +1,12 @@
 
 #ifndef __TIVO_DECODER_MPEG_PARSER_HXX__
 #define __TIVO_DECODER_MPEG_PARSER_HXX__
-//
-//#include <stddef.h>
 
 #ifdef HAVE_CONFIG_H
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
 #include "tivo_types.hxx"
-
 
 class TiVoDecoder_MPEG2_Parser
 {

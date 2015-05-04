@@ -8,22 +8,6 @@
 
 #include <stdio.h>
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
 #include <cstring>
 
 #include "hexlib.hxx"
