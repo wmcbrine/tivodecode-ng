@@ -6,8 +6,7 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
+#include <cstdio>
 #include <cstring>
 
 #include "hexlib.hxx"
@@ -114,7 +113,7 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
 
     if ( !pPkt )
     {
-        perror("Invalid handlePkt_PAT argument");
+        std::perror("Invalid handlePkt_PAT argument");
         return -1;
     }
 
@@ -127,7 +126,7 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
 
     if ( *pPtr != 0x00 )
     {
-        perror("PAT Table ID must be 0x00");
+        std::perror("PAT Table ID must be 0x00");
         return -1;
     }
     else
@@ -141,13 +140,13 @@ int TiVoDecoderTS::handlePkt_PAT( TiVoDecoderTsPacket * pPkt )
 
     if ( (pat_field & 0xC000) != 0x8000 )
     {
-        perror("Failed to validate PAT Misc field");
+        std::perror("Failed to validate PAT Misc field");
         return -1;
     }
 
     if ( (pat_field & 0x0C00) != 0x0000 )
     {
-        perror("Failed to validate PAT MBZ of section length");
+        std::perror("Failed to validate PAT MBZ of section length");
         return -1;
     }
 
@@ -221,7 +220,7 @@ int TiVoDecoderTS::handlePkt_PMT( TiVoDecoderTsPacket * pPkt )
 
     if ( !pPkt )
     {
-        perror("Invalid handlePkt_PMT argument");
+        std::perror("Invalid handlePkt_PMT argument");
         return -1;
     }
 
@@ -345,7 +344,7 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
 
     if ( !pPkt )
     {
-        perror("Invalid handlePkt_TiVo argument");
+        std::perror("Invalid handlePkt_TiVo argument");
         return -1;
     }
 
@@ -367,7 +366,7 @@ int TiVoDecoderTS::handlePkt_TiVo( TiVoDecoderTsPacket * pPkt )
     validator = portable_ntohl( pPtr );
     if ( validator != 0x5469566f )
     {
-        perror("Invalid TiVo private data validator");
+        std::perror("Invalid TiVo private data validator");
         return -1;
     }
 
@@ -483,7 +482,7 @@ BOOL TiVoDecoderTS::process()
         TiVoDecoderTsPacket * pPkt = new TiVoDecoderTsPacket;
         if(!pPkt)
         {
-            perror("failed to allocate TS packet");
+            std::perror("failed to allocate TS packet");
             return 10;
         }
         
@@ -495,7 +494,7 @@ BOOL TiVoDecoderTS::process()
         
         if( readSize < 0 )
         {
-            fprintf(stderr,"Error TS packet read : pkt %d : size read %d", pktCounter, readSize);
+            std::fprintf(stderr,"Error TS packet read : pkt %d : size read %d", pktCounter, readSize);
             return 10;
         }
         else if( readSize == 0 )
@@ -506,7 +505,7 @@ BOOL TiVoDecoderTS::process()
         }
         else if(TS_FRAME_SIZE != readSize )
         {
-            fprintf(stderr,"Error TS packet read : pkt %d : size read %d", pktCounter, readSize);
+            std::fprintf(stderr,"Error TS packet read : pkt %d : size read %d", pktCounter, readSize);
             return 10;
         }
         
@@ -515,7 +514,7 @@ BOOL TiVoDecoderTS::process()
 
         if( FALSE==pPkt->decode() )
         {
-            fprintf(stderr,"packet decode fails : pktId %d\n", pktCounter);
+            std::fprintf(stderr,"packet decode fails : pktId %d\n", pktCounter);
             return 10;
         }
         
@@ -533,7 +532,7 @@ BOOL TiVoDecoderTS::process()
             {
                 err = handlePkt_PAT( pPkt );
                 if ( err )
-                    perror("ts_handle_pat failed");
+                    std::perror("ts_handle_pat failed");
                 break;
             }
             case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA :
@@ -543,7 +542,7 @@ BOOL TiVoDecoderTS::process()
                     pPkt->setPmtPkt( TRUE );
                     err = handlePkt_PMT( pPkt );
                     if ( err )
-                        perror("ts_handle_pmt failed");
+                        std::perror("ts_handle_pmt failed");
                 }
                 else
                 {
@@ -562,20 +561,20 @@ BOOL TiVoDecoderTS::process()
                     {
                         err = handlePkt_TiVo( pPkt );
                         if ( err )
-                            perror("handlePkt_Tivo failed");
+                            std::perror("handlePkt_Tivo failed");
                     }
                     else
                     {
                         err = handlePkt_AudioVideo( pPkt );
                         if ( err )
-                            perror("handlePkt_AudoVideo failed");
+                            std::perror("handlePkt_AudoVideo failed");
                     }
                 }
                 break;
             }
             default :
             {
-                perror( "Unknown Packet Type" );
+                std::perror( "Unknown Packet Type" );
                 return 10;
             }
         }
@@ -583,7 +582,7 @@ BOOL TiVoDecoderTS::process()
         stream_iter = streams.find(pPkt->getPID());
         if(stream_iter == streams.end())
         {
-            perror("Can not locate packet stream by PID");
+            std::perror("Can not locate packet stream by PID");
         }
         else
         {
@@ -593,7 +592,7 @@ BOOL TiVoDecoderTS::process()
             pStream = stream_iter->second;
             if(FALSE == pStream->addPkt( pPkt ) )
             {
-                fprintf(stderr,"Failed to add packet to stream : pktId %d\n", 
+                std::fprintf(stderr,"Failed to add packet to stream : pktId %d\n", 
                     pPkt->packetId);
             }
             else

@@ -8,7 +8,6 @@
 
 #include "tdconfig.h"
 
-#include <stdio.h>
 #include <stddef.h>
 
 #ifdef HAVE_STDLIB_H
@@ -26,6 +25,8 @@
 #if defined(WIN32)
 # include <io.h>
 #endif
+
+#include <cstdio>
 
 #ifndef RAWBUFSIZE
 #define RAWBUFSIZE 65536

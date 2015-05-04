@@ -6,8 +6,7 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
+#include <cstdio>
 #include <cstring>
 
 #include "hexlib.hxx"
@@ -43,7 +42,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
 
     if(!pPkt)
     {
-        perror("bad parameter");
+        std::perror("bad parameter");
         return FALSE;
     }
 
@@ -94,8 +93,8 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
         BOOL pesParse = getPesHdrLength( pesDecodeBuffer, pesDecodeBufferLen );
         if ( FALSE == pesParse )
         {
-            fprintf(stderr,"failed to parse PES headers : pktID %d\n", 
-                pPkt->packetId);
+            std::fprintf(stderr, "failed to parse PES headers : pktID %d\n", 
+                         pPkt->packetId);
             return FALSE;
         }
         
@@ -217,7 +216,7 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
                                     
                 if( FALSE == decrypt( &pPkt2->buffer[decryptOffset], decryptLen ) )
                 {
-                    perror("Packet decrypt fails");
+                    std::perror("Packet decrypt fails");
                     return FALSE;
                 }
             }
@@ -228,9 +227,10 @@ BOOL TiVoDecoderTsStream::addPkt( TiVoDecoderTsPacket * pPkt )
                 pPkt2->dump();
             }
         
-            if( fwrite(&pPkt2->buffer[0], 1, TS_FRAME_SIZE, pOutfile) != TS_FRAME_SIZE)
+            if (std::fwrite(&pPkt2->buffer[0], 1, TS_FRAME_SIZE, pOutfile) !=
+                TS_FRAME_SIZE)
             {
-                perror("Writing packet to output file");
+                std::perror("Writing packet to output file");
             }
             else
             {

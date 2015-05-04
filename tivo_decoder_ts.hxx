@@ -5,7 +5,7 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <deque>
 #include <map>

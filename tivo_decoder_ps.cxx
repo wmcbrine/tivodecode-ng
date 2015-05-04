@@ -6,8 +6,7 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
+#include <cstdio>
 #include <cstring>
 
 #include "hexlib.hxx"
@@ -83,17 +82,17 @@ BOOL TiVoDecoderPS::process()
             }
             else if(ret == 0)
             {
-                fwrite(&byte, 1, 1, pFileOut);
+                std::fwrite(&byte, 1, 1, pFileOut);
             }
             else if(ret < 0)
             {
-                perror("processing frame");
+                std::perror("processing frame");
                 return 10;
             }
         }
         else if(!first)
         {
-            fwrite(&byte, 1, 1, pFileOut);
+            std::fwrite(&byte, 1, 1, pFileOut);
         }
 
         marker <<= 8;
@@ -313,9 +312,12 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                         aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x20;
                     }
 
-                    if (fwrite(aligned_buf.packet_buffer + sizeof(td_uint64_t) - 1, 1, length + 3, pFileOut) != length + 3)
+                    if (std::fwrite(aligned_buf.packet_buffer +
+                                    sizeof(td_uint64_t) - 1, 1, length + 3,
+                                    pFileOut) !=
+                        length + 3)
                     {
-                        perror ("writing buffer");
+                        std::perror("writing buffer");
                     }
 
                     return 1;
