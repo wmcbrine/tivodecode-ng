@@ -6,24 +6,7 @@
 #include "tdconfig.h"
 #endif
 
-#include <stdio.h>
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-
-#ifdef WIN32
-#include <windows.h>
-#endif
-
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-
+#include <cstdio>
 #include <cstring>
 
 #include "hexlib.hxx"
@@ -59,16 +42,16 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
     int size = 0;
     int loss_of_sync = 0;
 
-    if(!pInfile)
+    if (!pInfile)
     {
-        perror("bad parameter");
+        std::perror("bad parameter");
         return -1;
     }
 
     if (globalBufferLen > TS_FRAME_SIZE)
     {
-        fprintf(stderr, "globalBufferLen > TS_FRAME_SIZE, "
-                        "pulling packet from globalBuffer[]\n");
+        std::fprintf(stderr, "globalBufferLen > TS_FRAME_SIZE, "
+                             "pulling packet from globalBuffer[]\n");
 
         globalBufferLen -= TS_FRAME_SIZE;
 
@@ -94,7 +77,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
     }
     else if(TS_FRAME_SIZE != size)
     {
-        fprintf(stderr,"Read error : TS Frame Size : %d, Size Read %d\n",TS_FRAME_SIZE,size);
+        std::fprintf(stderr, "Read error : TS Frame Size : %d, Size Read %d\n",
+                     TS_FRAME_SIZE, size);
         if (size < 0)
             return -1;
         else
@@ -104,7 +88,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
     if (buffer[0] != 'G')
     {
         loss_of_sync = 1;
-        fprintf(stderr, "loss_of_sync\n");
+        std::fprintf(stderr, "loss_of_sync\n");
 
         if (globalBufferLen == 0)
         {
@@ -125,7 +109,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             {
                 if (globalBuffer[i] == 'G')
                 {
-                    fprintf(stderr, "skipped %d bytes, found a SYNC\n", skip);
+                    std::fprintf(stderr, "skipped %d bytes, found a SYNC\n",
+                                 skip);
 
                     globalBufferLen -= i;
                     std::memmove(globalBuffer, globalBuffer + i,
@@ -147,7 +132,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
                 }
                 else if ((TS_FRAME_SIZE*3) != size)
                 {
-                    fprintf(stderr,
+                    std::fprintf(stderr,
                             "Read error : TS Frame Size*3 : %d, Size Read %d\n",
                             TS_FRAME_SIZE * 3, size);
 
@@ -166,7 +151,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
                              (3 * TS_FRAME_SIZE) - globalBufferLen);
         if (size < 0)
         {
-            fprintf(stderr, "ERROR: size=%d\n", size);
+            std::fprintf(stderr, "ERROR: size=%d\n", size);
             return -1;
         }
 
@@ -174,7 +159,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
         if (globalBufferLen != (3 * TS_FRAME_SIZE))
         {
-            fprintf(stderr, "ERROR: globalBufferLen != (3 * TS_FRAME_SIZE)\n");
+            std::fprintf(stderr, "ERROR: globalBufferLen != (3 * TS_FRAME_SIZE)\n");
             return 0;  // indicate EOF on partial packet
         }
 
@@ -182,7 +167,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             globalBuffer[TS_FRAME_SIZE * 2] == 'G')
         {
             loss_of_sync = 0;
-            fprintf(stderr, "found 3 syncs in a row, loss_of_sync = 0\n");
+            std::fprintf(stderr, "found 3 syncs in a row, loss_of_sync = 0\n");
 
             size = TS_FRAME_SIZE;
             std::memcpy(buffer, globalBuffer, size);
@@ -196,9 +181,9 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
 BOOL TiVoDecoderTsPacket::decode()
 {
-    if(FALSE==isValid)
+    if (FALSE == isValid)
     {
-        perror("Packet not valid");
+        std::perror("Packet not valid");
         return FALSE;
     }
     
@@ -221,9 +206,9 @@ BOOL TiVoDecoderTsPacket::decode()
     tsHeader.payload_data_exists          = ( ts_hdr_val & 0x00000010 ) >> 4;
     tsHeader.continuity_counter           = ( ts_hdr_val & 0x0000000F );
 
-    if ( tsHeader.sync_byte != 0x47 )
+    if (tsHeader.sync_byte != 0x47)
     {
-        perror("invalid ts pkt header");
+        std::perror("invalid ts pkt header");
         isValid = FALSE;
         return FALSE;
     }
@@ -264,40 +249,44 @@ BOOL TiVoDecoderTsPacket::decode()
 
 void TiVoDecoderTsPacket::dump()
 {   
-    CHAR pidType[30];
-    switch(ts_packet_type)
+    const char *pidType;
+
+    if (!(IS_VVERBOSE))
+        return;
+
+    switch (ts_packet_type)
     {
         case TS_PID_TYPE_RESERVED                   : 
-            { sprintf(pidType,  "Reserved"); break; }
+            { pidType = "Reserved"; break; }
         case TS_PID_TYPE_NULL_PACKET                : 
-            { sprintf(pidType,  "NULL Packet"); break; }
+            { pidType = "NULL Packet"; break; }
         case TS_PID_TYPE_PROGRAM_ASSOCIATION_TABLE  : 
-            { sprintf(pidType,  "Program Association Table"); break; }
+            { pidType = "Program Association Table"; break; }
         case TS_PID_TYPE_PROGRAM_MAP_TABLE          : 
-            { sprintf(pidType,  "Program Map Table"); break; }
+            { pidType = "Program Map Table"; break; }
         case TS_PID_TYPE_CONDITIONAL_ACCESS_TABLE   : 
-            { sprintf(pidType,  "Conditional Access Table"); break; }
+            { pidType = "Conditional Access Table"; break; }
         case TS_PID_TYPE_NETWORK_INFORMATION_TABLE  : 
-            { sprintf(pidType,  "Network Information Table"); break; }
+            { pidType = "Network Information Table"; break; }
         case TS_PID_TYPE_SERVICE_DESCRIPTION_TABLE  : 
-            { sprintf(pidType,  "Service Description Table"); break; }
+            { pidType = "Service Description Table"; break; }
         case TS_PID_TYPE_EVENT_INFORMATION_TABLE    : 
-            { sprintf(pidType,  "Event Information Table"); break; }
+            { pidType = "Event Information Table"; break; }
         case TS_PID_TYPE_RUNNING_STATUS_TABLE       : 
-            { sprintf(pidType,  "Running Status Table"); break; }
+            { pidType = "Running Status Table"; break; }
         case TS_PID_TYPE_TIME_DATE_TABLE            : 
-            { sprintf(pidType,  "Time Date Table"); break; }
+            { pidType = "Time Date Table"; break; }
         case TS_PID_TYPE_NONE                       : 
-            { sprintf(pidType,  "None"); break; }
+            { pidType = "None"; break; }
         case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA :
         {
-            if ( TRUE == isPmtPkt() )
+            if (TRUE == isPmtPkt())
             {
-                sprintf(pidType,  "Program Map Table");
+                pidType = "Program Map Table";
             }
             else
             {
-                sprintf(pidType,  "Audio/Video/PrivateData");
+                pidType = "Audio/Video/PrivateData";
             }
 
             break;
@@ -305,164 +294,115 @@ void TiVoDecoderTsPacket::dump()
 
         default :
         {
-            sprintf(pidType,  "**** UNKNOWN ***");
+            pidType = "**** UNKNOWN ***";
         }
     }
 
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %s   : PktID %d\n", 
-        "TS Pkt header", pidType, packetId );
+    std::fprintf(stderr, "%-15s : %s   : PktID %d\n", 
+                 "TS Pkt header", pidType, packetId);
+    std::fprintf(stderr, "%-15s : %s   : Valid Decode %d\n", 
+                 "TS Pkt header", pidType, isValid);
+    std::fprintf(stderr, "%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
+                 "sync_byte", tsHeader.sync_byte);
+    std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
+                 "transport_error_indicator",
+                 tsHeader.transport_error_indicator);
+    std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
+                 "payload_unit_start_indicator", 
+                 tsHeader.payload_unit_start_indicator);
+    std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
+                 "transport_priority", tsHeader.transport_priority);
+    std::fprintf(stderr, "%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
+                 "pid", tsHeader.pid);
+    std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
+                 "transport_scrambling_control", 
+                 tsHeader.transport_scrambling_control);
+    std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
+                 "adaptation_field_exists", 
+                 tsHeader.adaptation_field_exists);
+    std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
+                 "payload_data_exists", tsHeader.payload_data_exists);
+    std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
+                 "continuity_counter", tsHeader.continuity_counter);
 
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %s   : Valid Decode %d\n", 
-        "TS Pkt header", pidType, isValid );
-
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
-            "sync_byte", 
-            tsHeader.sync_byte );
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
-            "transport_error_indicator", 
-            tsHeader.transport_error_indicator );
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
-            "payload_unit_start_indicator", 
-            tsHeader.payload_unit_start_indicator);
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
-            "transport_priority", 
-            tsHeader.transport_priority);
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
-            "pid", 
-            tsHeader.pid);
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
-            "transport_scrambling_control", 
-            tsHeader.transport_scrambling_control);
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
-            "adaptation_field_exists", 
-            tsHeader.adaptation_field_exists);
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
-            "payload_data_exists", 
-            tsHeader.payload_data_exists);
-    if(IS_VVERBOSE)
-    fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Pkt header",
-            "continuity_counter", 
-            tsHeader.continuity_counter);
-
-    if ( tsHeader.adaptation_field_exists )
+    if (tsHeader.adaptation_field_exists)
     {
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "adaptation_field_length", 
-                tsAdaptation.adaptation_field_length);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "discontinuity_indicator", 
-                tsAdaptation.discontinuity_indicator);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "random_access_indicator", 
-                tsAdaptation.random_access_indicator);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "elementary_stream_priority_indicator", 
-                tsAdaptation.elementary_stream_priority_indicator);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "pcr_flag", 
-                tsAdaptation.pcr_flag);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "opcr_flag", 
-                tsAdaptation.opcr_flag);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "splicing_point_flag", 
-                tsAdaptation.splicing_point_flag);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "transport_private_data_flag", 
-                tsAdaptation.transport_private_data_flag);
-
-        if(IS_VVERBOSE)
-        fprintf(stderr,"%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                "adaptation_field_extension_flag", 
-                tsAdaptation.adaptation_field_extension_flag);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "adaptation_field_length", 
+                     tsAdaptation.adaptation_field_length);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "discontinuity_indicator", 
+                     tsAdaptation.discontinuity_indicator);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "random_access_indicator", 
+                     tsAdaptation.random_access_indicator);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "elementary_stream_priority_indicator", 
+                     tsAdaptation.elementary_stream_priority_indicator);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "pcr_flag", tsAdaptation.pcr_flag);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "opcr_flag", tsAdaptation.opcr_flag);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "splicing_point_flag", tsAdaptation.splicing_point_flag);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "transport_private_data_flag", 
+                     tsAdaptation.transport_private_data_flag);
+        std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
+                     "adaptation_field_extension_flag", 
+                     tsAdaptation.adaptation_field_extension_flag);
     }
-    
-    if(IS_VVERBOSE)
-    hexbulk( buffer, TS_FRAME_SIZE );
+
+    hexbulk(buffer, TS_FRAME_SIZE);
 }
 
-
-BOOL TiVoDecoderTsStream::decrypt( UINT8 * pBuffer, UINT16 bufferLen )
+BOOL TiVoDecoderTsStream::decrypt(UINT8 *pBuffer, UINT16 bufferLen)
 {
-//    // turn off crypto bits in TS header
-//    UINT8 * pCrypto = &pBuffer[3];
-//    *pCrypto &= ~0xC0;  
-        
-    if ( !pParent )
+    if (!pParent)
     {
-        perror("Stream does not have a parent decoder");
+        std::perror("Stream does not have a parent decoder");
         return FALSE;
     }
 
-    if(IS_VVVERBOSE)
-        fprintf(stderr, "AAA : dump turing : INIT\n");
+    if (IS_VVVERBOSE)
+    {
+        std::fprintf(stderr, "AAA : dump turing : INIT\n");
 
-    if(IS_VVVERBOSE)
         pParent->pTuring->dump();
+    }
 
-    if ( pParent->do_header(&turing_stuff.key[0],
-            &(turing_stuff.block_no), NULL,
-            &(turing_stuff.crypted), NULL, NULL) )
+    if (pParent->do_header(&turing_stuff.key[0],
+                           &(turing_stuff.block_no), NULL,
+                           &(turing_stuff.crypted), NULL, NULL))
     {
-        perror("do_header did not return 0!\n");
+        std::perror("do_header did not return 0!\n");
         return FALSE;
     }
 
-    if(IS_VVVERBOSE)
-        fprintf(stderr, "BBB : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
-            stream_id, turing_stuff.block_no, turing_stuff.crypted );
+    if (IS_VVVERBOSE)
+        std::fprintf(stderr, "BBB : stream_id 0x%02x, blockno %d, crypted 0x%08x\n",
+                     stream_id, turing_stuff.block_no, turing_stuff.crypted);
 
     pParent->pTuring->prepare_frame(stream_id, turing_stuff.block_no);
 
-    if(IS_VVVERBOSE)
-        fprintf(stderr, "CCC : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
-            stream_id, turing_stuff.block_no, turing_stuff.crypted );
+    if (IS_VVVERBOSE)
+    {
+        std::fprintf(stderr, "CCC : stream_id 0x%02x, blockno %d, crypted 0x%08x\n",
+                     stream_id, turing_stuff.block_no, turing_stuff.crypted);
 
-    // Do not need to do this for TS streams - crypted is zero and apparently not used
-    // turing->decrypt_buffer((unsigned char *)&pStream->turing_stuff.crypted, 4);
+        std::fprintf(stderr, "ZZZ : dump turing : BEFORE DECRYPT\n");
 
-    if(IS_VVVERBOSE)
-        fprintf(stderr, "DDD : stream_id 0x%02x, blockno %d, crypted 0x%08x\n", 
-            stream_id, turing_stuff.block_no, turing_stuff.crypted );
-
-    if(IS_VVVERBOSE)
-        fprintf(stderr, "ZZZ : dump turing : BEFORE DECRYPT\n");
-
-    if(IS_VVVERBOSE)
         pParent->pTuring->dump();
+    }
 
     pParent->pTuring->decrypt_buffer(pBuffer, bufferLen);
 
-    if(IS_VVVERBOSE)
-        fprintf(stderr,"---Decrypted transport packet\n");
-    
     if (IS_VVVERBOSE)
-        hexbulk( pBuffer, bufferLen );
+    {
+        std::fprintf(stderr, "---Decrypted transport packet\n");
+    
+        hexbulk(pBuffer, bufferLen);
+    }
 
     return TRUE;
 }
