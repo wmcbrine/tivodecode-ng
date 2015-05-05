@@ -64,15 +64,12 @@ product or in the associated documentation.
 #include <cstdlib>
 
 #include "Turing.hxx"		/* interface definitions */
-
-#include "TuringSbox.h"
-#include "QUTsbox.h"
-#include "TuringMultab.h"
+#include "TuringBoxes.hxx"
 
 /* give correct offset for the current position of the register,
  * where logically R[0] is at position "zero".
  */
-#define OFF(zero, i) (((zero)+(i)) % LFSRLEN)
+#define OFF(zero, i) (((zero) + (i)) % LFSRLEN)
 
 /* step the LFSR */
 /* After stepping, "zero" moves right one place */
