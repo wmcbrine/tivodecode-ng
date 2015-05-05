@@ -1,7 +1,8 @@
 /*
-* tivodecode, (c) 2006, Jeremy Drake
-* See COPYING file for license terms
-*/
+ * tivodecode-ng
+ * Copyright 2006-2015, Jeremy Drake et al.
+ * See COPYING file for license terms
+ */
 #ifdef HAVE_CONFIG_H
 #include "tdconfig.h"
 #endif
