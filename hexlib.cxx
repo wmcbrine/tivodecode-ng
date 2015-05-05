@@ -8,8 +8,8 @@
 
 #include <cctype>
 #include <cstdio>
-#include <cstring>
 #include <iostream>
+#include <string>
 
 #include "hexlib.hxx"
 
@@ -22,33 +22,27 @@ hexbulk(unsigned char *buf, int n)
     int j = 0;
     char ch;
     char hexdigit[5];
-    char strdigit[5];
-    char hexstr[100];
-    char strstr[100];
+    std::string hexstr = "";
+    std::string strstr = "";
     
     while (i < n)
     {
-        std::memset(hexstr, 0, 100);
-        std::memset(strstr, 0, 100);
-	
         for (j = 0; (j < COLS) && (i < n); j++, i++)
         {
-            if (std::isspace(buf[i]))
+            ch = buf[i];
+            if (std::isspace(ch))
                 ch = ' ';
-            else if (std::isprint(buf[i]))
-                ch = buf[i];
-            else
+            else if (!std::isprint(ch))
                 ch = '.';
 
             std::sprintf(hexdigit, "%02x ", buf[i]);
-            std::sprintf(strdigit, "%c", ch);
-            std::strcat(hexstr, hexdigit);
-            std::strcat(strstr, strdigit);
+            hexstr += hexdigit;
+            strstr += ch;
         }
 
         while (j < COLS)
         {
-            std::strcat(hexstr, "   ");	
+            hexstr += "   ";
             j++;
         }
 
