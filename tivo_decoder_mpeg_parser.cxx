@@ -7,6 +7,8 @@
 #include "tdconfig.h"
 #endif
 
+#include <cstdio>
+
 #include "tivo_decoder_mpeg_parser.hxx"
 
 TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser()
@@ -158,7 +160,7 @@ INT32 TiVoDecoder_MPEG2_Parser::nextbits(UINT32 n)
         if (nread == 0)
         {
             _end_of_file = TRUE;
-            fprintf(stderr, "EOF\n");
+            std::fprintf(stderr, "EOF\n");
             return -1;
         }
 
