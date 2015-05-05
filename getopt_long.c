@@ -31,7 +31,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $PostgreSQL: pgsql/src/port/getopt_long.c,v 1.5 2005/10/15 02:49:51 momjian Exp $
  */
 
 #ifdef HAVE_CONFIG_H

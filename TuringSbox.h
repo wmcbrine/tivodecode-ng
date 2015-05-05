@@ -1,4 +1,3 @@
-/* @(#)TuringSbox.h	1.2 (QUALCOMM) 02/08/23 */
 /*
  * Basic Sbox for Turing.
  *

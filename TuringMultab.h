@@ -1,4 +1,3 @@
-/* @(#)TuringMultab.h	1.3 (QUALCOMM) 02/09/03 */
 /* Multiplication table for Turing using 0xD02B4367 */
 unsigned long Multab[256] = {
     0x00000000, 0xD02B4367, 0xED5686CE, 0x3D7DC5A9,

@@ -1,4 +1,3 @@
-/* @(#)Turing.h	1.4 (QUALCOMM) 03/02/24 */
 /*
  * Interface definition of Turing
  *

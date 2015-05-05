@@ -1,6 +1,5 @@
 /* useful hex manipulation routines */
 /* Copyright C Qualcomm Inc 1997 */
-/* @(#)hexlib.c	1.1 (AHAG) 02/08/23 */
 
 #ifdef HAVE_CONFIG_H
 # include "tdconfig.h"

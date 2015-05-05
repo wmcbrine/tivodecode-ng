@@ -1,4 +1,3 @@
-/* @(#)TuringFast.c	1.6 (QUALCOMM Turing) 03/02/24 */
 /*
  * Fast (unrolled) implementation of Turing
  *
