@@ -11,46 +11,50 @@
 
 #include "tivo_decoder_base.hxx"
 
-
 TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
                          FILE *pOutfile)
 {
     isValid = FALSE;
 
-    if(!pTuringState || !pInfile || !pOutfile )
+    if (!pTuringState || !pInfile || !pOutfile)
         return;
         
-    running       = TRUE;
-    pFileIn       = pInfile;
-    pFileOut      = pOutfile;
-    pTuring       = pTuringState;
-    isValid       = TRUE;
+    running  = TRUE;
+    pFileIn  = pInfile;
+    pFileOut = pOutfile;
+    pTuring  = pTuringState;
+    isValid  = TRUE;
 }
 
 TiVoDecoder::~TiVoDecoder()
 {
-    
 }
 
-
 /**
- * This is from analyzing the TiVo directshow dll.  Most of the parameters I have no idea what they are for.
+ * This is from analyzing the TiVo directshow dll.  Most of the 
+ * parameters I have no idea what they are for.
  *
- * @param arg_0     pointer to the 16 byte private data section of the packet header.
- * @param block_no  pointer to an integer to contain the block number used in the turing key
+ * @param arg_0     pointer to the 16 byte private data section of the
+ *                  packet header.
+ * @param block_no  pointer to an integer to contain the block number used
+ *                  in the turing key
  * @param arg_8     no clue
  * @param crypted   pointer to an integer to contain 4 bytes of data encrypted
- *                  with the same turing cipher as the video.  No idea what to do with it once
- *                  it is decrypted, tho, but the turing needs to have 4 bytes
- *                  consumed in order to line up with the video/audio data.  My
- *                  guess is it is a checksum of some sort.
+ *                  with the same turing cipher as the video.  No idea what to
+ *                  do with it once it is decrypted, tho, but the turing needs
+ *                  to have 4 bytes consumed in order to line up with the
+ *                  video/audio data.  My guess is it is a checksum of some
+ *                  sort.
  * @param arg_10    no clue
  * @param arg_14    no clue
  *
- * @return count of particular bits which are zero.  They should all be 1, so the return value should be zero.
- *         I would consider a non-zero return an error.
+ * @return count of particular bits which are zero.  They should all be 1,
+ * so the return value should be zero. I would consider a non-zero 
+ * return an error.
  */
-int TiVoDecoder::do_header(UINT8 * arg_0, int * block_no, int * arg_8, int * crypted, int * arg_10, int * arg_14)
+
+int TiVoDecoder::do_header(UINT8 *arg_0, int *block_no, int *arg_8,
+                           int *crypted, int *arg_10, int *arg_14)
 {
     int var_4 = 0;
 
@@ -120,6 +124,4 @@ int TiVoDecoder::do_header(UINT8 * arg_0, int * block_no, int * arg_8, int * cry
     return var_4;
 }
 
-
 /* vi:set ai ts=4 sw=4 expandtab: */
-

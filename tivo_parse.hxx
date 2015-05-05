@@ -10,21 +10,21 @@
 #include "tivo_types.hxx"
 #include "turing_stream.hxx"
 
-extern UINT16 portable_ntohs( UINT8 * pVal );
-extern UINT32 portable_ntohl( UINT8 * pVal );
+extern UINT16 portable_ntohs(UINT8 *pVal);
+extern UINT32 portable_ntohl(UINT8 *pVal);
 
 #define static_strlen(str) (sizeof(str) - 1)
 
 extern int  o_verbose;
 extern BOOL o_pkt_dump;
 
-#define IS_VERBOSE          ( (o_pkt_dump) || (o_verbose >= 1) )
-#define IS_VVERBOSE         ( (o_pkt_dump) || (o_verbose >= 2) )
-#define IS_VVVERBOSE        ( (o_pkt_dump) || (o_verbose >= 3) )
+#define IS_VERBOSE     ( (o_pkt_dump) || (o_verbose >= 1) )
+#define IS_VVERBOSE    ( (o_pkt_dump) || (o_verbose >= 2) )
+#define IS_VVVERBOSE   ( (o_pkt_dump) || (o_verbose >= 3) )
 
-#define VERBOSE(...)        if ( IS_VERBOSE )   { std::fprintf(stderr, __VA_ARGS__); }
-#define VVERBOSE(...)       if ( IS_VVERBOSE )  { std::fprintf(stderr, __VA_ARGS__); }
-#define VVVERBOSE(...)      if ( IS_VVVERBOSE ) { std::fprintf(stderr, __VA_ARGS__); }
+#define VERBOSE(...)   if (IS_VERBOSE)   { std::fprintf(stderr, __VA_ARGS__); }
+#define VVERBOSE(...)  if (IS_VVERBOSE)  { std::fprintf(stderr, __VA_ARGS__); }
+#define VVVERBOSE(...) if (IS_VVVERBOSE) { std::fprintf(stderr, __VA_ARGS__); }
 
 /*
  * Initial header formats lifted from ezrec's posting:
@@ -52,33 +52,33 @@ TiVoChunkType;
 class TiVoStreamHeader 
 {
     public:
-        CHAR        fileType[4];    /* the string 'TiVo' */
-        UINT16      dummy_0004;
-        UINT16      dummy_0006;
-        UINT16      dummy_0008;
-        UINT32      mpeg_offset;    /* 0-based offset of MPEG stream */
-        UINT16      chunks;         /* Number of metadata chunks */
+        CHAR   fileType[4];    /* the string 'TiVo' */
+        UINT16 dummy_0004;
+        UINT16 dummy_0006;
+        UINT16 dummy_0008;
+        UINT32 mpeg_offset;    /* 0-based offset of MPEG stream */
+        UINT16 chunks;         /* Number of metadata chunks */
         
-        TiVoFormatType  getFormatType();
-        BOOL            read(HappyFile *file);
-        void            dump(UINT8 dbgLevel=0);
-        UINT16          size() { return sizeof(TiVoStreamHeader); };
+        TiVoFormatType getFormatType();
+        BOOL           read(HappyFile *file);
+        void           dump(UINT8 dbgLevel=0);
+        UINT16         size() { return sizeof(TiVoStreamHeader); };
     
         TiVoStreamHeader();
         
-} __attribute__((packed)) ;
+} __attribute__((packed));
 
 class TiVoStreamChunk 
 {
     public:
-        UINT32      chunkSize;  /* Size of chunk */
-        UINT32      dataSize;   /* Length of the payload */
-        UINT16      id;         /* Chunk ID */
-        UINT16      type;       /* Subtype */
-        UINT8       * pData;    /* Variable length data */
+        UINT32 chunkSize;  /* Size of chunk */
+        UINT32 dataSize;   /* Length of the payload */
+        UINT16 id;         /* Chunk ID */
+        UINT16 type;       /* Subtype */
+        UINT8  *pData;     /* Variable length data */
         
         BOOL   read(HappyFile *file);       
-        BOOL   write(FILE * file); 
+        BOOL   write(FILE *file); 
         void   dump(UINT8 dbgLevel=0);
         UINT16 size() { return sizeof(TiVoStreamChunk) - sizeof(UINT8*); };
         

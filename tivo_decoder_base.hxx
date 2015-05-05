@@ -11,7 +11,6 @@
 #include "tivo_parse.hxx"
 #include "turing_stream.hxx"
 
-
 #define LOOK_AHEAD(fh, bytes, n) do {\
     int retval = fh->read((bytes) + looked_ahead, (n) - looked_ahead);\
     if ( retval == 0 )\
@@ -32,13 +31,14 @@ class TiVoDecoder
 {
     public:
 
-        BOOL           running;
-        BOOL           isValid;
-        TuringState  * pTuring;
-        HappyFile    * pFileIn;
-        FILE         * pFileOut;
-        
-        int do_header(UINT8 * arg_0, int * block_no, int * arg_8, int * crypted, int * arg_10, int * arg_14);
+        BOOL         running;
+        BOOL         isValid;
+        TuringState *pTuring;
+        HappyFile   *pFileIn;
+        FILE        *pFileOut;
+
+        int do_header(UINT8 *arg_0, int *block_no, int *arg_8,
+                      int *crypted, int *arg_10, int *arg_14);
 
         virtual BOOL process() = 0;
 
@@ -46,15 +46,8 @@ class TiVoDecoder
                     FILE *pOutfile);
         virtual ~TiVoDecoder();
 
-} __attribute__((packed)) ;
-
-
-
+} __attribute__((packed));
 
 #endif /* TIVO_DECODER_HXX_ */
 
-
-
-
 /* vi:set ai ts=4 sw=4 expandtab: */
-

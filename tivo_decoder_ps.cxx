@@ -39,7 +39,6 @@ static packet_tag_info packet_tags[] = {
     {0, 0, PACK_NONE}       // end of list
 };
 
-
 TiVoDecoderPS::TiVoDecoderPS(
         TuringState *pTuringState, 
         HappyFile *pInfile, 
@@ -51,46 +50,43 @@ TiVoDecoderPS::TiVoDecoderPS(
     marker = 0xFFFFFFFF;
 }
 
-
 TiVoDecoderPS::~TiVoDecoderPS()
 {
-
 }
-
 
 BOOL TiVoDecoderPS::process()
 {
-    if(FALSE==isValid)
+    if (FALSE == isValid)
     {
         VERBOSE("PS Process : not valid\n");
         return FALSE;
     }
 
-    BOOL first   = TRUE;
-    UINT8 byte   = 0x00;
+    BOOL first = TRUE;
+    UINT8 byte = 0x00;
     
-    while(running)
+    while (running)
     {
-        if((marker & 0xFFFFFF00) == 0x100)
+        if ((marker & 0xFFFFFF00) == 0x100)
         {
             hoff_t position = pFileIn->tell();
             int ret = process_frame(byte, position);
 
-            if(ret == 1)
+            if (ret == 1)
             {
                 marker = 0xFFFFFFFF;
             }
-            else if(ret == 0)
+            else if (ret == 0)
             {
                 std::fwrite(&byte, 1, 1, pFileOut);
             }
-            else if(ret < 0)
+            else if (ret < 0)
             {
                 std::perror("processing frame");
                 return 10;
             }
         }
-        else if(!first)
+        else if (!first)
         {
             std::fwrite(&byte, 1, 1, pFileOut);
         }
@@ -99,7 +95,7 @@ BOOL TiVoDecoderPS::process()
 
         if (pFileIn->read(&byte, 1) == 0)
         {
-            VERBOSE( "End of File\n");
+            VERBOSE("End of File\n");
             running = FALSE;
         }
         else
@@ -114,8 +110,6 @@ BOOL TiVoDecoderPS::process()
     return TRUE;
 }
 
-
-
 int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
 {
     static union {
@@ -126,7 +120,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
     unsigned char bytes[32];
     int looked_ahead = 0;
     int i;
-    int scramble=0;
+    int scramble = 0;
     unsigned int header_len = 0;
     unsigned int length;
 
@@ -135,10 +129,10 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
     for (i = 0; packet_tags[i].packet != PACK_NONE; i++)
     {
         if (code >= packet_tags[i].code_match_lo &&
-                code <= packet_tags[i].code_match_hi)
+            code <= packet_tags[i].code_match_hi)
         {
-            if (packet_tags[i].packet == PACK_PES_SIMPLE
-                    || packet_tags[i].packet == PACK_PES_COMPLEX)
+            if (packet_tags[i].packet == PACK_PES_SIMPLE ||
+                packet_tags[i].packet == PACK_PES_COMPLEX)
             {
                 if (packet_tags[i].packet == PACK_PES_COMPLEX)
                 {
@@ -154,13 +148,14 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                     //            copyright  dsm_trick
                     //              copy       addtl copy
 
-                    if ((bytes[2]>>6) != 0x2) 
+                    if ((bytes[2] >> 6) != 0x2) 
                     {
-                        VERBOSE( "PES (0x%02X) header mark != 0x2: 0x%x (is this an MPEG2-PS file?)\n",
-                            code,(bytes[2]>>6));
+                        VERBOSE("PES (0x%02X) header mark != 0x2: 0x%x "
+                                "(is this an MPEG2-PS file?)\n",
+                                code, (bytes[2] >> 6));
                     }
 
-                    scramble=((bytes[2]>>4)&0x3);
+                    scramble = ((bytes[2] >> 4) & 0x3);
 
                     header_len = 5 + bytes[4];
 
@@ -190,8 +185,8 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                                 //private data flag
                                 if (bytes[ext_byte] & 0x80)
                                 {
-                                    int block_no    = 0;
-                                    int crypted     = 0;
+                                    int block_no = 0;
+                                    int crypted  = 0;
 
                                     VERBOSE("\n\n---Turing : Key\n");
                                     if ( IS_VERBOSE )
@@ -246,12 +241,14 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                 std::memcpy(aligned_buf.packet_buffer + sizeof(td_uint64_t),
                             bytes, looked_ahead);
 
-                LOOK_AHEAD (pFileIn, aligned_buf.packet_buffer + sizeof(td_uint64_t), length + 2);
+                LOOK_AHEAD (pFileIn, aligned_buf.packet_buffer +
+                            sizeof(td_uint64_t), length + 2);
                 {
-                    unsigned char * packet_ptr = aligned_buf.packet_buffer + sizeof(td_uint64_t);
+                    unsigned char *packet_ptr = aligned_buf.packet_buffer +
+                        sizeof(td_uint64_t);
                     size_t packet_size;
 
-                    aligned_buf.packet_buffer[sizeof(td_uint64_t)-1] = code;
+                    aligned_buf.packet_buffer[sizeof(td_uint64_t) - 1] = code;
 
                     if (header_len)
                     {
@@ -271,7 +268,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                         pTuring->decrypt_buffer(packet_ptr, packet_size);
 
                         // turn off scramble bits
-                        aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x30;
+                        aligned_buf.packet_buffer[sizeof(td_uint64_t) + 2] &= ~0x30;
 
                         // scan video buffer for Slices.  If no slices are
                         // found, the MAK is wrong.
@@ -279,7 +276,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                             int slice_count=0;
                             size_t offset;
 
-                            for (offset=sizeof(td_uint64_t);offset+4<packet_size;offset++)
+                            for (offset = sizeof(td_uint64_t); offset + 4 < packet_size; offset++)
                             {
                                 if (aligned_buf.packet_buffer[offset] == 0x00 &&
                                     aligned_buf.packet_buffer[offset+1] == 0x00 &&
@@ -291,7 +288,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                                 }
                                 // choose 8 as a good test that if 8 slices
                                 // are seen, it's probably not random noise
-                                if (slice_count>8)
+                                if (slice_count > 8)
                                 {
                                     // disable future verification
                                     o_no_verify = 1;
@@ -299,7 +296,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                             }
                             if (!o_no_verify)
                             {
-                                VERBOSE( "Invalid MAK -- aborting\n");
+                                VERBOSE("Invalid MAK -- aborting\n");
                                 return -2;
                             }
                         }
@@ -309,7 +306,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                         // don't know why, but tivo dll does this.
                         // I can find no good docs on the format of the program_stream_map
                         // but I think this clears a reserved bit.  No idea why
-                        aligned_buf.packet_buffer[sizeof(td_uint64_t)+2] &= ~0x20;
+                        aligned_buf.packet_buffer[sizeof(td_uint64_t) + 2] &= ~0x20;
                     }
 
                     if (std::fwrite(aligned_buf.packet_buffer +
@@ -332,4 +329,3 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */
-

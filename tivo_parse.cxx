@@ -234,4 +234,3 @@ void TiVoStreamChunk::decryptMetadata(TuringState *pTuring, UINT16 offsetVal)
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */
-

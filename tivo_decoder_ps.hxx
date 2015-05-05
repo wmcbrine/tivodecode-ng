@@ -10,7 +10,6 @@
 #include "tivo_types.hxx"
 #include "tivo_decoder_base.hxx"
 
-
 //============================
 // PS Specific data structures
 //============================
@@ -24,7 +23,6 @@ typedef enum
 }
 packet_type;
 
-
 typedef struct
 {
     // the byte value match for the packet tags
@@ -36,17 +34,14 @@ typedef struct
 }
 packet_tag_info;
 
-
 /* All elements are in big-endian format and are packed */
 
 class TiVoDecoderPS : public TiVoDecoder
 {
-    private :
-        
-        UINT32  marker;
+    private:
+        UINT32 marker;
         
     public:
-
         virtual BOOL process();
         int process_frame(UINT8 code, hoff_t packet_start);
     
@@ -54,7 +49,6 @@ class TiVoDecoderPS : public TiVoDecoder
                       FILE *pOutfile);
         ~TiVoDecoderPS();
         
-} __attribute__((packed)) ;
-
+} __attribute__((packed));
 
 #endif /* TIVO_DECODER_PS_HXX_ */

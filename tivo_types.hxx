@@ -8,14 +8,14 @@
 
 #include <iostream>
 
-typedef unsigned int        UINT32;
-typedef int                 INT32;
-typedef unsigned short      UINT16;
-typedef short               INT16;
-typedef unsigned char       UINT8;
-typedef char                INT8;
-typedef char                CHAR;
-typedef char                BOOL;
+typedef unsigned int   UINT32;
+typedef int            INT32;
+typedef unsigned short UINT16;
+typedef short          INT16;
+typedef unsigned char  UINT8;
+typedef char           INT8;
+typedef char           CHAR;
+typedef char           BOOL;
 
 #define TRUE  1
 #define FALSE 0

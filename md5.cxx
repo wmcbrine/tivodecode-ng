@@ -1,5 +1,3 @@
-/*	   $KAME: md5.c,v 1.3 2000/02/22 14:01:17 itojun Exp $	   */
-
 /*
  * Copyright (C) 1995, 1996, 1997, and 1998 WIDE Project.
  * All rights reserved.
@@ -28,7 +26,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * $PostgreSQL: pgsql/contrib/pgcrypto/md5.c,v 1.13 2005/07/11 15:07:59 tgl Exp $
  */
 
 #include "tdconfig.h"
@@ -37,11 +34,11 @@
 
 #include "md5.hxx"
 
-#define md5_sta  md5_st.md5_state32[0]
-#define md5_stb  md5_st.md5_state32[1]
-#define md5_stc  md5_st.md5_state32[2]
-#define md5_std  md5_st.md5_state32[3]
-#define md5_st8  md5_st.md5_state8
+#define md5_sta md5_st.md5_state32[0]
+#define md5_stb md5_st.md5_state32[1]
+#define md5_stc md5_st.md5_state32[2]
+#define md5_std md5_st.md5_state32[3]
+#define md5_st8 md5_st.md5_state8
 
 #define md5_nl  md5_count.md5_count64.md5_count32_lsw
 #define md5_nh  md5_count.md5_count64.md5_count32_msw
@@ -142,8 +139,7 @@ static const unsigned char md5_paddat[MD5_BUFLEN] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void
-MD5::init()
+void MD5::init()
 {
     md5_nl = 0;
     md5_nh = 0;
@@ -155,8 +151,7 @@ MD5::init()
     std::memset(md5_buf, 0, sizeof(md5_buf));
 }
 
-void
-MD5::loop(const unsigned char *input, size_t len)
+void MD5::loop(const unsigned char *input, size_t len)
 {
     unsigned int gap, i;
 
@@ -183,8 +178,7 @@ MD5::loop(const unsigned char *input, size_t len)
     }
 }
 
-void
-MD5::pad()
+void MD5::pad()
 {
     unsigned int gap;
 
@@ -219,8 +213,7 @@ MD5::pad()
     calc(md5_buf);
 }
 
-void
-MD5::result(unsigned char *digest)
+void MD5::result(unsigned char *digest)
 {
     /* 4 byte words */
 #ifndef WORDS_BIGENDIAN
@@ -249,8 +242,7 @@ MD5::result(unsigned char *digest)
 static unsigned int X[16];
 #endif
 
-void
-MD5::calc(unsigned char *b64)
+void MD5::calc(unsigned char *b64)
 {
     unsigned int A = md5_sta;
     unsigned int B = md5_stb;

@@ -32,7 +32,7 @@ TiVoDecoderTsPacket::TiVoDecoderTsPacket()
     std::memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field));
 }
 
-void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream * pStream)
+void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream *pStream)
 {
     pParent = pStream;
 }
@@ -69,13 +69,13 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
         VVERBOSE("Read handler : size %d\n", size);
     }
 
-    if(0==size)
+    if (0 == size)
     {
         VERBOSE("End of file\n");
         isValid = TRUE;
         return size;
     }
-    else if(TS_FRAME_SIZE != size)
+    else if (TS_FRAME_SIZE != size)
     {
         std::fprintf(stderr, "Read error : TS Frame Size : %d, Size Read %d\n",
                      TS_FRAME_SIZE, size);
@@ -159,7 +159,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
         if (globalBufferLen != (3 * TS_FRAME_SIZE))
         {
-            std::fprintf(stderr, "ERROR: globalBufferLen != (3 * TS_FRAME_SIZE)\n");
+            std::fprintf(stderr,
+                "ERROR: globalBufferLen != (3 * TS_FRAME_SIZE)\n");
             return 0;  // indicate EOF on partial packet
         }
 
@@ -178,7 +179,6 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
     return size;
 }
 
-
 BOOL TiVoDecoderTsPacket::decode()
 {
     if (FALSE == isValid)
@@ -193,18 +193,18 @@ BOOL TiVoDecoderTsPacket::decode()
     payloadOffset = 0;
     std::memset(&tsHeader, 0, sizeof(TS_Header));
 
-    UINT32 ts_hdr_val  = portable_ntohl( &buffer[payloadOffset] );
+    UINT32 ts_hdr_val = portable_ntohl(&buffer[payloadOffset]);
     payloadOffset += 4;
 
-    tsHeader.sync_byte                    = ( ts_hdr_val & 0xff000000 ) >> 24;
-    tsHeader.transport_error_indicator    = ( ts_hdr_val & 0x00800000 ) >> 23;
-    tsHeader.payload_unit_start_indicator = ( ts_hdr_val & 0x00400000 ) >> 22;
-    tsHeader.transport_priority           = ( ts_hdr_val & 0x00200000 ) >> 21;
-    tsHeader.pid                          = ( ts_hdr_val & 0x001FFF00 ) >> 8;
-    tsHeader.transport_scrambling_control = ( ts_hdr_val & 0x000000C0 ) >> 6;
-    tsHeader.adaptation_field_exists      = ( ts_hdr_val & 0x00000020 ) >> 5;
-    tsHeader.payload_data_exists          = ( ts_hdr_val & 0x00000010 ) >> 4;
-    tsHeader.continuity_counter           = ( ts_hdr_val & 0x0000000F );
+    tsHeader.sync_byte                    = (ts_hdr_val & 0xff000000) >> 24;
+    tsHeader.transport_error_indicator    = (ts_hdr_val & 0x00800000) >> 23;
+    tsHeader.payload_unit_start_indicator = (ts_hdr_val & 0x00400000) >> 22;
+    tsHeader.transport_priority           = (ts_hdr_val & 0x00200000) >> 21;
+    tsHeader.pid                          = (ts_hdr_val & 0x001FFF00) >> 8;
+    tsHeader.transport_scrambling_control = (ts_hdr_val & 0x000000C0) >> 6;
+    tsHeader.adaptation_field_exists      = (ts_hdr_val & 0x00000020) >> 5;
+    tsHeader.payload_data_exists          = (ts_hdr_val & 0x00000010) >> 4;
+    tsHeader.continuity_counter           = (ts_hdr_val & 0x0000000F);
 
     if (tsHeader.sync_byte != 0x47)
     {
@@ -216,30 +216,33 @@ BOOL TiVoDecoderTsPacket::decode()
     for (int i = 0; ts_packet_tags[i].ts_packet != TS_PID_TYPE_NONE; i++)
     {
         if (tsHeader.pid >= ts_packet_tags[i].code_match_lo &&
-                tsHeader.pid <= ts_packet_tags[i].code_match_hi)
+            tsHeader.pid <= ts_packet_tags[i].code_match_hi)
         {
             ts_packet_type = ts_packet_tags[i].ts_packet;
             break;
         }
     }
 
-    if ( tsHeader.adaptation_field_exists )
+    if (tsHeader.adaptation_field_exists)
     {
         std::memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field));
 
         tsAdaptation.adaptation_field_length = buffer[payloadOffset];
         payloadOffset++;
         
-        UINT8  ts_adapt_val = portable_ntohs( &buffer[payloadOffset] );
+        UINT8 ts_adapt_val = portable_ntohs(&buffer[payloadOffset]);
 
-        tsAdaptation.discontinuity_indicator               = (ts_adapt_val & 0x80) >> 7;
-        tsAdaptation.random_access_indicator               = (ts_adapt_val & 0x40) >> 6;
-        tsAdaptation.elementary_stream_priority_indicator  = (ts_adapt_val & 0x20) >> 5;
-        tsAdaptation.pcr_flag                              = (ts_adapt_val & 0x10) >> 4;
-        tsAdaptation.opcr_flag                             = (ts_adapt_val & 0x08) >> 3;
-        tsAdaptation.splicing_point_flag                   = (ts_adapt_val & 0x04) >> 2;
-        tsAdaptation.transport_private_data_flag           = (ts_adapt_val & 0x02) >> 1;
-        tsAdaptation.adaptation_field_extension_flag       = (ts_adapt_val & 0x01);
+        tsAdaptation.discontinuity_indicator =
+            (ts_adapt_val & 0x80) >> 7;
+        tsAdaptation.random_access_indicator =
+            (ts_adapt_val & 0x40) >> 6;
+        tsAdaptation.elementary_stream_priority_indicator = 
+            (ts_adapt_val & 0x20) >> 5;
+        tsAdaptation.pcr_flag = (ts_adapt_val & 0x10) >> 4;
+        tsAdaptation.opcr_flag = (ts_adapt_val & 0x08) >> 3;
+        tsAdaptation.splicing_point_flag = (ts_adapt_val & 0x04) >> 2;
+        tsAdaptation.transport_private_data_flag = (ts_adapt_val & 0x02) >> 1;
+        tsAdaptation.adaptation_field_extension_flag = (ts_adapt_val & 0x01);
         
         payloadOffset += (tsAdaptation.adaptation_field_length);
     }
@@ -256,29 +259,29 @@ void TiVoDecoderTsPacket::dump()
 
     switch (ts_packet_type)
     {
-        case TS_PID_TYPE_RESERVED                   : 
+        case TS_PID_TYPE_RESERVED:
             { pidType = "Reserved"; break; }
-        case TS_PID_TYPE_NULL_PACKET                : 
+        case TS_PID_TYPE_NULL_PACKET:
             { pidType = "NULL Packet"; break; }
-        case TS_PID_TYPE_PROGRAM_ASSOCIATION_TABLE  : 
+        case TS_PID_TYPE_PROGRAM_ASSOCIATION_TABLE:
             { pidType = "Program Association Table"; break; }
-        case TS_PID_TYPE_PROGRAM_MAP_TABLE          : 
+        case TS_PID_TYPE_PROGRAM_MAP_TABLE:
             { pidType = "Program Map Table"; break; }
-        case TS_PID_TYPE_CONDITIONAL_ACCESS_TABLE   : 
+        case TS_PID_TYPE_CONDITIONAL_ACCESS_TABLE:
             { pidType = "Conditional Access Table"; break; }
-        case TS_PID_TYPE_NETWORK_INFORMATION_TABLE  : 
+        case TS_PID_TYPE_NETWORK_INFORMATION_TABLE:
             { pidType = "Network Information Table"; break; }
-        case TS_PID_TYPE_SERVICE_DESCRIPTION_TABLE  : 
+        case TS_PID_TYPE_SERVICE_DESCRIPTION_TABLE:
             { pidType = "Service Description Table"; break; }
-        case TS_PID_TYPE_EVENT_INFORMATION_TABLE    : 
+        case TS_PID_TYPE_EVENT_INFORMATION_TABLE:
             { pidType = "Event Information Table"; break; }
-        case TS_PID_TYPE_RUNNING_STATUS_TABLE       : 
+        case TS_PID_TYPE_RUNNING_STATUS_TABLE:
             { pidType = "Running Status Table"; break; }
-        case TS_PID_TYPE_TIME_DATE_TABLE            : 
+        case TS_PID_TYPE_TIME_DATE_TABLE:
             { pidType = "Time Date Table"; break; }
-        case TS_PID_TYPE_NONE                       : 
+        case TS_PID_TYPE_NONE:
             { pidType = "None"; break; }
-        case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA :
+        case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA:
         {
             if (TRUE == isPmtPkt())
             {
@@ -292,7 +295,7 @@ void TiVoDecoderTsPacket::dump()
             break;
         }
 
-        default :
+        default:
         {
             pidType = "**** UNKNOWN ***";
         }
@@ -408,4 +411,3 @@ BOOL TiVoDecoderTsStream::decrypt(UINT8 *pBuffer, UINT16 bufferLen)
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */
-

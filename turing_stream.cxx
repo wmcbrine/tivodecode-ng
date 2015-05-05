@@ -166,7 +166,6 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
         prepare_frame_helper((stream_id), (block_id)); \
     } while(0)
 
-
 void TuringState::prepare_frame(unsigned char stream_id, int block_id)
 {
     if (active)

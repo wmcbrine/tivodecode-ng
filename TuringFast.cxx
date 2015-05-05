@@ -78,57 +78,55 @@ product or in the associated documentation.
 /* step the LFSR */
 /* After stepping, "zero" moves right one place */
 #define STEP(z) \
-    R[OFF(z,0)] = R[OFF(z,15)] ^ R[OFF(z,4)] ^ \
-	(R[OFF(z,0)] << 8) ^ Multab[(R[OFF(z,0)] >> 24) & 0xFF]
+    R[OFF(z, 0)] = R[OFF(z, 15)] ^ R[OFF(z, 4)] ^ \
+	(R[OFF(z, 0)] << 8) ^ Multab[(R[OFF(z, 0)] >> 24) & 0xFF]
 
 /*
  * This does a reversible transformation of a word, based on the S-boxes.
  * The reversibility isn't used, but it guarantees no loss of information,
  * and hence no equivalent keys or IVs.
  */
-static WORD
-fixedS(WORD w)
+static WORD fixedS(WORD w)
 {
-    WORD    b;
+    WORD b;
 
-    b = Sbox[B(w, 0)]; w = ((w ^      Qbox[b])     & 0x00FFFFFF) | (b << 24);
-    b = Sbox[B(w, 1)]; w = ((w ^ ROTL(Qbox[b],8))  & 0xFF00FFFF) | (b << 16);
-    b = Sbox[B(w, 2)]; w = ((w ^ ROTL(Qbox[b],16)) & 0xFFFF00FF) | (b << 8);
-    b = Sbox[B(w, 3)]; w = ((w ^ ROTL(Qbox[b],24)) & 0xFFFFFF00) | b;
+    b = Sbox[B(w, 0)]; w = ((w ^      Qbox[b])      & 0x00FFFFFF) | (b << 24);
+    b = Sbox[B(w, 1)]; w = ((w ^ ROTL(Qbox[b], 8))  & 0xFF00FFFF) | (b << 16);
+    b = Sbox[B(w, 2)]; w = ((w ^ ROTL(Qbox[b], 16)) & 0xFFFF00FF) | (b << 8);
+    b = Sbox[B(w, 3)]; w = ((w ^ ROTL(Qbox[b], 24)) & 0xFFFFFF00) | b;
     return w;
 }
 
 /*
  * Push a word through the keyed S-boxes.
  */
-#define S(w,b) (S0[B((w), ((0+b)&0x3))] \
-		^ S1[B((w), ((1+b)&0x3))] \
-		^ S2[B((w), ((2+b)&0x3))] \
-		^ S3[B((w), ((3+b)&0x3))])
+#define S(w, b) (S0[B((w), ((0 + b) & 0x3))] \
+               ^ S1[B((w), ((1 + b) & 0x3))] \
+               ^ S2[B((w), ((2 + b) & 0x3))] \
+               ^ S3[B((w), ((3 + b) & 0x3))])
 
 /* two variants of the Pseudo-Hadamard Transform */
 
 /* Mix 5 words in place */
-#define PHT(A,B,C,D,E) { \
-	(E) += (A) + (B) + (C) + (D); \
-	(A) += (E); \
-	(B) += (E); \
-	(C) += (E); \
-	(D) += (E); \
+#define PHT(A, B, C, D, E) { \
+    (E) += (A) + (B) + (C) + (D); \
+    (A) += (E); \
+    (B) += (E); \
+    (C) += (E); \
+    (D) += (E); \
 }
 
 /* General word-wide n-PHT */
-void
-mixwords(WORD w[], int n)
+void mixwords(WORD w[], int n)
 {
     WORD sum;
     int i;
 
-    for (sum = i = 0; i < n-1; ++i)
+    for (sum = i = 0; i < n - 1; ++i)
 	sum += w[i];
-    w[n-1] += sum;
-    sum = w[n-1];
-    for (i = 0; i < n-1; ++i)
+    w[n - 1] += sum;
+    sum = w[n - 1];
+    for (i = 0; i < n - 1; ++i)
 	w[i] += sum;
 }
 
@@ -137,8 +135,7 @@ mixwords(WORD w[], int n)
  * Table version; gathers words, mixes them, saves them.
  * Then compiles lookup tables for the keyed S-boxes.
  */
-void
-Turing::key(const BYTE key[], const int keylength)
+void Turing::key(const BYTE key[], const int keylength)
 {
     int i, j, k;
     WORD w;
@@ -198,8 +195,7 @@ Turing::key(const BYTE key[], const int keylength)
  * to avoid any "chosen-IV" interactions with the keyed S-boxes, not that I
  * can think of any.
  */
-void
-Turing::IV(const BYTE iv[], const int ivlength)
+void Turing::IV(const BYTE iv[], const int ivlength)
 {
     int i, j;
 
@@ -216,37 +212,37 @@ Turing::IV(const BYTE iv[], const int ivlength)
     R[i++] = (keylen << 4) | (ivlength >> 2) | 0x01020300UL;
     /* ... and fill the rest of the register */
     for (j = 0 /* i continues */; i < LFSRLEN; ++i, ++j)
-	R[i] = S(R[j] + R[i-1], 0);
+	R[i] = S(R[j] + R[i - 1], 0);
     /* finally mix all the words */
     mixwords(R, LFSRLEN);
 }
 
 /* a single round */
-#define ROUND(z,b) \
+#define ROUND(z, b) \
 { \
     STEP(z); \
-    A = R[OFF(z+1,16)]; \
-		B = R[OFF(z+1,13)]; \
-			    C = R[OFF(z+1,6)]; \
-					D = R[OFF(z+1,1)]; \
-						    E = R[OFF(z+1,0)]; \
-    PHT(A,	B,	    C,		D,	    E); \
-    A = S(A,0);	B = S(B,1); C = S(C,2);	D = S(D,3); E = S(E,0); \
-    PHT(A,	B,	    C,		D,	    E); \
-    STEP(z+1); \
-    STEP(z+2); \
-    STEP(z+3); \
-    A += R[OFF(z+4,14)]; \
-		B += R[OFF(z+4,12)]; \
-			    C += R[OFF(z+4,8)]; \
-					D += R[OFF(z+4,1)]; \
-						    E += R[OFF(z+4,0)]; \
+    A = R[OFF(z + 1, 16)]; \
+        B = R[OFF(z + 1, 13)]; \
+            C = R[OFF(z + 1, 6)]; \
+                D = R[OFF(z + 1, 1)]; \
+                    E = R[OFF(z + 1, 0)]; \
+    PHT(A, B, C, D, E); \
+    A = S(A, 0); B = S(B, 1); C = S(C, 2); D = S(D, 3); E = S(E, 0); \
+    PHT(A, B, C, D, E); \
+    STEP(z + 1); \
+    STEP(z + 2); \
+    STEP(z + 3); \
+    A += R[OFF(z + 4, 14)]; \
+        B += R[OFF(z + 4, 12)]; \
+            C += R[OFF(z + 4, 8)]; \
+                D += R[OFF(z + 4, 1)]; \
+                    E += R[OFF(z + 4, 0)]; \
     WORD2BYTE(A, b); \
-		WORD2BYTE(B, b+4); \
-			    WORD2BYTE(C, b+8); \
-					WORD2BYTE(D, b+12); \
-						    WORD2BYTE(E, b+16); \
-    STEP(z+4); \
+        WORD2BYTE(B, b + 4); \
+            WORD2BYTE(C, b + 8); \
+                WORD2BYTE(D, b + 12); \
+                    WORD2BYTE(E, b + 16); \
+    STEP(z + 4); \
 }
 
 /*
@@ -255,27 +251,26 @@ Turing::IV(const BYTE iv[], const int ivlength)
  * Buffering issues are outside the scope of this implementation.
  * Returns the number of bytes of stream generated.
  */
-int
-Turing::gen(BYTE *buf)
+int Turing::gen(BYTE *buf)
 {
-    WORD	    A, B, C, D, E;
+    WORD A, B, C, D, E;
 
-    ROUND(0,buf);
-    ROUND(5,buf+20);
-    ROUND(10,buf+40);
-    ROUND(15,buf+60);
-    ROUND(3,buf+80);
-    ROUND(8,buf+100);
-    ROUND(13,buf+120);
-    ROUND(1,buf+140);
-    ROUND(6,buf+160);
-    ROUND(11,buf+180);
-    ROUND(16,buf+200);
-    ROUND(4,buf+220);
-    ROUND(9,buf+240);
-    ROUND(14,buf+260);
-    ROUND(2,buf+280);
-    ROUND(7,buf+300);
-    ROUND(12,buf+320);
-    return 17*20;
+    ROUND(0, buf);
+    ROUND(5, buf + 20);
+    ROUND(10, buf + 40);
+    ROUND(15, buf + 60);
+    ROUND(3, buf + 80);
+    ROUND(8, buf + 100);
+    ROUND(13, buf + 120);
+    ROUND(1, buf + 140);
+    ROUND(6, buf + 160);
+    ROUND(11, buf + 180);
+    ROUND(16, buf + 200);
+    ROUND(4, buf + 220);
+    ROUND(9, buf + 240);
+    ROUND(14, buf + 260);
+    ROUND(2, buf + 280);
+    ROUND(7, buf + 300);
+    ROUND(12, buf + 320);
+    return 17 * 20;
 }

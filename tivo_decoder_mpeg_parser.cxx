@@ -51,7 +51,8 @@ TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser()
     picture_structure       = 0x00;
 }
 
-TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser(UINT8 * pBuffer, UINT16 bufLen)
+TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser(UINT8 *pBuffer,
+                                                   UINT16 bufLen)
 {
     _pBuffer = pBuffer;
     _buffer_length = bufLen;
@@ -60,41 +61,41 @@ TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser(UINT8 * pBuffer, UINT16 bufLe
     hdr_len = 0;
 
     /* start codes */
-    picture_start_code      = 0x100;
-    slice_start_code        = 0x101;
-    user_data_start_code    = 0x1b2;
-    sequence_header_code    = 0x1b3;
-    sequence_error_code     = 0x1b4;
-    extension_start_code    = 0x1b5;
-    sequence_end_code       = 0x1b7;
-    group_start_code        = 0x1b8;
+    picture_start_code   = 0x100;
+    slice_start_code     = 0x101;
+    user_data_start_code = 0x1b2;
+    sequence_header_code = 0x1b3;
+    sequence_error_code  = 0x1b4;
+    extension_start_code = 0x1b5;
+    sequence_end_code    = 0x1b7;
+    group_start_code     = 0x1b8;
 
     /* extension start codes */
-    sequence_extension_id                   = 0x1;
-    sequence_display_extension_id           = 0x2;
-    quant_matrix_extension_id               = 0x3;
-    copyright_extension_id                  = 0x4;
-    sequence_scalable_extension_id          = 0x5;
-    picture_display_extension_id            = 0x7;
-    picture_coding_extension_id             = 0x8;
-    picture_spatial_scalable_extension_id   = 0x9;
-    picture_temporal_scalable_extension_id  = 0xa;
+    sequence_extension_id                  = 0x1;
+    sequence_display_extension_id          = 0x2;
+    quant_matrix_extension_id              = 0x3;
+    copyright_extension_id                 = 0x4;
+    sequence_scalable_extension_id         = 0x5;
+    picture_display_extension_id           = 0x7;
+    picture_coding_extension_id            = 0x8;
+    picture_spatial_scalable_extension_id  = 0x9;
+    picture_temporal_scalable_extension_id = 0xa;
 
     /* scalable modes */
-    data_partitioning       = 0x0;
-    spatial_scalability     = 0x1;
-    snr_scalability         = 0x2;
-    temporal_scalability    = 0x3;
+    data_partitioning    = 0x0;
+    spatial_scalability  = 0x1;
+    snr_scalability      = 0x2;
+    temporal_scalability = 0x3;
 
-    progressive_sequence    = 0x00;
-    repeat_first_field      = 0x00;
-    top_field_first         = 0x00;
-    vertical_size           = 0x00;
-    scalable_mode           = 0x00;
-    picture_structure       = 0x00;
+    progressive_sequence = 0x00;
+    repeat_first_field   = 0x00;
+    top_field_first      = 0x00;
+    vertical_size        = 0x00;
+    scalable_mode        = 0x00;
+    picture_structure    = 0x00;
 }
 
-void TiVoDecoder_MPEG2_Parser::setBuffer(UINT8 * pBuffer, UINT16 bufLen )
+void TiVoDecoder_MPEG2_Parser::setBuffer(UINT8 *pBuffer, UINT16 bufLen)
 {
     _pBuffer = pBuffer;
     _buffer_length = bufLen;
@@ -113,7 +114,7 @@ void TiVoDecoder_MPEG2_Parser::advanceBits(UINT32 n)
     _bit_ptr += n;
     hdr_len  += n;
 
-    if(_bit_ptr >= (_buffer_length*8))
+    if (_bit_ptr >= (_buffer_length*8))
         _end_of_file = TRUE;
 }
 
@@ -126,7 +127,7 @@ INT32 TiVoDecoder_MPEG2_Parser::nextbits(UINT32 n)
     INT32  nread        = 0;
     INT32  value        = 0;
 
-    if( alignDelta )
+    if (alignDelta)
     {
         int i = 0;
         int j = 0;
@@ -134,29 +135,29 @@ INT32 TiVoDecoder_MPEG2_Parser::nextbits(UINT32 n)
         bit_ptr_copy -= alignDelta;
         nread         = readByte(bit_ptr_copy, byte);
 
-        for(i=0; i<alignDelta; i++)
+        for (i = 0; i < alignDelta; i++)
         {
-            byte &= ~(1<<(7-i));
+            byte &= ~(1 << (7 - i));
             bit_ptr_copy++;
         }
 
-        for(j=alignDelta; (j<8) && n_copy; j++, n_copy--)
+        for (j = alignDelta; (j < 8) && n_copy; j++, n_copy--)
             bit_ptr_copy++;
 
-        if(0 == n_copy)
-            for( ; j<8; j++)
+        if (0 == n_copy)
+            for ( ; j < 8; j++)
                 byte = byte >> 1;
 
         value = byte;
     }
 
-    while ( n_copy > 0 )
+    while (n_copy > 0)
     {
         nread = readByte(bit_ptr_copy, byte);
-        if(nread == 0)
+        if (nread == 0)
         {
             _end_of_file = TRUE;
-            fprintf(stderr,"EOF\n");
+            fprintf(stderr, "EOF\n");
             return -1;
         }
 
@@ -167,24 +168,23 @@ INT32 TiVoDecoder_MPEG2_Parser::nextbits(UINT32 n)
 
     if (n_copy < 0)
     {
-//        value = value >> (8+n_copy);
-        value = value >> (0-n_copy);
+        value = value >> (0 - n_copy);
     }
 
     return value;
 }
 
-INT32 TiVoDecoder_MPEG2_Parser::readByte(UINT32 bit_pos, UINT8 & byte)
+INT32 TiVoDecoder_MPEG2_Parser::readByte(UINT32 bit_pos, UINT8 &byte)
 {
     byte = 0;
 
-    if(bit_pos > _buffer_length*8)
+    if (bit_pos > _buffer_length * 8)
     {
         _end_of_file = TRUE;
         return -1;
     }
 
-    byte = _pBuffer[bit_pos/8];
+    byte = _pBuffer[bit_pos / 8];
     return 1;
 }
 
@@ -193,17 +193,17 @@ INT32 TiVoDecoder_MPEG2_Parser::readByte(UINT32 bit_pos, UINT8 & byte)
 void TiVoDecoder_MPEG2_Parser::next_start_code()
 {
     BOOL aligned = byteAligned();
-    while(FALSE == aligned)
+    while (FALSE == aligned)
     {
         advanceBits(1);
         aligned = byteAligned();
     }
 
-    while(FALSE==_end_of_file)
+    while (FALSE == _end_of_file)
     {
-        if(0x000001 == nextbits(24))
+        if (0x000001 == nextbits(24))
             break;
-        else if(0x000000 == nextbits(24))
+        else if (0x000000 == nextbits(24))
         {
             advanceBits(8);
         }
@@ -216,7 +216,7 @@ void TiVoDecoder_MPEG2_Parser::next_start_code()
 
 // =========================================================================
 
-void TiVoDecoder_MPEG2_Parser::video_sequence(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::video_sequence(UINT16 &len)
 {
     sequence_header(len);
     if (nextbits(32) == extension_start_code)
@@ -224,18 +224,19 @@ void TiVoDecoder_MPEG2_Parser::video_sequence(UINT16 & len)
         sequence_extension(len);
         do
         {
-            extension_and_user_data(0,len);
+            extension_and_user_data(0, len);
             do
             {
                 if (nextbits(32) == group_start_code)
                 {
                     group_of_pictures_header(len);
-                    extension_and_user_data(1,len);
+                    extension_and_user_data(1, len);
                 }
                 picture_header(len);
-                extension_and_user_data(2,len);
+                extension_and_user_data(2, len);
                 picture_data(len);
-            } while ((nextbits(32) == picture_start_code) || (nextbits(32) == group_start_code));
+            } while ((nextbits(32) == picture_start_code) ||
+                     (nextbits(32) == group_start_code));
 
             if (nextbits(32) != sequence_end_code)
             {
@@ -251,25 +252,25 @@ void TiVoDecoder_MPEG2_Parser::video_sequence(UINT16 & len)
 
 //  sequence_end_code:32;
     advanceBits(32);
-	len = hdr_len;
+    len = hdr_len;
     return;
 }
 
-void TiVoDecoder_MPEG2_Parser::sequence_end(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::sequence_end(UINT16 &len)
 {
 //  sequence_header_code:32;
     advanceBits(32);
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::ancillary_data(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::ancillary_data(UINT16 &len)
 {
 //  sequence_header_code:32;
     advanceBits(32);
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::sequence_header(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::sequence_header(UINT16 &len)
 {
 //  sequence_header_code:32;
     advanceBits(32);
@@ -306,7 +307,7 @@ void TiVoDecoder_MPEG2_Parser::sequence_header(UINT16 & len)
     if (load_intra_quantiser_matrix == 1)
     {
 //      intra_quantiser_matrix:8[64];
-        advanceBits(8*64);
+        advanceBits(8 * 64);
     }
 
 //  load_non_intra_quantiser_matrix:1;
@@ -316,20 +317,21 @@ void TiVoDecoder_MPEG2_Parser::sequence_header(UINT16 & len)
     if (load_non_intra_quantiser_matrix == 1)
     {
 //      non_intra_quantiser_matrix:8[64];
-        advanceBits(8*64);
+        advanceBits(8 * 64);
     }
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::extension_and_user_data(INT32 i, UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::extension_and_user_data(INT32 i, UINT16 &len)
 {
-    while ((nextbits(32) == extension_start_code) || (nextbits(32) == user_data_start_code))
+    while ((nextbits(32) == extension_start_code) ||
+           (nextbits(32) == user_data_start_code))
     {
         if ((i != 1) && (nextbits(32) == extension_start_code))
         {
-            extension_data(i,len);
+            extension_data(i, len);
         }
     }
 
@@ -337,10 +339,10 @@ void TiVoDecoder_MPEG2_Parser::extension_and_user_data(INT32 i, UINT16 & len)
     {
         user_data(len);
     }
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::extension_data(INT32 i, UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::extension_data(INT32 i, UINT16 &len)
 {
     while (nextbits(32) == extension_start_code)
     {
@@ -348,7 +350,7 @@ void TiVoDecoder_MPEG2_Parser::extension_data(INT32 i, UINT16 & len)
         UINT32 extension_start_code = nextbits(32);
         advanceBits(32);
 
-        if (i==0)
+        if (i == 0)
         {
             if (nextbits(4) == sequence_display_extension_id)
             {
@@ -360,7 +362,7 @@ void TiVoDecoder_MPEG2_Parser::extension_data(INT32 i, UINT16 & len)
             }
         }
 
-        if (i==2)
+        if (i == 2)
         {
             if (nextbits(4) == quant_matrix_extension_id)
             {
@@ -384,10 +386,10 @@ void TiVoDecoder_MPEG2_Parser::extension_data(INT32 i, UINT16 & len)
             }
         }
     }
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::user_data(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::user_data(UINT16 &len)
 {
 //  user_data_start_code:32;
     UINT32 user_data_start_code = nextbits(32);
@@ -401,27 +403,26 @@ void TiVoDecoder_MPEG2_Parser::user_data(UINT16 & len)
     }
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-
-void TiVoDecoder_MPEG2_Parser::extension_header(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::extension_header(UINT16 &len)
 {
 //  extension_start_code:32;
     advanceBits(32);
 
     UINT8 type = nextbits(4);
 
-    if( 1 == type )
+    if (1 == type)
         sequence_extension(len);
-    else if (2 == type )
+    else if (2 == type)
         sequence_display_extension(len);
-    else if (8 == type )
+    else if (8 == type)
         picture_coding_extension(len);
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::sequence_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::sequence_extension(UINT16 &len)
 {
 //  extension_start_code:32;
 //  advanceBits(32);
@@ -453,10 +454,10 @@ void TiVoDecoder_MPEG2_Parser::sequence_extension(UINT16 & len)
     advanceBits(5);
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::sequence_display_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::sequence_display_extension(UINT16 &len)
 {
 //  extension_start_code:32;
 //  advanceBits(32);
@@ -489,10 +490,10 @@ void TiVoDecoder_MPEG2_Parser::sequence_display_extension(UINT16 & len)
     advanceBits(3);
     
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::picture_coding_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::picture_coding_extension(UINT16 &len)
 {
 //  extension_start_code:32;
 //  advanceBits(32);
@@ -500,7 +501,7 @@ void TiVoDecoder_MPEG2_Parser::picture_coding_extension(UINT16 & len)
 //  picture_coding_extension_id:4;
     advanceBits(4);
 //  f_code:4[2][2];
-    advanceBits(4*2*2);
+    advanceBits(4 * 2 * 2);
 //  intra_dc_precision:2;
     advanceBits(2);
 //  picture_structure:2;
@@ -545,10 +546,10 @@ void TiVoDecoder_MPEG2_Parser::picture_coding_extension(UINT16 & len)
     }
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::sequence_scalable_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::sequence_scalable_extension(UINT16 &len)
 {
 //  sequence_scalable_extension_id:4;
     advanceBits(4);
@@ -595,10 +596,10 @@ void TiVoDecoder_MPEG2_Parser::sequence_scalable_extension(UINT16 & len)
     }
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::group_of_pictures_header(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::group_of_pictures_header(UINT16 &len)
 {
 //  group_start_code:32;
     advanceBits(32);
@@ -610,10 +611,10 @@ void TiVoDecoder_MPEG2_Parser::group_of_pictures_header(UINT16 & len)
     advanceBits(1);
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::picture_header(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::picture_header(UINT16 &len)
 {
 //  picture_start_code:32;
     advanceBits(32);
@@ -652,12 +653,12 @@ void TiVoDecoder_MPEG2_Parser::picture_header(UINT16 & len)
 //  extra_bit_picture:1 = 0;
 //    advanceBits(1); // ????
 
-	len = hdr_len;
+    len = hdr_len;
 
 //    next_start_code(); // ???
 }
 
-void TiVoDecoder_MPEG2_Parser::pes_header(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::pes_header(UINT16 &len)
 {
 //  picture_start_code:24;
     advanceBits(24);
@@ -667,32 +668,32 @@ void TiVoDecoder_MPEG2_Parser::pes_header(UINT16 & len)
 
     advanceBits(8);
 
-    if( streamId == 0xBD )
+    if (streamId == 0xBD)
         extensionPresent = TRUE;
-    else if( streamId == 0xBE )
+    else if (streamId == 0xBE)
         extensionPresent = FALSE;
-    else if( streamId == 0xBF )
+    else if (streamId == 0xBF)
         extensionPresent = FALSE;
-    else if( ( streamId >= 0xC0 ) && ( streamId <= 0xDF ) )
+    else if ((streamId >= 0xC0) && (streamId <= 0xDF))
         extensionPresent = TRUE;
-    else if( ( streamId >= 0xE0 ) && ( streamId <= 0xEF ) )
+    else if ((streamId >= 0xE0) && (streamId <= 0xEF))
         extensionPresent = TRUE;
 
     UINT16 pesHdrLen = nextbits(16);
     advanceBits(16);
 
-    if(TRUE==extensionPresent)
+    if (TRUE == extensionPresent)
     {
         pes_header_extension(len);
     }
     
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 &len)
 {
-    UINT8 pes_private_data_flag  = 0;
+    UINT8 pes_private_data_flag = 0;
     UINT8 pack_header_field_flag = 0;
     UINT8 program_packet_sequence_counter_flag = 0;
     UINT8 p_std_buffer_flag = 0;
@@ -740,7 +741,7 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
 //  PES_header_data_length:8 = 0;
     advanceBits(8);
 
-    if(PTS_DTS_flags == 2)
+    if (PTS_DTS_flags == 2)
     {
 //      marker_bit:4 = 0;
         advanceBits(4);
@@ -757,7 +758,7 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
 //      marker_bit:1 = 0;
         advanceBits(1);
     }
-    else if(PTS_DTS_flags == 3)
+    else if (PTS_DTS_flags == 3)
     {
 //      marker_bit:4 = 0;
         advanceBits(4);
@@ -789,7 +790,7 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
         advanceBits(1);
     }
 
-    if(ESCR_flag)
+    if (ESCR_flag)
     {
 //      marker_bit:2 = 0;
         advanceBits(2);
@@ -811,7 +812,7 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
         advanceBits(1);
     }
 
-    if(ES_rate_flag)
+    if (ES_rate_flag)
     {
 //      marker_bit:1 = 0;
         advanceBits(1);
@@ -820,22 +821,22 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
 //      marker_bit:1 = 0;
         advanceBits(1);
     }
-    
-    if(additional_copy_flag)
+
+    if (additional_copy_flag)
     {
 //      marker_bit:1 = 0;
         advanceBits(1);
 //      additional_copy_info:7 = 0;
         advanceBits(7);
     } 
-    
-    if(PES_CRC_flag)
+
+    if (PES_CRC_flag)
     {
 //      previous_pes_crc:16 = 0;
         advanceBits(16);
     }
-    
-    if(PES_extension_flag)
+
+    if (PES_extension_flag)
     {
 //      pes_private_data_flag:1 = 0;
         pes_private_data_flag = nextbits(1);
@@ -855,20 +856,20 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
         pes_extension_flag2 = nextbits(1);
         advanceBits(1);
     }
-    
-    if(pes_private_data_flag)
+
+    if (pes_private_data_flag)
     {
 //      pes_private_data:8[16] = 0;
         advanceBits(8*16);        
     }
 
-    if(pack_header_field_flag)
+    if (pack_header_field_flag)
     {
 //      pack_field_length:8 = 0;
         advanceBits(8);        
     }
 
-    if(program_packet_sequence_counter_flag)
+    if (program_packet_sequence_counter_flag)
     {
 //      marker_bit:1 = 0;
         advanceBits(1);   
@@ -881,8 +882,8 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
 //      original_stuffing_length:6 = 0;
         advanceBits(6);
     }
-    
-    if(p_std_buffer_flag)
+
+    if (p_std_buffer_flag)
     {
 //      marker_bits:2 = 0;
         advanceBits(2);     
@@ -891,8 +892,8 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
 //      p_std_buffer_size:13 = 0;
         advanceBits(13);    
     }
-    
-    if(pes_extension_flag2)
+
+    if (pes_extension_flag2)
     {
 //      marker_bits:1 = 0;
         advanceBits(1);  
@@ -901,21 +902,21 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(UINT16 & len)
 //      marker_bits:8 = 0;
         advanceBits(8);
     }
-    
-    if(pes_extension_field_length)
+
+    if (pes_extension_field_length)
     {
 //      pes_extension_field:8[n] = 0;
         advanceBits(8*pes_extension_field_length);    
     }
-    
-    while(0xFF == nextbits(8))
+
+    while (0xFF == nextbits(8))
     {
         advanceBits(8);    
     }
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::quant_matrix_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::quant_matrix_extension(UINT16 &len)
 {
 //  quant_matrix_extension_id:4;
     advanceBits(4);
@@ -926,7 +927,7 @@ void TiVoDecoder_MPEG2_Parser::quant_matrix_extension(UINT16 & len)
     if (load_intra_quantiser_matrix == 1)
     {
 //      intra_quantiser_matrix:8[64];
-        advanceBits(8*64);
+        advanceBits(8 * 64);
     }
 
 //  load_non_intra_quantiser_matrix:1;
@@ -936,7 +937,7 @@ void TiVoDecoder_MPEG2_Parser::quant_matrix_extension(UINT16 & len)
     if (load_non_intra_quantiser_matrix == 1)
     {
 //      non_intra_quantiser_matrix:8[64];
-        advanceBits(8*64);
+        advanceBits(8 * 64);
     }
 
 //  load_chroma_intra_quantiser_matrix:1;
@@ -946,7 +947,7 @@ void TiVoDecoder_MPEG2_Parser::quant_matrix_extension(UINT16 & len)
     if (load_chroma_intra_quantiser_matrix == 1)
     {
 //      chroma_intra_quantiser_matrix:8[64];
-        advanceBits(8*64);
+        advanceBits(8 * 64);
     }
 
 //    load_chroma_non_intra_quantiser_matrix:1;
@@ -956,14 +957,14 @@ void TiVoDecoder_MPEG2_Parser::quant_matrix_extension(UINT16 & len)
     if (load_chroma_non_intra_quantiser_matrix == 1)
     {
 //      chroma_non_intra_quantiser_matrix:8[64];
-        advanceBits(8*64);
+        advanceBits(8 * 64);
     }
 
-	next_start_code();
-	len = hdr_len;
+    next_start_code();
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::picture_display_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::picture_display_extension(UINT16 &len)
 {
     UINT8 number_of_frame_centre_offsets = 0;
 
@@ -1008,7 +1009,7 @@ void TiVoDecoder_MPEG2_Parser::picture_display_extension(UINT16 & len)
         }
     }
 
-    for (UINT8 i=0;i<number_of_frame_centre_offsets;i++)
+    for (UINT8 i = 0; i < number_of_frame_centre_offsets; i++)
     {
 //      frame_centre_horizontal_offset[i]:16;
         advanceBits(16);
@@ -1021,10 +1022,10 @@ void TiVoDecoder_MPEG2_Parser::picture_display_extension(UINT16 & len)
     }
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::picture_spatial_scalable_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::picture_spatial_scalable_extension(UINT16 &len)
 {
 //  picture_spatial_scalable_extension_id:4;
     advanceBits(4);
@@ -1046,10 +1047,10 @@ void TiVoDecoder_MPEG2_Parser::picture_spatial_scalable_extension(UINT16 & len)
     advanceBits(1);
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::picture_temporal_scalable_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::picture_temporal_scalable_extension(UINT16 &len)
 {
 //  picture_temporal_scalable_extension_id:4;
     advanceBits(4);
@@ -1063,10 +1064,10 @@ void TiVoDecoder_MPEG2_Parser::picture_temporal_scalable_extension(UINT16 & len)
     advanceBits(10);
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::copyright_extension(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::copyright_extension(UINT16 &len)
 {
 //  copyright_extension_id:4;
     advanceBits(4);
@@ -1090,10 +1091,10 @@ void TiVoDecoder_MPEG2_Parser::copyright_extension(UINT16 & len)
     advanceBits(22);
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::picture_data(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::picture_data(UINT16 &len)
 {
     do
     {
@@ -1102,10 +1103,10 @@ void TiVoDecoder_MPEG2_Parser::picture_data(UINT16 & len)
     while (nextbits(32) == slice_start_code);
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::slice(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::slice(UINT16 &len)
 {
 //  slice_start_code:32;
     advanceBits(32);
@@ -1153,115 +1154,11 @@ void TiVoDecoder_MPEG2_Parser::slice(UINT16 & len)
     while (nextbits(24) != 0x000001);
 
     next_start_code();
-	len = hdr_len;
+    len = hdr_len;
 }
 
-void TiVoDecoder_MPEG2_Parser::macroblock(UINT16 & len)
+void TiVoDecoder_MPEG2_Parser::macroblock(UINT16 &len)
 {
-	len = hdr_len;
+    len = hdr_len;
     return;
 }
-
-/*
-void TiVoDecoder_MPEG2_Parser::macroblock(len)
-{
-    while (nextbits(11) == '0000 0001 000')
-    {
-        macroblock_escape:11;
-    }
-
-    macroblock_address_increment:mba_inc;
-    macroblock_modes();
-
-    if (macroblock_quant)
-    {
-        quantiser_scale_code:5;
-    }
-
-    if ((macroblock_type && macroblock_motion_forward) ||
-    ((macroblock_type && macroblock_intra) && (concealment_motion_vectors == 1)))
-    {
-        motion_vectors(0);
-    }
-
-    if (macroblock_type && macroblock_motion_backward)
-    {
-        motion_vectors(1);
-    }
-
-    if ((macroblock_type && macroblock_intra) && (concealment_motion_vectors == 1))
-    {
-        marker_bit:1 = 1;
-    }
-
-    if (macroblock_pattern == 1)
-    {
-        coded_block_pattern();
-    }
-
-    for (i=0;i<block_count;i++)
-    {
-        block(i);
-    }
-}
-
-macroblock_modes() {
-  macroblock_type:mb_type;
-  if ((spatial_temporal_weight_code_flag == 1) && (spatial_temporal_weight_codee_table_index != '00')) {
-    spatial_temporal_weight_code:2;
-  }
-  if ((macroblock_type && macroblock_motion_forward) || (macroblock_type && macroblock_motion_backward) {
-    if (picture_structure == frame_picture) {
-      if (frame_pred_frame_dct == 0) {
-        frame_motion_type:2
-      }
-    } else {
-      field_motion_type:2;
-    }
-  }
-  if ((picture_structure == frame_picture) && (frame_pred_frame_dct == 0) &&
-      ((macroblock_type && macroblock_intra) || (macroblock_type || macroblock_pattern))) {
-    dct_type:1;
-  }
-}
-
-motion_vectors(s) {
-  if (motion_vector_count == 1) {
-    if ((mv_format == field) && (dmv != 1)) {
-      motion_vertical_field_select[0][s]:1;
-    }
-    motion_vector(0,s);
-  } else {
-    motion_vertical_field_select[0][s];
-    motion_vector(0,s);
-    motion_vertical_field_select[1][s];
-    motion_vector(1,s);
-  }
-}
-
-motion_vector(r,s) {
-  motion_code[r][s][0]:motion_code_vlc;
-  if ((f_code[s][0] != 1) && (motion_code[r][s][0] != 0)) {
-    motion_residual[r][s][0]:motion_residual_vlc;
-  }
-  if (dmv == 1) {
-    dmvector[0]:dmvector_vlc;
-  }
-  if ((f_code[s][1] != 1) && (motion_code[r][s][1] != 0)) {
-    motion_residual[r][s][1]:motion_residual_vlc;
-  }
-  if (dmv == 1) {
-    dmvector[1]:dmvector_vlc;
-  }
-}
-
-coded_block_pattern() {
-  coded_block_pattern_420:coded_block_pattern_420_vlc;
-  if (chroma_format == chroma_422) {
-    coded_block_pattern_1:2;
-  }
-  if (chroma_format == chroma_444) {
-    coded_block_pattern_2:6;
-  }
-}
-*/
