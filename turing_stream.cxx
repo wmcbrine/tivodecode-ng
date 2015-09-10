@@ -134,7 +134,7 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
     turingkey[16] = stream_id;
     turingkey[17] = (block_id & 0xFF0000) >> 16;
     turingkey[18] = (block_id & 0x00FF00) >> 8;
-    turingkey[19] = (block_id & 0x0000FF) >> 0;
+    turingkey[19] = (block_id & 0x0000FF);
 
     context.init();
     context.update(turingkey, 17);
