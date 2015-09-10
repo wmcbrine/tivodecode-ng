@@ -295,7 +295,7 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
         section_length -= 2;
 
         pmt_field      = portable_ntohs(pPtr);
-        es_info_length = pmt_field & 0x1fff;
+        es_info_length = pmt_field & 0x0fff;
 
         // advance past ES info length field
         pPtr += 2;
