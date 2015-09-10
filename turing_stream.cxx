@@ -153,9 +153,7 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
 
     std::memset(active->cipher_data, 0, MAXSTREAM);
 
-    active->cipher_len = active->internal->gen(active->cipher_data);
-
-    //hexbulk(active->cipher_data, active->cipher_len);
+    active->cipher_len = 0;
 }
 
 #define CREATE_TURING_LISTITM(nxt, stream_id, block_id) \
