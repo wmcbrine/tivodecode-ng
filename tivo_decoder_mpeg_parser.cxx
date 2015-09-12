@@ -14,7 +14,7 @@
 TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser()
 {
     _bit_ptr = 0;
-    _end_of_file = FALSE;
+    _end_of_file = false;
     _buffer_length = 0;
     _pBuffer = NULL;
     hdr_len = 0;
@@ -60,7 +60,7 @@ TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser(UINT8 *pBuffer,
     _pBuffer = pBuffer;
     _buffer_length = bufLen;
     _bit_ptr = 0;
-    _end_of_file = FALSE;
+    _end_of_file = false;
     hdr_len = 0;
 
     /* start codes */
@@ -103,10 +103,10 @@ void TiVoDecoder_MPEG2_Parser::setBuffer(UINT8 *pBuffer, UINT16 bufLen)
     _pBuffer = pBuffer;
     _buffer_length = bufLen;
     _bit_ptr = 0;
-    _end_of_file = FALSE;
+    _end_of_file = false;
 }
 
-BOOL TiVoDecoder_MPEG2_Parser::byteAligned()
+bool TiVoDecoder_MPEG2_Parser::byteAligned()
 {
     UINT32 align_mode = _bit_ptr % 8;
     return !align_mode;
@@ -118,7 +118,7 @@ void TiVoDecoder_MPEG2_Parser::advanceBits(UINT32 n)
     hdr_len  += n;
 
     if (_bit_ptr >= (_buffer_length*8))
-        _end_of_file = TRUE;
+        _end_of_file = true;
 }
 
 INT32 TiVoDecoder_MPEG2_Parser::nextbits(UINT32 n)
@@ -159,7 +159,7 @@ INT32 TiVoDecoder_MPEG2_Parser::nextbits(UINT32 n)
         nread = readByte(bit_ptr_copy, byte);
         if (nread == 0)
         {
-            _end_of_file = TRUE;
+            _end_of_file = true;
             std::fprintf(stderr, "EOF\n");
             return -1;
         }
@@ -183,7 +183,7 @@ INT32 TiVoDecoder_MPEG2_Parser::readByte(UINT32 bit_pos, UINT8 &byte)
 
     if (bit_pos > _buffer_length * 8)
     {
-        _end_of_file = TRUE;
+        _end_of_file = true;
         return -1;
     }
 
@@ -195,14 +195,14 @@ INT32 TiVoDecoder_MPEG2_Parser::readByte(UINT32 bit_pos, UINT8 &byte)
 
 void TiVoDecoder_MPEG2_Parser::next_start_code()
 {
-    BOOL aligned = byteAligned();
-    while (FALSE == aligned)
+    bool aligned = byteAligned();
+    while (false == aligned)
     {
         advanceBits(1);
         aligned = byteAligned();
     }
 
-    while (FALSE == _end_of_file)
+    while (false == _end_of_file)
     {
         if (0x000001 == nextbits(24))
             break;
@@ -666,26 +666,26 @@ void TiVoDecoder_MPEG2_Parser::pes_header(UINT16 &len)
 //  picture_start_code:24;
     advanceBits(24);
 
-    BOOL extensionPresent = FALSE;
+    bool extensionPresent = false;
     UINT8 streamId        = nextbits(8);
 
     advanceBits(8);
 
     if (streamId == 0xBD)
-        extensionPresent = TRUE;
+        extensionPresent = true;
     else if (streamId == 0xBE)
-        extensionPresent = FALSE;
+        extensionPresent = false;
     else if (streamId == 0xBF)
-        extensionPresent = FALSE;
+        extensionPresent = false;
     else if ((streamId >= 0xC0) && (streamId <= 0xDF))
-        extensionPresent = TRUE;
+        extensionPresent = true;
     else if ((streamId >= 0xE0) && (streamId <= 0xEF))
-        extensionPresent = TRUE;
+        extensionPresent = true;
 
     UINT16 pesHdrLen = nextbits(16);
     advanceBits(16);
 
-    if (TRUE == extensionPresent)
+    if (true == extensionPresent)
     {
         pes_header_extension(len);
     }

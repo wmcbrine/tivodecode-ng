@@ -11,7 +11,7 @@ class TiVoDecoder_MPEG2_Parser
 {
     private:
         UINT32 _bit_ptr;
-        BOOL   _end_of_file;
+        bool   _end_of_file;
         UINT32 _buffer_length;
         UINT8  *_pBuffer;
         UINT16 hdr_len;
@@ -56,11 +56,11 @@ class TiVoDecoder_MPEG2_Parser
         TiVoDecoder_MPEG2_Parser(UINT8 *pBuffer, UINT16 bufLen);
         void setBuffer(UINT8 *pBuffer, UINT16 bufLen);
 
-        inline BOOL   isEndOfFile() { return _end_of_file; }
+        inline bool   isEndOfFile() { return _end_of_file; }
         inline UINT16 getReadPos()  { return _bit_ptr / 8; }
         inline void   clear()       { hdr_len = 0;         }
 
-        BOOL  byteAligned();
+        bool  byteAligned();
         void  advanceBits(UINT32 n);
         INT32 nextbits(UINT32 n);
         INT32 readByte(UINT32 bit_pos, UINT8 &byte);

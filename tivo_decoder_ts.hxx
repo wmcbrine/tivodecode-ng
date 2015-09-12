@@ -14,8 +14,8 @@ using namespace std;
 #include "tivo_types.hxx"
 #include "tivo_decoder_base.hxx"
 
-extern std::map<UINT32, BOOL> pktDumpMap;
-extern std::map<UINT32, BOOL>::iterator pktDumpMap_iter;
+extern std::map<UINT32, bool> pktDumpMap;
+extern std::map<UINT32, bool>::iterator pktDumpMap_iter;
 
 #define TS_FRAME_SIZE  188
 
@@ -168,8 +168,8 @@ typedef std::deque<TiVoDecoderTsPacket*>::iterator      TsPackets_it;
 typedef std::map<int, TiVoDecoderTsStream*>             TsStreams;
 typedef std::map<int, TiVoDecoderTsStream*>::iterator   TsStreams_it;
 
-typedef std::map<UINT32,BOOL>                           TsPktDump;
-typedef std::map<UINT32,BOOL>::iterator                 TsPktDump_iter;
+typedef std::map<UINT32,bool>                           TsPktDump;
+typedef std::map<UINT32,bool>::iterator                 TsPktDump_iter;
     
 extern TsPktDump pktDumpMap;
 
@@ -188,7 +188,7 @@ class TiVoDecoderTS : public TiVoDecoder
         int handlePkt_TiVo(TiVoDecoderTsPacket *pPkt);
         int handlePkt_AudioVideo(TiVoDecoderTsPacket *pPkt);
 
-        virtual BOOL process();
+        virtual bool process();
         TiVoDecoderTS(TuringState *pTuringState, HappyFile *pInfile,
                       FILE *pOutfile);
         ~TiVoDecoderTS();
@@ -213,9 +213,9 @@ class TiVoDecoderTsStream
         UINT8           pesDecodeBuffer[TS_FRAME_SIZE * 10];
         
         void            setDecoder(TiVoDecoderTS *pDecoder);
-        BOOL            addPkt(TiVoDecoderTsPacket *pPkt);
-        BOOL            getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen);
-        BOOL            decrypt(UINT8 *pBuffer, UINT16 bufLen);
+        bool            addPkt(TiVoDecoderTsPacket *pPkt);
+        bool            getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen);
+        bool            decrypt(UINT8 *pBuffer, UINT16 bufLen);
 
         TiVoDecoderTsStream(UINT16 pid);
         ~TiVoDecoderTsStream();
@@ -230,9 +230,9 @@ class TiVoDecoderTsPacket
         TiVoDecoderTsStream *pParent;
         UINT32              packetId;
 
-        BOOL                isValid;
-        BOOL                isPmt;
-        BOOL                isTiVo;
+        bool                isValid;
+        bool                isPmt;
+        bool                isTiVo;
 
         UINT8               buffer[TS_FRAME_SIZE];
         UINT8               payloadOffset;
@@ -242,34 +242,34 @@ class TiVoDecoderTsPacket
         ts_packet_pid_types ts_packet_type;
 
         int  read(HappyFile *pInfile);
-        BOOL decode();
+        bool decode();
         void dump();
         void setStream(TiVoDecoderTsStream *pStream);
 
-        inline void setTiVoPkt(BOOL isTiVoPkt)
+        inline void setTiVoPkt(bool isTiVoPkt)
             { isTiVo = isTiVoPkt; }
-        inline BOOL isTiVoPkt()
+        inline bool isTiVoPkt()
             { return isTiVo; }
-        inline void setPmtPkt(BOOL isPmtPkt)
+        inline void setPmtPkt(bool isPmtPkt)
             { isPmt = isPmtPkt; }
-        inline BOOL isPmtPkt()
+        inline bool isPmtPkt()
             { return isPmt; }
 
-        inline BOOL   isTsPacket()
-            { return (buffer[0] == 0x47) ? TRUE : FALSE; }
+        inline bool   isTsPacket()
+            { return (buffer[0] == 0x47) ? true : false; }
         inline UINT16 getPID()
             { UINT16 val = portable_ntohs(&buffer[1]); return val & 0x1FFF; }
-        inline BOOL   getPayloadStartIndicator()
+        inline bool   getPayloadStartIndicator()
             { UINT16 val = portable_ntohs(&buffer[1]); return (val & 0x4000) ?
-              TRUE: FALSE; }
-        inline BOOL   getScramblingControl()
-            { return (buffer[3] &  0xC0) ? TRUE : FALSE; }
+              true: false; }
+        inline bool   getScramblingControl()
+            { return (buffer[3] &  0xC0) ? true : false; }
         inline void   clrScramblingControl()
             { buffer[3] &= ~(0xC0); }
-        inline BOOL   getPayloadExists()
-            { return (buffer[3] &  0x10) ? TRUE : FALSE; }
-        inline BOOL   getAdaptHdrExists()
-            { return (buffer[3] &  0x20) ? TRUE : FALSE; }
+        inline bool   getPayloadExists()
+            { return (buffer[3] &  0x10) ? true : false; }
+        inline bool   getAdaptHdrExists()
+            { return (buffer[3] &  0x20) ? true : false; }
 
         TiVoDecoderTsPacket();
 };

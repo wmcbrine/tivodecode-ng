@@ -451,7 +451,7 @@ int TiVoDecoderTS::handlePkt_AudioVideo(TiVoDecoderTsPacket *pPkt)
     return 0;
 }
 
-BOOL TiVoDecoderTS::process()
+bool TiVoDecoderTS::process()
 {
     int err         = 0;
     UINT16 pid      = 0;
@@ -460,10 +460,10 @@ BOOL TiVoDecoderTS::process()
     TsStreams_it        stream_iter;
     TsPktDump_iter      pktDump_iter;
 
-    if (FALSE == isValid)
+    if (false == isValid)
     {
         VERBOSE("TS Process : not valid\n");
-        return FALSE;
+        return false;
     }
 
     while (running)
@@ -498,7 +498,7 @@ BOOL TiVoDecoderTS::process()
         else if (readSize == 0)
         {
             VERBOSE("End of File\n");
-            running = FALSE;
+            running = false;
             continue;
         }
         else if (TS_FRAME_SIZE != readSize)
@@ -510,9 +510,9 @@ BOOL TiVoDecoderTS::process()
         }
         
         pktDump_iter = pktDumpMap.find(pktCounter);
-        o_pkt_dump   = (pktDump_iter != pktDumpMap.end()) ? TRUE : FALSE;
+        o_pkt_dump   = (pktDump_iter != pktDumpMap.end()) ? true : false;
 
-        if (FALSE == pPkt->decode())
+        if (false == pPkt->decode())
         {
             std::fprintf(stderr, "packet decode fails : pktId %d\n",
                          pktCounter);
@@ -541,7 +541,7 @@ BOOL TiVoDecoderTS::process()
             {
                 if (pPkt->getPID() == patData.program_map_pid)
                 {
-                    pPkt->setPmtPkt(TRUE);
+                    pPkt->setPmtPkt(true);
                     err = handlePkt_PMT(pPkt);
                     if (err)
                         std::perror("ts_handle_pmt failed");
@@ -556,12 +556,12 @@ BOOL TiVoDecoderTS::process()
                             (TS_STREAM_TYPE_PRIVATE_DATA ==
                              pStream->stream_type))
                         {
-                            pPkt->setTiVoPkt(TRUE);
+                            pPkt->setTiVoPkt(true);
                             break;
                         }
                     }
 
-                    if (TRUE == pPkt->isTiVoPkt())
+                    if (true == pPkt->isTiVoPkt())
                     {
                         err = handlePkt_TiVo(pPkt);
                         if (err)
@@ -594,7 +594,7 @@ BOOL TiVoDecoderTS::process()
                      pktCounter, pPkt->getPID(), pPkt->getPID());
 
             pStream = stream_iter->second;
-            if (FALSE == pStream->addPkt(pPkt))
+            if (false == pStream->addPkt(pPkt))
             {
                 std::fprintf(stderr,
                     "Failed to add packet to stream : pktId %d\n", 
@@ -608,7 +608,7 @@ BOOL TiVoDecoderTS::process()
         }
     }
 
-    return TRUE;
+    return true;
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

@@ -31,8 +31,8 @@ class TiVoDecoder
 {
     public:
 
-        BOOL         running;
-        BOOL         isValid;
+        bool         running;
+        bool         isValid;
         TuringState *pTuring;
         HappyFile   *pFileIn;
         FILE        *pFileOut;
@@ -40,7 +40,7 @@ class TiVoDecoder
         int do_header(UINT8 *arg_0, int *block_no, int *arg_8,
                       int *crypted, int *arg_10, int *arg_14);
 
-        virtual BOOL process() = 0;
+        virtual bool process() = 0;
 
         TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
                     FILE *pOutfile);

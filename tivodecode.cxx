@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
                 break;
             case 'p':
                 std::sscanf(optarg, "%d", &pktDump);
-                pktDumpMap[pktDump] = TRUE;
+                pktDumpMap[pktDump] = true;
                 break;
             case 'o':
                 outfile = optarg;
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
 
     PRINT_QUALCOMM_MSG();
 
-    if (FALSE == header.read(hfh))
+    if (false == header.read(hfh))
     {
         return(8);
     }
@@ -217,7 +217,7 @@ int main(int argc, char *argv[])
     {
         hoff_t chunk_start = hfh->tell() + pChunks[i].size();
 
-        if (FALSE == pChunks[i].read(hfh))
+        if (false == pChunks[i].read(hfh))
         {
             std::perror("chunk read fail");
             return(8);
@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
             }
 
             pChunks[i].dump();
-            if (FALSE == pChunks[i].write(chunkfh))
+            if (false == pChunks[i].write(chunkfh))
             {
                 std::perror("write chunk");
                 return 8;
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
         return 9;
     }
     
-    if (FALSE == pDecoder->process())
+    if (false == pDecoder->process())
     {
         std::perror("Failed to process file");
         return 9;

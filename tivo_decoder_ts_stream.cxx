@@ -33,17 +33,17 @@ void TiVoDecoderTsStream::setDecoder(TiVoDecoderTS *pDecoder)
     pParent = pDecoder;
 }
 
-BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
+bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
 {
     TiVoDecoderTsPacket *pPkt2 = NULL;
-    BOOL flushBuffers = FALSE;
+    bool flushBuffers = false;
     TsPackets_it pkt_iter;
     TsLengths_it len_iter;
 
     if (!pPkt)
     {
         std::perror("bad parameter");
-        return FALSE;
+        return false;
     }
 
     pPkt->setStream(this);
@@ -57,7 +57,7 @@ BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
     // The accounts for the situation where the PES headers
     // straddles two packets, and decryption is needed on the 2nd.
 
-    if ((TRUE == pPkt->getPayloadStartIndicator()) || (0 != packets.size()))
+    if ((true == pPkt->getPayloadStartIndicator()) || (0 != packets.size()))
     {
         VERBOSE("Add PktID %d from PID 0x%04x to packet list : payloadStart "
                 "%d listCount %zu\n", pPkt->packetId, stream_pid, 
@@ -92,12 +92,12 @@ BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         TsLengths_it len_iter;
         pesHdrLengths.clear();
 
-        BOOL pesParse = getPesHdrLength(pesDecodeBuffer, pesDecodeBufferLen);
-        if (FALSE == pesParse)
+        bool pesParse = getPesHdrLength(pesDecodeBuffer, pesDecodeBufferLen);
+        if (false == pesParse)
         {
             std::fprintf(stderr, "failed to parse PES headers : pktID %d\n", 
                          pPkt->packetId);
-            return FALSE;
+            return false;
         }
 
         for (len_iter = pesHdrLengths.begin();
@@ -115,7 +115,7 @@ BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         if (pesHeaderLength < pesDecodeBufferLen)
         {
             VERBOSE("FLUSH BUFFERS\n");
-            flushBuffers = TRUE;
+            flushBuffers = true;
 
             // For each packet, set the end point for PES headers in 
             // that packet
@@ -200,11 +200,11 @@ BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
     {
         VERBOSE("Push Back : PayloadStartIndicator %d, packets.size() %zu \n", 
             pPkt->getPayloadStartIndicator(), packets.size());
-        flushBuffers = TRUE;
+        flushBuffers = true;
         packets.push_back(pPkt);
     }
     
-    if (TRUE == flushBuffers)
+    if (true == flushBuffers)
     {        
         VERBOSE("Flush packets for write\n");
         
@@ -217,7 +217,7 @@ BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
 
             VERBOSE("Flushing packet %d\n", pPkt2->packetId);
 
-            if (TRUE == pPkt2->getScramblingControl())
+            if (true == pPkt2->getScramblingControl())
             {
                 pPkt2->clrScramblingControl();
                 UINT8 decryptOffset = pPkt2->payloadOffset +
@@ -228,11 +228,11 @@ BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                         "decrypt offset %d len %d\n", pPkt2->packetId, 
                         stream_pid, decryptOffset, decryptLen);
 
-                if (FALSE == decrypt(&pPkt2->buffer[decryptOffset],
+                if (false == decrypt(&pPkt2->buffer[decryptOffset],
                                      decryptLen))
                 {
                     std::perror("Packet decrypt fails");
-                    return FALSE;
+                    return false;
                 }
             }
         
@@ -264,18 +264,18 @@ BOOL TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         VERBOSE("Do NOT flush packets for write\n");
     }
 
-    return TRUE;
+    return true;
 }
 
-BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen)
+bool TiVoDecoderTsStream::getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen)
 {
     TiVoDecoder_MPEG2_Parser parser(pBuffer, bufLen);
     
-    BOOL   done      = FALSE;
+    bool   done      = false;
     UINT32 startCode = 0;
     UINT16 len       = 0;
     
-    while ((FALSE == done) && (FALSE == parser.isEndOfFile()) &&
+    while ((false == done) && (false == parser.isEndOfFile()) &&
            (bufLen > parser.getReadPos()))
     {
         VVERBOSE("PES Header Offset : %d (0x%x)\n",
@@ -283,7 +283,7 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen)
 
         if (0x000001 != parser.nextbits(24))
         {
-            done = TRUE;
+            done = true;
             continue;
         }
 
@@ -338,7 +338,7 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen)
             VVERBOSE("%-15s   : 0x%08x : %-25.25s\n", "TS PES Packet",
                      startCode, "Slice" );    
 //            parser.slice(len);
-            done = TRUE;
+            done = true;
         }
         else if ((startCode == 0x1BD) ||
                  (startCode >= 0x1C0 && startCode <= 0x1EF))
@@ -350,7 +350,7 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen)
         else
         {
             VERBOSE("Unhandled PES header : 0x%08x\n", startCode);
-            return FALSE;
+            return false;
         }
         
         if (len)
@@ -361,7 +361,7 @@ BOOL TiVoDecoderTsStream::getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen)
         }
     }
     
-    return TRUE;
+    return true;
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

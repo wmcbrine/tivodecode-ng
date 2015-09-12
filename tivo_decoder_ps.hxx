@@ -42,7 +42,7 @@ class TiVoDecoderPS : public TiVoDecoder
         UINT32 marker;
         
     public:
-        virtual BOOL process();
+        virtual bool process();
         int process_frame(UINT8 code, hoff_t packet_start);
     
         TiVoDecoderPS(TuringState *pTuringState, HappyFile *pInfile,

@@ -15,10 +15,6 @@ typedef short          INT16;
 typedef unsigned char  UINT8;
 typedef char           INT8;
 typedef char           CHAR;
-typedef char           BOOL;
-
-#define TRUE  1
-#define FALSE 0
 
 #define PRINT_QUALCOMM_MSG() std::cerr << "Encryption by QUALCOMM ;)\n\n"
 

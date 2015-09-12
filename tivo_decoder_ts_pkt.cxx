@@ -20,9 +20,9 @@ UINT8 TiVoDecoderTsPacket::globalBuffer[];
 TiVoDecoderTsPacket::TiVoDecoderTsPacket()
 {
     pParent         = NULL;
-    isValid         = FALSE;
-    isPmt           = FALSE;
-    isTiVo          = FALSE;
+    isValid         = false;
+    isPmt           = false;
+    isTiVo          = false;
     payloadOffset   = 0;
     pesHdrOffset    = 0;
     ts_packet_type  = TS_PID_TYPE_NONE;
@@ -73,7 +73,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
     if (0 == size)
     {
         VERBOSE("End of file\n");
-        isValid = TRUE;
+        isValid = true;
         return size;
     }
     else if (TS_FRAME_SIZE != size)
@@ -176,16 +176,16 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
         }
     }
 
-    isValid = TRUE;
+    isValid = true;
     return size;
 }
 
-BOOL TiVoDecoderTsPacket::decode()
+bool TiVoDecoderTsPacket::decode()
 {
-    if (FALSE == isValid)
+    if (false == isValid)
     {
         std::perror("Packet not valid");
-        return FALSE;
+        return false;
     }
     
     // TS packet streams are big endian, and we may be running on little 
@@ -210,8 +210,8 @@ BOOL TiVoDecoderTsPacket::decode()
     if (tsHeader.sync_byte != 0x47)
     {
         std::perror("invalid ts pkt header");
-        isValid = FALSE;
-        return FALSE;
+        isValid = false;
+        return false;
     }
 
     for (int i = 0; ts_packet_tags[i].ts_packet != TS_PID_TYPE_NONE; i++)
@@ -248,7 +248,7 @@ BOOL TiVoDecoderTsPacket::decode()
         payloadOffset += (tsAdaptation.adaptation_field_length);
     }
         
-    return TRUE;
+    return true;
 }
 
 void TiVoDecoderTsPacket::dump()
@@ -284,7 +284,7 @@ void TiVoDecoderTsPacket::dump()
             { pidType = "None"; break; }
         case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA:
         {
-            if (TRUE == isPmtPkt())
+            if (true == isPmtPkt())
             {
                 pidType = "Program Map Table";
             }
@@ -360,12 +360,12 @@ void TiVoDecoderTsPacket::dump()
     hexbulk(buffer, TS_FRAME_SIZE);
 }
 
-BOOL TiVoDecoderTsStream::decrypt(UINT8 *pBuffer, UINT16 bufferLen)
+bool TiVoDecoderTsStream::decrypt(UINT8 *pBuffer, UINT16 bufferLen)
 {
     if (!pParent)
     {
         std::perror("Stream does not have a parent decoder");
-        return FALSE;
+        return false;
     }
 
     if (IS_VVVERBOSE)
@@ -380,7 +380,7 @@ BOOL TiVoDecoderTsStream::decrypt(UINT8 *pBuffer, UINT16 bufferLen)
                            &(turing_stuff.crypted), NULL, NULL))
     {
         std::perror("do_header did not return 0!\n");
-        return FALSE;
+        return false;
     }
 
     if (IS_VVVERBOSE)
@@ -408,7 +408,7 @@ BOOL TiVoDecoderTsStream::decrypt(UINT8 *pBuffer, UINT16 bufferLen)
         hexbulk(pBuffer, bufferLen);
     }
 
-    return TRUE;
+    return true;
 }
 
 /* vi:set ai ts=4 sw=4 expandtab: */

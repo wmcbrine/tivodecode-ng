@@ -55,15 +55,15 @@ TiVoDecoderPS::~TiVoDecoderPS()
 {
 }
 
-BOOL TiVoDecoderPS::process()
+bool TiVoDecoderPS::process()
 {
-    if (FALSE == isValid)
+    if (false == isValid)
     {
         VERBOSE("PS Process : not valid\n");
-        return FALSE;
+        return false;
     }
 
-    BOOL first = TRUE;
+    bool first = true;
     UINT8 byte = 0x00;
     
     while (running)
@@ -97,18 +97,18 @@ BOOL TiVoDecoderPS::process()
         if (pFileIn->read(&byte, 1) == 0)
         {
             VERBOSE("End of File\n");
-            running = FALSE;
+            running = false;
         }
         else
         {
             marker |= byte;
         }
 
-        first = FALSE;
+        first = false;
     }    
 
     VERBOSE("PS Process\n");
-    return TRUE;
+    return true;
 }
 
 int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)

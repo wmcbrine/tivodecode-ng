@@ -15,16 +15,16 @@
 TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
                          FILE *pOutfile)
 {
-    isValid = FALSE;
+    isValid = false;
 
     if (!pTuringState || !pInfile || !pOutfile)
         return;
         
-    running  = TRUE;
+    running  = true;
     pFileIn  = pInfile;
     pFileOut = pOutfile;
     pTuring  = pTuringState;
-    isValid  = TRUE;
+    isValid  = true;
 }
 
 TiVoDecoder::~TiVoDecoder()

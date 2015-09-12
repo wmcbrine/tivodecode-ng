@@ -16,7 +16,7 @@ extern UINT32 portable_ntohl(UINT8 *pVal);
 #define static_strlen(str) (sizeof(str) - 1)
 
 extern int  o_verbose;
-extern BOOL o_pkt_dump;
+extern bool o_pkt_dump;
 
 #define IS_VERBOSE     ( (o_pkt_dump) || (o_verbose >= 1) )
 #define IS_VVERBOSE    ( (o_pkt_dump) || (o_verbose >= 2) )
@@ -60,7 +60,7 @@ class TiVoStreamHeader
         UINT16 chunks;         /* Number of metadata chunks */
         
         TiVoFormatType getFormatType();
-        BOOL           read(HappyFile *file);
+        bool           read(HappyFile *file);
         void           dump(UINT8 dbgLevel=0);
         UINT16         size() { return sizeof(TiVoStreamHeader); };
     
@@ -77,8 +77,8 @@ class TiVoStreamChunk
         UINT16 type;       /* Subtype */
         UINT8  *pData;     /* Variable length data */
         
-        BOOL   read(HappyFile *file);       
-        BOOL   write(FILE *file); 
+        bool   read(HappyFile *file);       
+        bool   write(FILE *file); 
         void   dump(UINT8 dbgLevel=0);
         UINT16 size() { return sizeof(TiVoStreamChunk) - sizeof(UINT8*); };
         

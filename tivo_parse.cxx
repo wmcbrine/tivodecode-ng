@@ -14,7 +14,7 @@
 #include "tivo_parse.hxx"
 
 int o_verbose;
-BOOL o_pkt_dump;
+bool o_pkt_dump;
 
 UINT32 portable_ntohl(UINT8 *pVal)
 {
@@ -50,12 +50,12 @@ TiVoStreamHeader::TiVoStreamHeader()
     chunks      = 0;
 }
 
-BOOL TiVoStreamHeader::read(HappyFile *file)
+bool TiVoStreamHeader::read(HappyFile *file)
 {    
     if (file->read(this, size()) != size())
     {
         std::perror("read header");
-        return FALSE;
+        return false;
     }    
     
     dummy_0004  = portable_ntohs(dummy_0004);
@@ -67,10 +67,10 @@ BOOL TiVoStreamHeader::read(HappyFile *file)
     if (std::strncmp(fileType, "TiVo", 4))
     {
         std::perror("Not a TiVo file!");
-        return FALSE;    
+        return false;    
     }
 
-    return TRUE;
+    return true;
 }
 
 void TiVoStreamHeader::dump(UINT8 dbgLevel)
@@ -139,12 +139,12 @@ TiVoStreamChunk::~TiVoStreamChunk()
         delete[] pData;
 }
 
-BOOL TiVoStreamChunk::read(HappyFile *file)
+bool TiVoStreamChunk::read(HappyFile *file)
 {    
     if (file->read(this, size()) != size())
     {
         std::perror("read chunk");
-        return FALSE;
+        return false;
     }    
 
     chunkSize   = portable_ntohl(chunkSize);
@@ -157,24 +157,24 @@ BOOL TiVoStreamChunk::read(HappyFile *file)
     if (NULL == pData)
     {
         std::perror("chunk data alloc");
-        return FALSE;
+        return false;
     }
     
     if (file->read(pData, readSize) != readSize)
     {
         std::perror("read chunk data");
-        return FALSE;
+        return false;
     }     
     
-    return TRUE;
+    return true;
 }
 
-BOOL TiVoStreamChunk::write(FILE *file)
+bool TiVoStreamChunk::write(FILE *file)
 {
     if (std::fwrite(pData, 1, dataSize, file) != dataSize)
-        return FALSE;
+        return false;
         
-    return TRUE; 
+    return true; 
 }
 
 void TiVoStreamChunk::dump(UINT8 dbgLevel)

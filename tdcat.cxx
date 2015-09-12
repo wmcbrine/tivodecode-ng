@@ -189,7 +189,7 @@ int main(int argc, char *argv[])
 
     PRINT_QUALCOMM_MSG();
 
-    if (FALSE == header.read(hfh))
+    if (false == header.read(hfh))
     {
         return 8;
     }
@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
     {
         hoff_t chunk_start = hfh->tell() + pChunks[i].size();
 
-        if (FALSE == pChunks[i].read(hfh))
+        if (false == pChunks[i].read(hfh))
         {
             std::perror("chunk read fail");
             return 8;
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
             (o_chunk_2 && pChunks[i].id == 2))
         {
             pChunks[i].dump();
-            if (FALSE == pChunks[i].write(ofh))
+            if (false == pChunks[i].write(ofh))
             {
                 std::perror("write chunk");
                 return 8;
