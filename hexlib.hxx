@@ -4,7 +4,7 @@
 #ifndef HEXLIB_H_
 #define HEXLIB_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 int hexbulk(uint8_t *, int n);
 

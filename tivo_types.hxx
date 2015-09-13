@@ -5,7 +5,7 @@
 #include "tdconfig.h"
 #endif
 
-#include <cstdint>
+#include <stdint.h>
 #include <iostream>
 
 #define PRINT_QUALCOMM_MSG() std::cerr << "Encryption by QUALCOMM ;)\n\n"
