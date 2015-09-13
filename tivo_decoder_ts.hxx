@@ -14,8 +14,8 @@ using namespace std;
 #include "tivo_types.hxx"
 #include "tivo_decoder_base.hxx"
 
-extern std::map<UINT32, bool> pktDumpMap;
-extern std::map<UINT32, bool>::iterator pktDumpMap_iter;
+extern std::map<uint32_t, bool> pktDumpMap;
+extern std::map<uint32_t, bool>::iterator pktDumpMap_iter;
 
 #define TS_FRAME_SIZE  188
 
@@ -66,8 +66,8 @@ typedef struct _TS_Turing_Stuff
 {
     int           block_no;
     int           crypted;
-    unsigned char unknown_field[4];
-    unsigned char key[16];
+    uint8_t unknown_field[4];
+    uint8_t key[16];
 } __attribute__((packed)) TS_Turing_Stuff;
 
 typedef struct _TS_header
@@ -85,56 +85,56 @@ typedef struct _TS_header
 
 typedef struct _TS_adaptation_field
 {
-    unsigned short adaptation_field_length:8;
-    unsigned short discontinuity_indicator:1;
-    unsigned short random_access_indicator:1;
-    unsigned short elementary_stream_priority_indicator:1;
-    unsigned short pcr_flag:1;
-    unsigned short opcr_flag:1;
-    unsigned short splicing_point_flag:1;
-    unsigned short transport_private_data_flag:1;
-    unsigned short adaptation_field_extension_flag:1;
+    uint16_t adaptation_field_length:8;
+    uint16_t discontinuity_indicator:1;
+    uint16_t random_access_indicator:1;
+    uint16_t elementary_stream_priority_indicator:1;
+    uint16_t pcr_flag:1;
+    uint16_t opcr_flag:1;
+    uint16_t splicing_point_flag:1;
+    uint16_t transport_private_data_flag:1;
+    uint16_t adaptation_field_extension_flag:1;
 } __attribute__((packed)) TS_Adaptation_Field;
 
 typedef struct _TS_PAT_data
 {
-    unsigned char  version_number;
-    unsigned char  current_next_indicator;
-    unsigned char  section_number;
-    unsigned char  last_section_number;
-    unsigned short program_map_pid;
+    uint8_t  version_number;
+    uint8_t  current_next_indicator;
+    uint8_t  section_number;
+    uint8_t  last_section_number;
+    uint16_t program_map_pid;
 } __attribute__((packed)) TS_PAT_data;
 
 typedef struct _TS_PES_Packet
 {
-    unsigned char marker_bits:2;
-    unsigned char scrambling_control:2;
-    unsigned char priority:1;
-    unsigned char data_alignment_indicator:1;
-    unsigned char copyright:1;
-    unsigned char original_or_copy:1;
-    unsigned char PTS_DTS_indicator:2;
-    unsigned char ESCR_flag:1;
-    unsigned char ES_rate_flag:1;
-    unsigned char DSM_trick_mode_flag:1;
-    unsigned char additional_copy_info_flag:1;
-    unsigned char CRC_flag:1;
-    unsigned char extension_flag:1;
+    uint8_t marker_bits:2;
+    uint8_t scrambling_control:2;
+    uint8_t priority:1;
+    uint8_t data_alignment_indicator:1;
+    uint8_t copyright:1;
+    uint8_t original_or_copy:1;
+    uint8_t PTS_DTS_indicator:2;
+    uint8_t ESCR_flag:1;
+    uint8_t ES_rate_flag:1;
+    uint8_t DSM_trick_mode_flag:1;
+    uint8_t additional_copy_info_flag:1;
+    uint8_t CRC_flag:1;
+    uint8_t extension_flag:1;
     unsigned int  PES_header_length;
 } __attribute__((packed)) PES_packet;
 
 typedef struct _TS_Prog_Elements
 {
-    UINT8      streamId;
-    UINT16     pesPktLength;
+    uint8_t      streamId;
+    uint16_t     pesPktLength;
     PES_packet PES_hdr;
 } __attribute__((packed)) TS_Stream_Element;
 
 typedef struct
 {
     // the 16-bit value match for the packet pids
-    unsigned char code_match_lo;    // low end of the range of matches
-    unsigned char code_match_hi;    // high end of the range of matches
+    uint8_t code_match_lo;    // low end of the range of matches
+    uint8_t code_match_hi;    // high end of the range of matches
 
     // what kind of TS packet is it?
     ts_stream_types ts_stream_type;
@@ -144,8 +144,8 @@ ts_pmt_stream_type_info;
 typedef struct
 {
     // the 16-bit value match for the packet pids
-    unsigned short code_match_lo;      // low end of the range of matches
-    unsigned short code_match_hi;      // high end of the range of matches
+    uint16_t code_match_lo;      // low end of the range of matches
+    uint16_t code_match_hi;      // high end of the range of matches
 
     // what kind of TS packet is it?
     ts_packet_pid_types ts_packet;
@@ -159,8 +159,8 @@ class TiVoDecoderTS;
 class TiVoDecoderTsStream;
 class TiVoDecoderTsPacket;
 
-typedef std::deque<UINT16>                              TsLengths;
-typedef std::deque<UINT16>::iterator                    TsLengths_it;
+typedef std::deque<uint16_t>                              TsLengths;
+typedef std::deque<uint16_t>::iterator                    TsLengths_it;
 
 typedef std::deque<TiVoDecoderTsPacket*>                TsPackets;
 typedef std::deque<TiVoDecoderTsPacket*>::iterator      TsPackets_it;
@@ -168,8 +168,8 @@ typedef std::deque<TiVoDecoderTsPacket*>::iterator      TsPackets_it;
 typedef std::map<int, TiVoDecoderTsStream*>             TsStreams;
 typedef std::map<int, TiVoDecoderTsStream*>::iterator   TsStreams_it;
 
-typedef std::map<UINT32,bool>                           TsPktDump;
-typedef std::map<UINT32,bool>::iterator                 TsPktDump_iter;
+typedef std::map<uint32_t,bool>                           TsPktDump;
+typedef std::map<uint32_t,bool>::iterator                 TsPktDump_iter;
     
 extern TsPktDump pktDumpMap;
 
@@ -179,7 +179,7 @@ class TiVoDecoderTS : public TiVoDecoder
 {
     private:
         TsStreams   streams;
-        UINT32      pktCounter;
+        uint32_t      pktCounter;
         TS_PAT_data patData;
 
     public:
@@ -201,23 +201,23 @@ class TiVoDecoderTsStream
         TsPackets       packets;
         TsLengths       pesHdrLengths;
 
-        UINT8           stream_type_id;
-        UINT16          stream_pid;
-        UINT8           stream_id;
+        uint8_t           stream_type_id;
+        uint16_t          stream_pid;
+        uint8_t           stream_id;
         ts_stream_types stream_type;
 
         FILE            *pOutfile;
 
         TS_Turing_Stuff turing_stuff;
         
-        UINT8           pesDecodeBuffer[TS_FRAME_SIZE * 10];
+        uint8_t           pesDecodeBuffer[TS_FRAME_SIZE * 10];
         
         void            setDecoder(TiVoDecoderTS *pDecoder);
         bool            addPkt(TiVoDecoderTsPacket *pPkt);
-        bool            getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen);
-        bool            decrypt(UINT8 *pBuffer, UINT16 bufLen);
+        bool            getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen);
+        bool            decrypt(uint8_t *pBuffer, uint16_t bufLen);
 
-        TiVoDecoderTsStream(UINT16 pid);
+        TiVoDecoderTsStream(uint16_t pid);
         ~TiVoDecoderTsStream();
 };
 
@@ -225,18 +225,18 @@ class TiVoDecoderTsPacket
 {
     public:
         static int          globalBufferLen;
-        static UINT8        globalBuffer[TS_FRAME_SIZE * 3];
+        static uint8_t        globalBuffer[TS_FRAME_SIZE * 3];
 
         TiVoDecoderTsStream *pParent;
-        UINT32              packetId;
+        uint32_t              packetId;
 
         bool                isValid;
         bool                isPmt;
         bool                isTiVo;
 
-        UINT8               buffer[TS_FRAME_SIZE];
-        UINT8               payloadOffset;
-        UINT8               pesHdrOffset;
+        uint8_t               buffer[TS_FRAME_SIZE];
+        uint8_t               payloadOffset;
+        uint8_t               pesHdrOffset;
         TS_Header           tsHeader;
         TS_Adaptation_Field tsAdaptation;
         ts_packet_pid_types ts_packet_type;
@@ -257,10 +257,10 @@ class TiVoDecoderTsPacket
 
         inline bool   isTsPacket()
             { return (buffer[0] == 0x47) ? true : false; }
-        inline UINT16 getPID()
-            { UINT16 val = portable_ntohs(&buffer[1]); return val & 0x1FFF; }
+        inline uint16_t getPID()
+            { uint16_t val = portable_ntohs(&buffer[1]); return val & 0x1FFF; }
         inline bool   getPayloadStartIndicator()
-            { UINT16 val = portable_ntohs(&buffer[1]); return (val & 0x4000) ?
+            { uint16_t val = portable_ntohs(&buffer[1]); return (val & 0x4000) ?
               true: false; }
         inline bool   getScramblingControl()
             { return (buffer[3] &  0xC0) ? true : false; }

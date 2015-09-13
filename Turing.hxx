@@ -61,8 +61,7 @@ product or in the associated documentation.
 #ifndef TURING_H
 #define TURING_H 1
 
-typedef unsigned char BYTE;
-typedef unsigned long WORD;
+#include "tivo_types.hxx"
 
 #define MAXKEY      32  /* bytes*/
 #define MAXKIV	    48  /* bytes*/
@@ -74,20 +73,20 @@ typedef unsigned long WORD;
 class Turing
 {
     private:
-        int  keylen;         /* adjusted to count WORDs */
-        WORD K[MAXKEY / 4];  /* storage for mixed key */
-        WORD R[LFSRLEN];     /* the shift register */
+        int      keylen;         /* adjusted to count WORDs */
+        uint32_t K[MAXKEY / 4];  /* storage for mixed key */
+        uint32_t R[LFSRLEN];     /* the shift register */
         /* precalculated S-boxes */
-        WORD S0[256], S1[256], S2[256], S3[256];
+        uint32_t S0[256], S1[256], S2[256], S3[256];
 
     public:
-        void key(const BYTE key[], const int keylength);
-        void IV(const BYTE iv[], const int ivlength);
-        int  gen(BYTE *buf);  /* returns number of bytes of mask generated */
+        void key(const uint8_t key[], const int keylength);
+        void IV(const uint8_t iv[], const int ivlength);
+        int  gen(uint8_t *buf);  /* returns number of bytes of mask generated */
 };
 
 /* some useful macros -- big-endian */
-#define B(x,i) ((BYTE)(((x) >> (24 - 8 * i)) & 0xFF))
+#define B(x,i) ((uint8_t)(((x) >> (24 - 8 * i)) & 0xFF))
 
 #define WORD2BYTE(w, b) { \
     (b)[3] = B(w, 3); \
@@ -97,10 +96,10 @@ class Turing
 }
 
 #define BYTE2WORD(b) ( \
-    (((WORD)(b)[0] & 0xFF) << 24) | \
-    (((WORD)(b)[1] & 0xFF) << 16) | \
-    (((WORD)(b)[2] & 0xFF) << 8) | \
-    (((WORD)(b)[3] & 0xFF)) \
+    (((uint32_t)(b)[0] & 0xFF) << 24) | \
+    (((uint32_t)(b)[1] & 0xFF) << 16) | \
+    (((uint32_t)(b)[2] & 0xFF) << 8) | \
+    (((uint32_t)(b)[3] & 0xFF)) \
 )
 
 #define ROTL(w,x) (((w) << (x))|((w) >> (32 - (x))))

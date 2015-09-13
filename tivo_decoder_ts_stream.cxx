@@ -15,7 +15,7 @@
 #include "tivo_decoder_ts.hxx"
 #include "tivo_decoder_mpeg_parser.hxx"
 
-TiVoDecoderTsStream::TiVoDecoderTsStream(UINT16 pid)
+TiVoDecoderTsStream::TiVoDecoderTsStream(uint16_t pid)
 {
     packets.clear();
 
@@ -66,7 +66,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         packets.push_back(pPkt);
 
         // Form one contiguous buffer containing all buffered packet payloads
-        UINT16 pesDecodeBufferLen = 0;
+        uint16_t pesDecodeBufferLen = 0;
         std::memset(pesDecodeBuffer, 0, 10 * TS_FRAME_SIZE);
         for (pkt_iter = packets.begin(); pkt_iter != packets.end(); pkt_iter++)
         {
@@ -88,7 +88,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
 
         // Scan the contiguous buffer for PES headers 
         // in order to find the end of PES headers.  
-        UINT16 pesHeaderLength = 0;
+        uint16_t pesHeaderLength = 0;
         TsLengths_it len_iter;
         pesHdrLengths.clear();
 
@@ -129,7 +129,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
  
                 while (!pesHdrLengths.empty())
                 {
-                    UINT16 pesHdrLen = pesHdrLengths.front();
+                    uint16_t pesHdrLen = pesHdrLengths.front();
                     pesHdrLen /= 8;
                     pesHdrLengths.pop_front();
 
@@ -158,7 +158,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                         //     start decrypt offset into the payload
 
                         // Case 1                        
-                        UINT16 pktBoundaryOffset = TS_FRAME_SIZE - 
+                        uint16_t pktBoundaryOffset = TS_FRAME_SIZE - 
                             pPkt2->payloadOffset - pPkt2->pesHdrOffset;
 
                         VVERBOSE("  pktBoundaryOffset : %d (%d - %d - %d)\n",
@@ -220,9 +220,9 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
             if (true == pPkt2->getScramblingControl())
             {
                 pPkt2->clrScramblingControl();
-                UINT8 decryptOffset = pPkt2->payloadOffset +
+                uint8_t decryptOffset = pPkt2->payloadOffset +
                     pPkt2->pesHdrOffset;
-                UINT8 decryptLen = TS_FRAME_SIZE - decryptOffset;
+                uint8_t decryptLen = TS_FRAME_SIZE - decryptOffset;
 
                 VERBOSE("Decrypting PktID %d from stream 0x%04x : "
                         "decrypt offset %d len %d\n", pPkt2->packetId, 
@@ -267,13 +267,13 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
     return true;
 }
 
-bool TiVoDecoderTsStream::getPesHdrLength(UINT8 *pBuffer, UINT16 bufLen)
+bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
 {
     TiVoDecoder_MPEG2_Parser parser(pBuffer, bufLen);
     
-    bool   done      = false;
-    UINT32 startCode = 0;
-    UINT16 len       = 0;
+    bool     done      = false;
+    uint32_t startCode = 0;
+    uint16_t len       = 0;
     
     while ((false == done) && (false == parser.isEndOfFile()) &&
            (bufLen > parser.getReadPos()))

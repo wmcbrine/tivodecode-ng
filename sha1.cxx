@@ -49,19 +49,19 @@
 
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
-static void transform(unsigned int state[5], unsigned char buffer[64])
+static void transform(unsigned int state[5], uint8_t buffer[64])
 {
     unsigned int a, b, c, d, e;
 
     typedef union {
-        unsigned char c[64];
+        uint8_t c[64];
         unsigned int l[16];
     } CHAR64LONG16;
 
     CHAR64LONG16 *block;
 
 #ifdef SHA1HANDSOFF
-    static unsigned char workspace[64];
+    static uint8_t workspace[64];
     block = (CHAR64LONG16 *)workspace;
     std::memcpy(block, buffer, 64);
 #else
@@ -123,7 +123,7 @@ void SHA1::init()
 
 /* Run your data through this. */
 
-void SHA1::update(unsigned char *data, size_t len)
+void SHA1::update(uint8_t *data, size_t len)
 {
     unsigned int i, j;
 
@@ -157,29 +157,29 @@ void SHA1::update(unsigned char *data, size_t len)
 
 /* Add padding and return the message digest. */
 
-void SHA1::final(unsigned char digest[20])
+void SHA1::final(uint8_t digest[20])
 {
     unsigned int i, j;
-    unsigned char finalcount[8];
+    uint8_t finalcount[8];
 
     for (i = 0; i < 8; i++)
     {
-        finalcount[i] = (unsigned char)((count[(i >= 4 ? 0 : 1)]
+        finalcount[i] = (uint8_t)((count[(i >= 4 ? 0 : 1)]
                         >> ((3 - (i & 3)) * 8)) & 255);  /* Either-endian */
     }
 
-    update((unsigned char *)"\200", 1);
+    update((uint8_t *)"\200", 1);
 
     while ((count[0] & 504) != 448)
     {
-        update((unsigned char *)"\0", 1);
+        update((uint8_t *)"\0", 1);
     }
 
     update(finalcount, 8);  /* Should cause a transform() */
 
     for (i = 0; i < 20; i++)
     {
-        digest[i] = (unsigned char)
+        digest[i] = (uint8_t)
             ((state[i >> 2] >> ((3 - (i & 3)) * 8)) & 255);
     }
 

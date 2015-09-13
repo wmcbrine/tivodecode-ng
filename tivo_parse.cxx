@@ -16,25 +16,25 @@
 int o_verbose;
 bool o_pkt_dump;
 
-UINT32 portable_ntohl(UINT8 *pVal)
+uint32_t portable_ntohl(uint8_t *pVal)
 {
     return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
 }
 
-UINT32 portable_ntohl(UINT32 val)
+uint32_t portable_ntohl(uint32_t val)
 {
-    UINT8 *pVal = (UINT8*) &val;
+    uint8_t *pVal = (uint8_t*) &val;
     return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
 }
 
-UINT16 portable_ntohs(UINT8 *pVal)
+uint16_t portable_ntohs(uint8_t *pVal)
 {
     return (pVal[0] << 8) | pVal[1];
 }
 
-UINT16 portable_ntohs(UINT16 val)
+uint16_t portable_ntohs(uint16_t val)
 {
-    UINT8 *pVal = (UINT8*) &val;
+    uint8_t *pVal = (uint8_t*) &val;
     return (pVal[0] << 8) | pVal[1];
 }
 
@@ -73,7 +73,7 @@ bool TiVoStreamHeader::read(HappyFile *file)
     return true;
 }
 
-void TiVoStreamHeader::dump(UINT8 dbgLevel)
+void TiVoStreamHeader::dump(uint8_t dbgLevel)
 {
     if (IS_VERBOSE)
     {
@@ -152,8 +152,8 @@ bool TiVoStreamChunk::read(HappyFile *file)
     id          = portable_ntohs(id);
     type        = portable_ntohs(type);
 
-    UINT16 readSize = chunkSize - size(); 
-    pData = new UINT8[readSize];
+    uint16_t readSize = chunkSize - size(); 
+    pData = new uint8_t[readSize];
     if (NULL == pData)
     {
         std::perror("chunk data alloc");
@@ -177,7 +177,7 @@ bool TiVoStreamChunk::write(FILE *file)
     return true; 
 }
 
-void TiVoStreamChunk::dump(UINT8 dbgLevel)
+void TiVoStreamChunk::dump(uint8_t dbgLevel)
 {
     if (IS_VERBOSE)
     {
@@ -194,7 +194,7 @@ void TiVoStreamChunk::dump(UINT8 dbgLevel)
     }
 }
 
-void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, UINT8 *pMAK)
+void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, uint8_t *pMAK)
 {
     if (NULL == pTuring || NULL == pMAK)
     {
@@ -205,7 +205,7 @@ void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, UINT8 *pMAK)
     pTuring->setup_key(pData, dataSize, (char *)pMAK);
 }
 
-void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, UINT8 *pMAK)
+void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, uint8_t *pMAK)
 {
     pTuring->setup_metadata_key(pData, dataSize, (char *)pMAK);
 
@@ -213,7 +213,7 @@ void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, UINT8 *pMAK)
 //    pTuring->dump();
 }
 
-void TiVoStreamChunk::decryptMetadata(TuringState *pTuring, UINT16 offsetVal)
+void TiVoStreamChunk::decryptMetadata(TuringState *pTuring, uint16_t offsetVal)
 {
 //    std::cerr << "METADATA TURING DECRYPT : INIT : offsetVal " << offsetVal << "\n";
 //    pTuring->dump();

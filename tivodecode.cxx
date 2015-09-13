@@ -66,12 +66,12 @@ int main(int argc, char *argv[])
     int o_no_video = 0;
     int o_dump_metadata = 0;
     int makgiven = 0;
-    UINT32 pktDump = 0;
+    uint32_t pktDump = 0;
 
     const char *tivofile = NULL;
     const char *outfile  = NULL;
 
-    CHAR mak[12];
+    char mak[12];
     std::memset(mak, 0, sizeof(mak));
 
     TuringState turing;
@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
         return(9);
     }
 
-    for (INT32 i = 0; i < header.chunks; i++)
+    for (int32_t i = 0; i < header.chunks; i++)
     {
         hoff_t chunk_start = hfh->tell() + pChunks[i].size();
 
@@ -225,12 +225,12 @@ int main(int argc, char *argv[])
 
         if (TIVO_CHUNK_PLAINTEXT_XML == pChunks[i].type)
         {
-            pChunks[i].setupTuringKey(&turing, (UINT8*)mak);
-            pChunks[i].setupMetadataKey(&metaturing, (UINT8*)mak);
+            pChunks[i].setupTuringKey(&turing, (uint8_t*)mak);
+            pChunks[i].setupMetadataKey(&metaturing, (uint8_t*)mak);
         }
         else if (TIVO_CHUNK_ENCRYPTED_XML == pChunks[i].type)
         {
-            UINT16 offsetVal = chunk_start - current_meta_stream_pos;
+            uint16_t offsetVal = chunk_start - current_meta_stream_pos;
             pChunks[i].decryptMetadata(&metaturing, offsetVal);
             current_meta_stream_pos = chunk_start + pChunks[i].dataSize;
         }
@@ -242,7 +242,7 @@ int main(int argc, char *argv[])
 
         if (o_dump_metadata)
         {
-            CHAR buf[25];
+            char buf[25];
             std::sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, pChunks[i].id);
 
             FILE *chunkfh = std::fopen(buf, "wb");

@@ -26,8 +26,8 @@ packet_type;
 typedef struct
 {
     // the byte value match for the packet tags
-    unsigned char code_match_lo;      // low end of the range of matches
-    unsigned char code_match_hi;      // high end of the range of matches
+    uint8_t code_match_lo;      // low end of the range of matches
+    uint8_t code_match_hi;      // high end of the range of matches
 
     // what kind of PES is it?
     packet_type packet;
@@ -39,11 +39,11 @@ packet_tag_info;
 class TiVoDecoderPS : public TiVoDecoder
 {
     private:
-        UINT32 marker;
+        uint32_t marker;
         
     public:
         virtual bool process();
-        int process_frame(UINT8 code, hoff_t packet_start);
+        int process_frame(uint8_t code, hoff_t packet_start);
     
         TiVoDecoderPS(TuringState *pTuringState, HappyFile *pInfile,
                       FILE *pOutfile);

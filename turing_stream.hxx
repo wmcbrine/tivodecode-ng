@@ -29,27 +29,27 @@ typedef struct turing_state_stream
     unsigned int cipher_len;
 
     unsigned int block_id;
-    unsigned char stream_id;
+    uint8_t stream_id;
 
     struct turing_state_stream *next;
 
     Turing *internal;
-    unsigned char cipher_data[MAXSTREAM + sizeof(td_uint64_t)];
+    uint8_t cipher_data[MAXSTREAM + sizeof(td_uint64_t)];
 } turing_state_stream;
 
 class TuringState
 {
     private:
-        unsigned char turingkey[20];
+        uint8_t turingkey[20];
         turing_state_stream *active;
 
     public:
-        void setup_key(unsigned char *buffer, size_t buffer_length, char *mak);
-        void setup_metadata_key(unsigned char *buffer, size_t buffer_length,
+        void setup_key(uint8_t *buffer, size_t buffer_length, char *mak);
+        void setup_metadata_key(uint8_t *buffer, size_t buffer_length,
                                 char *mak);
-        void prepare_frame_helper(unsigned char stream_id, int block_id);
-        void prepare_frame(unsigned char stream_id, int block_id);
-        void decrypt_buffer(unsigned char *buffer, size_t buffer_length);
+        void prepare_frame_helper(uint8_t stream_id, int block_id);
+        void prepare_frame(uint8_t stream_id, int block_id);
+        void decrypt_buffer(uint8_t *buffer, size_t buffer_length);
         void skip_data(size_t bytes_to_skip);
         void destruct();
         void dump();

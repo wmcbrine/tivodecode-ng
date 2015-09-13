@@ -79,32 +79,32 @@ product or in the associated documentation.
 #include "Turing.hxx"		/* interface definitions */
 #include "turing_stream.hxx"
 
-void TuringState::setup_key(unsigned char *buffer, size_t buffer_length,
+void TuringState::setup_key(uint8_t *buffer, size_t buffer_length,
                             char *mak)
 {
     SHA1 context;
 
     context.init();
-    context.update((unsigned char *)mak, strlen(mak));
+    context.update((uint8_t *)mak, strlen(mak));
     context.update(buffer, buffer_length);
     context.final(turingkey);
 }
 
 #define static_strlen(str) (sizeof(str) - 1)
 
-void TuringState::setup_metadata_key(unsigned char *buffer,
+void TuringState::setup_metadata_key(uint8_t *buffer,
                                      size_t buffer_length, char *mak)
 {
     static const char lookup[] = "0123456789abcdef";
-    static const unsigned char media_mak_prefix[] = "tivo:TiVo DVR:";
+    static const uint8_t media_mak_prefix[] = "tivo:TiVo DVR:";
     MD5 md5;
     int i;
-    unsigned char md5result[16];
+    uint8_t md5result[16];
     char metakey[33];
 
     md5.init();
     md5.loop(media_mak_prefix, static_strlen(media_mak_prefix));
-    md5.loop((unsigned char *)mak, strlen(mak));
+    md5.loop((uint8_t *)mak, strlen(mak));
 
     md5.pad();
     md5.result(md5result);
@@ -122,11 +122,11 @@ void TuringState::setup_metadata_key(unsigned char *buffer,
     setup_key(buffer, buffer_length, metakey);
 }
 
-void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
+void TuringState::prepare_frame_helper(uint8_t stream_id, int block_id)
 {
     SHA1 context;
-    unsigned char turkey[20];
-    unsigned char turiv [20];
+    uint8_t turkey[20];
+    uint8_t turiv [20];
 
     active->stream_id = stream_id;
     active->block_id = block_id;
@@ -165,7 +165,7 @@ void TuringState::prepare_frame_helper(unsigned char stream_id, int block_id)
         prepare_frame_helper((stream_id), (block_id)); \
     } while(0)
 
-void TuringState::prepare_frame(unsigned char stream_id, int block_id)
+void TuringState::prepare_frame(uint8_t stream_id, int block_id)
 {
     if (active)
     {
@@ -197,7 +197,7 @@ void TuringState::prepare_frame(unsigned char stream_id, int block_id)
     }
 }
 
-void TuringState::decrypt_buffer(unsigned char *buffer, size_t buffer_length)
+void TuringState::decrypt_buffer(uint8_t *buffer, size_t buffer_length)
 {
     unsigned int i;
 

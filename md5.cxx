@@ -128,7 +128,7 @@ static const unsigned int T[65] = {
     0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-static const unsigned char md5_paddat[MD5_BUFLEN] = {
+static const uint8_t md5_paddat[MD5_BUFLEN] = {
     0x80, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
@@ -151,7 +151,7 @@ void MD5::init()
     std::memset(md5_buf, 0, sizeof(md5_buf));
 }
 
-void MD5::loop(const unsigned char *input, size_t len)
+void MD5::loop(const uint8_t *input, size_t len)
 {
     unsigned int gap, i;
 
@@ -166,7 +166,7 @@ void MD5::loop(const unsigned char *input, size_t len)
         calc(md5_buf);
 
         for (i = gap; i + MD5_BUFLEN <= len; i += MD5_BUFLEN)
-        calc((unsigned char *) (input + i));
+        calc((uint8_t *) (input + i));
 
         md5_i = (unsigned int)len - i;
         std::memmove(md5_buf, input + i, md5_i);
@@ -213,7 +213,7 @@ void MD5::pad()
     calc(md5_buf);
 }
 
-void MD5::result(unsigned char *digest)
+void MD5::result(uint8_t *digest)
 {
     /* 4 byte words */
 #ifndef WORDS_BIGENDIAN
@@ -242,7 +242,7 @@ void MD5::result(unsigned char *digest)
 static unsigned int X[16];
 #endif
 
-void MD5::calc(unsigned char *b64)
+void MD5::calc(uint8_t *b64)
 {
     unsigned int A = md5_sta;
     unsigned int B = md5_stb;
@@ -254,7 +254,7 @@ void MD5::calc(unsigned char *b64)
 #else
     /* 4 byte words */
     /* what a brute force but fast! */
-    unsigned char *y = (unsigned char *)X;
+    uint8_t *y = (uint8_t *)X;
 
     y[0] = b64[3];
     y[1] = b64[2];

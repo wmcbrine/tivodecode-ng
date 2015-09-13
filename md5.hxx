@@ -30,6 +30,8 @@
 #ifndef _NETINET6_MD5_H_
 #define _NETINET6_MD5_H_
 
+#include <cstdint>
+
 #define MD5_BUFLEN	64
 
 class MD5
@@ -38,7 +40,7 @@ class MD5
         union
         {
             unsigned int md5_state32[4];
-            unsigned char md5_state8[16];
+            uint8_t md5_state8[16];
         } md5_st;
 
         union
@@ -47,19 +49,19 @@ class MD5
                 unsigned int md5_count32_lsw;
                 unsigned int md5_count32_msw;
             } md5_count64;
-            unsigned char md5_count8[8];
+            uint8_t md5_count8[8];
         } md5_count;
 
         unsigned int md5_i;
-        unsigned char md5_buf[MD5_BUFLEN];
+        uint8_t md5_buf[MD5_BUFLEN];
 
-        void calc(unsigned char *);
+        void calc(uint8_t *);
 
     public:
         void init();
-        void loop(const unsigned char *, size_t);
+        void loop(const uint8_t *, size_t);
         void pad();
-        void result(unsigned char *);
+        void result(uint8_t *);
 };
 
 #endif   /* ! _NETINET6_MD5_H_ */

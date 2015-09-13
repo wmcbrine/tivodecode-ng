@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     const char *tivofile = NULL;
     const char *outfile  = NULL;
 
-    CHAR mak[12];
+    char mak[12];
     std::memset(mak, 0, sizeof(mak));
 
     TuringState turing;
@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
         return 9;
     }
 
-    for (INT32 i = 0; i < header.chunks; i++)
+    for (int32_t i = 0; i < header.chunks; i++)
     {
         hoff_t chunk_start = hfh->tell() + pChunks[i].size();
 
@@ -215,12 +215,12 @@ int main(int argc, char *argv[])
 
         if (TIVO_CHUNK_PLAINTEXT_XML == pChunks[i].type)
         {
-            pChunks[i].setupTuringKey(&turing, (UINT8*)mak);
-            pChunks[i].setupMetadataKey(&metaturing, (UINT8*)mak);
+            pChunks[i].setupTuringKey(&turing, (uint8_t*)mak);
+            pChunks[i].setupMetadataKey(&metaturing, (uint8_t*)mak);
         }
         else if (TIVO_CHUNK_ENCRYPTED_XML==pChunks[i].type)
         {
-            UINT16 offsetVal = chunk_start - current_meta_stream_pos;
+            uint16_t offsetVal = chunk_start - current_meta_stream_pos;
             pChunks[i].decryptMetadata(&metaturing, offsetVal);
             current_meta_stream_pos = chunk_start + pChunks[i].dataSize;
         }

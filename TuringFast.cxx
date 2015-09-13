@@ -82,9 +82,9 @@ product or in the associated documentation.
  * The reversibility isn't used, but it guarantees no loss of information,
  * and hence no equivalent keys or IVs.
  */
-static WORD fixedS(WORD w)
+static uint32_t fixedS(uint32_t w)
 {
-    WORD b;
+    uint32_t b;
 
     b = Sbox[B(w, 0)]; w = ((w ^      Qbox[b])      & 0x00FFFFFF) | (b << 24);
     b = Sbox[B(w, 1)]; w = ((w ^ ROTL(Qbox[b], 8))  & 0xFF00FFFF) | (b << 16);
@@ -113,9 +113,9 @@ static WORD fixedS(WORD w)
 }
 
 /* General word-wide n-PHT */
-void mixwords(WORD w[], int n)
+void mixwords(uint32_t w[], int n)
 {
-    WORD sum;
+    uint32_t sum;
     int i;
 
     for (sum = i = 0; i < n - 1; ++i)
@@ -131,10 +131,10 @@ void mixwords(WORD w[], int n)
  * Table version; gathers words, mixes them, saves them.
  * Then compiles lookup tables for the keyed S-boxes.
  */
-void Turing::key(const BYTE key[], const int keylength)
+void Turing::key(const uint8_t key[], const int keylength)
 {
     int i, j, k;
-    WORD w;
+    uint32_t w;
 
     if ((keylength & 0x03) != 0 || keylength > MAXKEY)
 	std::abort();
@@ -191,7 +191,7 @@ void Turing::key(const BYTE key[], const int keylength)
  * to avoid any "chosen-IV" interactions with the keyed S-boxes, not that I
  * can think of any.
  */
-void Turing::IV(const BYTE iv[], const int ivlength)
+void Turing::IV(const uint8_t iv[], const int ivlength)
 {
     int i, j;
 
@@ -247,9 +247,9 @@ void Turing::IV(const BYTE iv[], const int ivlength)
  * Buffering issues are outside the scope of this implementation.
  * Returns the number of bytes of stream generated.
  */
-int Turing::gen(BYTE *buf)
+int Turing::gen(uint8_t *buf)
 {
-    WORD A, B, C, D, E;
+    uint32_t A, B, C, D, E;
 
     ROUND(0, buf);
     ROUND(5, buf + 20);

@@ -4,6 +4,8 @@
 #ifndef HEXLIB_H_
 #define HEXLIB_H_
 
-int hexbulk(unsigned char *, int n);
+#include <cstdint>
+
+int hexbulk(uint8_t *, int n);
 
 #endif

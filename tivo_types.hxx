@@ -1,4 +1,3 @@
-
 #ifndef __TIVO_TYPES_HXX__
 #define __TIVO_TYPES_HXX__
 
@@ -6,15 +5,8 @@
 #include "tdconfig.h"
 #endif
 
+#include <cstdint>
 #include <iostream>
-
-typedef unsigned int   UINT32;
-typedef int            INT32;
-typedef unsigned short UINT16;
-typedef short          INT16;
-typedef unsigned char  UINT8;
-typedef char           INT8;
-typedef char           CHAR;
 
 #define PRINT_QUALCOMM_MSG() std::cerr << "Encryption by QUALCOMM ;)\n\n"
 

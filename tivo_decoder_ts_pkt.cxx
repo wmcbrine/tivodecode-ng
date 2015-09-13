@@ -15,7 +15,7 @@
 #include "tivo_decoder_ts.hxx"
 
 int TiVoDecoderTsPacket::globalBufferLen=0;
-UINT8 TiVoDecoderTsPacket::globalBuffer[];
+uint8_t TiVoDecoderTsPacket::globalBuffer[];
 
 TiVoDecoderTsPacket::TiVoDecoderTsPacket()
 {
@@ -194,7 +194,7 @@ bool TiVoDecoderTsPacket::decode()
     payloadOffset = 0;
     std::memset(&tsHeader, 0, sizeof(TS_Header));
 
-    UINT32 ts_hdr_val = portable_ntohl(&buffer[payloadOffset]);
+    uint32_t ts_hdr_val = portable_ntohl(&buffer[payloadOffset]);
     payloadOffset += 4;
 
     tsHeader.sync_byte                    = (ts_hdr_val & 0xff000000) >> 24;
@@ -231,7 +231,7 @@ bool TiVoDecoderTsPacket::decode()
         tsAdaptation.adaptation_field_length = buffer[payloadOffset];
         payloadOffset++;
         
-        UINT8 ts_adapt_val = portable_ntohs(&buffer[payloadOffset]);
+        uint8_t ts_adapt_val = portable_ntohs(&buffer[payloadOffset]);
 
         tsAdaptation.discontinuity_indicator =
             (ts_adapt_val & 0x80) >> 7;
@@ -360,7 +360,7 @@ void TiVoDecoderTsPacket::dump()
     hexbulk(buffer, TS_FRAME_SIZE);
 }
 
-bool TiVoDecoderTsStream::decrypt(UINT8 *pBuffer, UINT16 bufferLen)
+bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
 {
     if (!pParent)
     {

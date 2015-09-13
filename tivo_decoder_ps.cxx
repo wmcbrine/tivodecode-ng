@@ -64,7 +64,7 @@ bool TiVoDecoderPS::process()
     }
 
     bool first = true;
-    UINT8 byte = 0x00;
+    uint8_t byte = 0x00;
     
     while (running)
     {
@@ -111,14 +111,14 @@ bool TiVoDecoderPS::process()
     return true;
 }
 
-int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
+int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
 {
     static union {
         td_uint64_t align;
-        unsigned char packet_buffer[65536 + sizeof(td_uint64_t) + 2];
+        uint8_t packet_buffer[65536 + sizeof(td_uint64_t) + 2];
     } aligned_buf;
     
-    unsigned char bytes[32];
+    uint8_t bytes[32];
     int looked_ahead = 0;
     int i;
     int scramble = 0;
@@ -191,7 +191,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
 
                                     VERBOSE("\n\n---Turing : Key\n");
                                     if ( IS_VERBOSE )
-                                        hexbulk( (unsigned char *)&bytes[off], 16 );
+                                        hexbulk( (uint8_t *)&bytes[off], 16 );
                                     VERBOSE("---Turing : header : block %d crypted 0x%08x\n", block_no, crypted );
 
                                     if (do_header (&bytes[off], &block_no, NULL, &crypted, NULL, NULL))
@@ -208,7 +208,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                                     VERBOSE("CCC : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
                                     VERBOSE("---Turing : decrypt : crypted 0x%08x len %d\n", crypted, 4 );
 
-                                    pTuring->decrypt_buffer((unsigned char *)&crypted, 4);
+                                    pTuring->decrypt_buffer((uint8_t *)&crypted, 4);
 
                                     VERBOSE("DDD : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
 
@@ -245,7 +245,7 @@ int TiVoDecoderPS::process_frame(UINT8 code, hoff_t packet_start)
                 LOOK_AHEAD (pFileIn, aligned_buf.packet_buffer +
                             sizeof(td_uint64_t), length + 2);
                 {
-                    unsigned char *packet_ptr = aligned_buf.packet_buffer +
+                    uint8_t *packet_ptr = aligned_buf.packet_buffer +
                         sizeof(td_uint64_t);
                     size_t packet_size;
 

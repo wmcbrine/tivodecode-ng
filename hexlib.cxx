@@ -14,7 +14,7 @@
 
 #define COLS 16
 
-int hexbulk(unsigned char *buf, int n)
+int hexbulk(uint8_t *buf, int n)
 {
     int i = 0;
     int j = 0;

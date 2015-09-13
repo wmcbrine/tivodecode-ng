@@ -103,10 +103,10 @@ TiVoDecoderTS::~TiVoDecoderTS()
 
 int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
 {
-    unsigned short pat_field           = 0;
-    unsigned short section_length      = 0;
-    unsigned short transport_stream_id = 0;
-    unsigned char *pPtr                = NULL;
+    uint16_t pat_field           = 0;
+    uint16_t section_length      = 0;
+    uint16_t transport_stream_id = 0;
+    uint8_t *pPtr                = NULL;
 
     if (!pPkt)
     {
@@ -211,10 +211,10 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
 
 int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
 {
-    unsigned short section_length = 0;
-    unsigned short pmt_field      = 0;
-    unsigned short i              = 0;
-    unsigned char *pPtr           = NULL;
+    uint16_t section_length = 0;
+    uint16_t pmt_field      = 0;
+    uint16_t i              = 0;
+    uint8_t *pPtr           = NULL;
 
     if (!pPkt)
     {
@@ -247,11 +247,11 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
 
     for (i = 0; section_length > 0; i++)
     {
-        unsigned short es_info_length = 0;
+        uint16_t es_info_length = 0;
         const char *strTypeStr;
 
-        UINT16 streamPid           = 0;
-        UINT8 streamTypeId         = *pPtr;
+        uint16_t streamPid           = 0;
+        uint8_t streamTypeId         = *pPtr;
         ts_stream_types streamType = TS_STREAM_TYPE_PRIVATE_DATA;
 
         for (int j = 0; ts_pmt_stream_tags[j].ts_stream_type !=
@@ -334,11 +334,11 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
 
 int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 {
-    unsigned char  *pPtr        = NULL;
+    uint8_t  *pPtr        = NULL;
     unsigned int   validator    = 0;
-    unsigned short pid          = 0;
-    unsigned char  stream_id    = 0;
-    unsigned short stream_bytes = 0;
+    uint16_t pid          = 0;
+    uint8_t  stream_id    = 0;
+    uint16_t stream_bytes = 0;
 
     if (!pPkt)
     {
@@ -454,7 +454,7 @@ int TiVoDecoderTS::handlePkt_AudioVideo(TiVoDecoderTsPacket *pPkt)
 bool TiVoDecoderTS::process()
 {
     int err         = 0;
-    UINT16 pid      = 0;
+    uint16_t pid      = 0;
     hoff_t position = 0;
     TiVoDecoderTsStream *pStream = NULL;
     TsStreams_it        stream_iter;

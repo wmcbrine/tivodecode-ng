@@ -11,12 +11,12 @@ class SHA1
     private:
         unsigned int state[5];
         unsigned int count[2];
-        unsigned char buffer[64];
+        uint8_t buffer[64];
 
     public:
         void init();
-        void update(unsigned char *data, size_t len);
-        void final(unsigned char digest[20]);
+        void update(uint8_t *data, size_t len);
+        void final(uint8_t digest[20]);
 };
 
 #endif
