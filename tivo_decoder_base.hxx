@@ -7,7 +7,6 @@
 
 #include <cstdio>
 
-#include "tivo_types.hxx"
 #include "tivo_parse.hxx"
 #include "turing_stream.hxx"
 

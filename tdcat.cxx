@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
     if (!o_chunk_1 && !o_chunk_2)
         o_chunk_1 = 1;
 
-    PRINT_QUALCOMM_MSG();
+    print_qualcomm_msg();
 
     if (false == header.read(hfh))
     {

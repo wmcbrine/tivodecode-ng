@@ -11,7 +11,6 @@
 #include <map>
 using namespace std;
 
-#include "tivo_types.hxx"
 #include "tivo_decoder_base.hxx"
 
 extern std::map<uint32_t, bool> pktDumpMap;

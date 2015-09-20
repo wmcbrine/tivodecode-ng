@@ -7,7 +7,6 @@
 
 #include <cstdio>
 
-#include "tivo_types.hxx"
 #include "tivo_decoder_base.hxx"
 
 //============================

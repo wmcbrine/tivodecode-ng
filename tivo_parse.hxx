@@ -7,7 +7,6 @@
 
 #include "happyfile.hxx"
 #include "Turing.hxx"
-#include "tivo_types.hxx"
 #include "turing_stream.hxx"
 
 extern uint16_t portable_ntohs(uint8_t *pVal);

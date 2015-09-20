@@ -7,7 +7,6 @@
 #include <iostream>
 #include <string>
 
-#include "tivo_types.hxx"
 #include "cli_common.hxx"
 
 #ifdef WIN32
@@ -66,12 +65,17 @@ fail:
     return 0;
 }
 
+void print_qualcomm_msg()
+{
+    std::cerr << "Encryption by QUALCOMM ;)\n\n";
+}
+
 void do_version(int exitval)
 {
     std::cerr << PACKAGE_STRING "\n"
         "Copyright 2006-2015, Jeremy Drake et al.\n"
         "See COPYING file in distribution for details\n\n";
-    PRINT_QUALCOMM_MSG();
+    print_qualcomm_msg();
     std::exit(exitval);
 }
 

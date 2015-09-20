@@ -176,7 +176,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    PRINT_QUALCOMM_MSG();
+    print_qualcomm_msg();
 
     if (false == header.read(hfh))
     {

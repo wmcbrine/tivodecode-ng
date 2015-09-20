@@ -5,7 +5,7 @@
 #include "tdconfig.h"
 #endif
 
-#include "tivo_types.hxx"
+#include <stdint.h>
 
 class TiVoDecoder_MPEG2_Parser
 {
