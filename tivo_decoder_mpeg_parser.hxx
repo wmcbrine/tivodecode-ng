@@ -29,19 +29,10 @@ class TiVoDecoder_MPEG2_Parser
         /* extension start codes */
         uint8_t sequence_extension_id;
         uint8_t sequence_display_extension_id;
-        uint8_t quant_matrix_extension_id;
-        uint8_t copyright_extension_id;
-        uint8_t sequence_scalable_extension_id;
-        uint8_t picture_display_extension_id;
         uint8_t picture_coding_extension_id;
-        uint8_t picture_spatial_scalable_extension_id;
-        uint8_t picture_temporal_scalable_extension_id;
 
         /* scalable modes */
         uint8_t data_partitioning;
-        uint8_t spatial_scalability;
-        uint8_t snr_scalability;
-        uint8_t temporal_scalability;
         
         /* private variables */
         uint8_t  progressive_sequence;
@@ -66,23 +57,14 @@ class TiVoDecoder_MPEG2_Parser
         int32_t readByte(uint32_t bit_pos, uint8_t &byte);
 
         void  next_start_code();
-        void  video_sequence(uint16_t &len);
         void  sequence_end(uint16_t &len);
         void  sequence_header(uint16_t &len);
-        void  extension_and_user_data(int32_t i, uint16_t &len);
-        void  extension_data(int32_t i, uint16_t &len);
         void  user_data(uint16_t &len);
         void  sequence_extension(uint16_t &len);
         void  sequence_display_extension(uint16_t &len);
-        void  sequence_scalable_extension(uint16_t &len);
         void  group_of_pictures_header(uint16_t &len);
         void  picture_header(uint16_t &len);
         void  picture_coding_extension(uint16_t &len);
-        void  quant_matrix_extension(uint16_t &len);
-        void  picture_display_extension(uint16_t &len);
-        void  picture_spatial_scalable_extension(uint16_t &len); 
-        void  picture_temporal_scalable_extension(uint16_t &len); 
-        void  copyright_extension(uint16_t &len);
         void  picture_data(uint16_t &len);
         void  extension_header(uint16_t &len);
         void  pes_header(uint16_t &len);
