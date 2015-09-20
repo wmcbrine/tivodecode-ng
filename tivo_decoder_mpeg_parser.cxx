@@ -20,19 +20,7 @@ TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser()
     hdr_len = 0;
 
     /* start codes */ 
-    picture_start_code      = 0x100; 
     slice_start_code        = 0x101; 
-    user_data_start_code    = 0x1b2; 
-    sequence_header_code    = 0x1b3;
-    sequence_error_code     = 0x1b4; 
-    extension_start_code    = 0x1b5;
-    sequence_end_code       = 0x1b7; 
-    group_start_code        = 0x1b8;
-
-    /* extension start codes */
-    sequence_extension_id                   = 0x1;
-    sequence_display_extension_id           = 0x2;
-    picture_coding_extension_id             = 0x8;
 
     /* scalable modes */
     data_partitioning       = 0x0;
@@ -55,19 +43,7 @@ TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser(uint8_t *pBuffer,
     hdr_len = 0;
 
     /* start codes */
-    picture_start_code   = 0x100;
     slice_start_code     = 0x101;
-    user_data_start_code = 0x1b2;
-    sequence_header_code = 0x1b3;
-    sequence_error_code  = 0x1b4;
-    extension_start_code = 0x1b5;
-    sequence_end_code    = 0x1b7;
-    group_start_code     = 0x1b8;
-
-    /* extension start codes */
-    sequence_extension_id                  = 0x1;
-    sequence_display_extension_id          = 0x2;
-    picture_coding_extension_id            = 0x8;
 
     /* scalable modes */
     data_partitioning    = 0x0;
@@ -272,13 +248,11 @@ void TiVoDecoder_MPEG2_Parser::sequence_header(uint16_t &len)
 void TiVoDecoder_MPEG2_Parser::user_data(uint16_t &len)
 {
 //  user_data_start_code:32;
-    //uint32_t user_data_start_code = nextbits(32);
     advanceBits(32);
 
     while (nextbits(24) != 0x000001)
     {
 //      user_data++:8;
-        //uint8_t user_data = nextbits(8);
         advanceBits(8);
     }
 
@@ -509,7 +483,6 @@ void TiVoDecoder_MPEG2_Parser::pes_header(uint16_t &len)
     else if ((streamId >= 0xE0) && (streamId <= 0xEF))
         extensionPresent = true;
 
-    //uint16_t pesHdrLen = nextbits(16);
     advanceBits(16);
 
     if (true == extensionPresent)

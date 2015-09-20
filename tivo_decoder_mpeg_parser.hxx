@@ -17,19 +17,7 @@ class TiVoDecoder_MPEG2_Parser
         uint16_t hdr_len;
 
         /* start codes */
-        uint32_t picture_start_code;
         uint32_t slice_start_code;
-        uint32_t user_data_start_code;
-        uint32_t sequence_header_code;
-        uint32_t sequence_error_code;
-        uint32_t extension_start_code;
-        uint32_t sequence_end_code;
-        uint32_t group_start_code;
-
-        /* extension start codes */
-        uint8_t sequence_extension_id;
-        uint8_t sequence_display_extension_id;
-        uint8_t picture_coding_extension_id;
 
         /* scalable modes */
         uint8_t data_partitioning;
