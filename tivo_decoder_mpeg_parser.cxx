@@ -350,7 +350,7 @@ void TiVoDecoder_MPEG2_Parser::extension_data(int32_t i, uint16_t &len)
     while (nextbits(32) == extension_start_code)
     {
 //      extension_start_code:32;
-        uint32_t extension_start_code = nextbits(32);
+        //uint32_t extension_start_code = nextbits(32);
         advanceBits(32);
 
         if (i == 0)
@@ -395,13 +395,13 @@ void TiVoDecoder_MPEG2_Parser::extension_data(int32_t i, uint16_t &len)
 void TiVoDecoder_MPEG2_Parser::user_data(uint16_t &len)
 {
 //  user_data_start_code:32;
-    uint32_t user_data_start_code = nextbits(32);
+    //uint32_t user_data_start_code = nextbits(32);
     advanceBits(32);
 
     while (nextbits(24) != 0x000001)
     {
 //      user_data++:8;
-        uint8_t user_data = nextbits(8);
+        //uint8_t user_data = nextbits(8);
         advanceBits(8);
     }
 
@@ -682,7 +682,7 @@ void TiVoDecoder_MPEG2_Parser::pes_header(uint16_t &len)
     else if ((streamId >= 0xE0) && (streamId <= 0xEF))
         extensionPresent = true;
 
-    uint16_t pesHdrLen = nextbits(16);
+    //uint16_t pesHdrLen = nextbits(16);
     advanceBits(16);
 
     if (true == extensionPresent)
