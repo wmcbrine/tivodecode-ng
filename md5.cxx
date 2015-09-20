@@ -105,7 +105,7 @@ do { \
 #define MD5_D0  0x10325476
 
 /* Integer part of 4294967296 times abs(sin(i)), where i is in radians. */
-static const unsigned int T[65] = {
+static const uint32_t T[65] = {
     0,
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
     0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
@@ -113,13 +113,13 @@ static const unsigned int T[65] = {
     0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
 
     0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-    0xd62f105d, 0x2441453, 0xd8a1e681, 0xe7d3fbc8,
+    0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
     0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
     0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
 
     0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
     0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x4881d05,
+    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
     0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
 
     0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
@@ -239,18 +239,18 @@ void MD5::result(uint8_t *digest)
 }
 
 #ifdef WORDS_BIGENDIAN
-static unsigned int X[16];
+static uint32_t X[16];
 #endif
 
 void MD5::calc(uint8_t *b64)
 {
-    unsigned int A = md5_sta;
-    unsigned int B = md5_stb;
-    unsigned int C = md5_stc;
-    unsigned int D = md5_std;
+    uint32_t A = md5_sta;
+    uint32_t B = md5_stb;
+    uint32_t C = md5_stc;
+    uint32_t D = md5_std;
 
 #ifndef WORDS_BIGENDIAN
-    unsigned int *X = (unsigned int *)b64;
+    uint32_t *X = (uint32_t *)b64;
 #else
     /* 4 byte words */
     /* what a brute force but fast! */

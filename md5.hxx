@@ -39,15 +39,15 @@ class MD5
     private:
         union
         {
-            unsigned int md5_state32[4];
+            uint32_t md5_state32[4];
             uint8_t md5_state8[16];
         } md5_st;
 
         union
         {
             struct {
-                unsigned int md5_count32_lsw;
-                unsigned int md5_count32_msw;
+                uint32_t md5_count32_lsw;
+                uint32_t md5_count32_msw;
             } md5_count64;
             uint8_t md5_count8[8];
         } md5_count;
