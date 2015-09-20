@@ -122,8 +122,8 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
     int looked_ahead = 0;
     int i;
     int scramble = 0;
-    unsigned int header_len = 0;
-    unsigned int length;
+    int header_len = 0;
+    int length;
 
     std::memset(bytes, 0, 32);
 
@@ -312,7 +312,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
 
                     if (pFileOut->write(aligned_buf.packet_buffer +
                                     sizeof(uint64_t) - 1, length + 3) !=
-                        length + 3)
+                        (size_t)(length + 3))
                     {
                         std::perror("writing buffer");
                     }
