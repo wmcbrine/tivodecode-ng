@@ -9,10 +9,6 @@
 #include "tdconfig.h"
 #endif
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -62,7 +58,6 @@ static void do_help(const char *arg0, int exitval)
 
 int main(int argc, char *argv[])
 {
-    char rawbuf[RAWBUFSIZE];
     int o_no_video = 0;
     int o_dump_metadata = 0;
     int makgiven = 0;
@@ -81,8 +76,7 @@ int main(int argc, char *argv[])
     std::memset(&metaturing, 0, sizeof(metaturing));
     hoff_t current_meta_stream_pos = 0;
 
-    FILE *ofh = NULL;
-    HappyFile *hfh = NULL;
+    HappyFile *hfh = NULL, *ofh = NULL;
 
     TiVoStreamHeader header;
     pktDumpMap.clear();
@@ -154,15 +148,8 @@ int main(int argc, char *argv[])
 
     if (!std::strcmp(tivofile, "-"))
     {
-// JKOZEE-Make sure stdin is set to binary on Windows
-#ifdef WIN32
-        int result = _setmode(_fileno(stdin), _O_BINARY);
-        if (result == -1) {
-            std::perror("Cannot set stdin to binary mode");
+        if (!hfh->attach(stdin))
             return 10;
-        }
-#endif
-        hfh->attach(stdin);
     }
     else
     {
@@ -173,29 +160,21 @@ int main(int argc, char *argv[])
         }
     }
 
+    ofh = new HappyFile;
+
     if (!outfile || !std::strcmp(outfile, "-"))
     {
-// JKOZEE-Make sure stdout is set to binary on Windows
-#ifdef WIN32
-        int result = _setmode(_fileno(stdout), _O_BINARY);
-        if (result == -1) {
-            std::perror("Cannot set stdout to binary mode");
+        if (!ofh->attach(stdout))
             return 10;
-        }
-#endif
-        ofh = stdout;
     }
     else
     {
-        ofh = std::fopen(outfile, "wb");
-        if (NULL == ofh)
+        if (!ofh->open(outfile, "wb"))
         {
             std::perror("opening output file");
             return 7;
         }
     }
-
-    std::setvbuf(ofh, rawbuf, _IOFBF, RAWBUFSIZE);
 
     PRINT_QUALCOMM_MSG();
 
@@ -245,8 +224,8 @@ int main(int argc, char *argv[])
             char buf[25];
             std::sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, pChunks[i].id);
 
-            FILE *chunkfh = std::fopen(buf, "wb");
-            if (!chunkfh)
+            HappyFile *chunkfh = new HappyFile;
+            if (!chunkfh->open(buf, "wb"))
             {
                 std::perror("create metadata file");
                 return 8;
@@ -259,7 +238,8 @@ int main(int argc, char *argv[])
                 return 8;
             }
 
-            std::fclose(chunkfh);
+            chunkfh->close();
+            delete chunkfh;
         }
     }
 
@@ -302,8 +282,8 @@ int main(int argc, char *argv[])
     hfh->close();
     delete hfh;
 
-    if (ofh != stdout)
-        std::fclose(ofh);
+    ofh->close();
+    delete ofh;
 
     return 0;
 }

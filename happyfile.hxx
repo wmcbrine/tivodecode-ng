@@ -50,6 +50,7 @@ class HappyFile
 {
     private:
         FILE *fh;
+        bool attached;
         hoff_t pos;
 
         /* buffer stuff */
@@ -68,6 +69,7 @@ class HappyFile
         int close();
 
         size_t read(void *ptr, size_t size);
+        size_t write(void *ptr, size_t size);
 
         hoff_t tell();
         int seek(hoff_t offset);

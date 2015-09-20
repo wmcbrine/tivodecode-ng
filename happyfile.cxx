@@ -11,6 +11,10 @@
 #include <cstdio>
 #include <cstring>
 
+#ifdef WIN32
+# include <fcntl.h>
+#endif
+
 #include "happyfile.hxx"
 
 void HappyFile::init()
@@ -26,20 +30,32 @@ int HappyFile::open(const char *filename, const char *mode)
     fh = std::fopen(filename, mode);
     if (!fh)
         return 0;
+    attached = false;
     init();
     return 1;
 }
 
-int HappyFile::attach(FILE *infile)
+int HappyFile::attach(FILE *handle)
 {
-    fh = infile;
+    fh = handle;
+    attached = true;
+
+// JKOZEE-Make sure pipe is set to binary on Windows
+#ifdef WIN32
+    int result = _setmode(_fileno(handle), _O_BINARY);
+    if (result == -1) {
+        std::perror("Cannot set pipe to binary mode");
+        return 0;
+    }
+#endif
+
     init();
     return 1;
 }
 
 int HappyFile::close()
 {
-    if (fh != stdin)
+    if (!attached)
         return std::fclose(fh);
     else
         return 0;
@@ -82,6 +98,11 @@ size_t HappyFile::read(void *ptr, size_t size)
 
     pos += (hoff_t)nbytes;
     return nbytes;
+}
+
+size_t HappyFile::write(void *ptr, size_t size)
+{
+    return std::fwrite(ptr, 1, size, fh);
 }
 
 hoff_t HappyFile::tell()

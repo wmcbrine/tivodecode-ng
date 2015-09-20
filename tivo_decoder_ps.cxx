@@ -43,7 +43,7 @@ static packet_tag_info packet_tags[] = {
 TiVoDecoderPS::TiVoDecoderPS(
         TuringState *pTuringState, 
         HappyFile *pInfile, 
-        FILE *pOutfile) :
+        HappyFile *pOutfile) :
     TiVoDecoder(pTuringState, 
         pInfile, 
         pOutfile)
@@ -79,7 +79,7 @@ bool TiVoDecoderPS::process()
             }
             else if (ret == 0)
             {
-                std::fwrite(&byte, 1, 1, pFileOut);
+                pFileOut->write(&byte, 1);
             }
             else if (ret < 0)
             {
@@ -89,7 +89,7 @@ bool TiVoDecoderPS::process()
         }
         else if (!first)
         {
-            std::fwrite(&byte, 1, 1, pFileOut);
+            pFileOut->write(&byte, 1);
         }
 
         marker <<= 8;
@@ -310,9 +310,8 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
                         aligned_buf.packet_buffer[sizeof(td_uint64_t) + 2] &= ~0x20;
                     }
 
-                    if (std::fwrite(aligned_buf.packet_buffer +
-                                    sizeof(td_uint64_t) - 1, 1, length + 3,
-                                    pFileOut) !=
+                    if (pFileOut->write(aligned_buf.packet_buffer +
+                                    sizeof(td_uint64_t) - 1, length + 3) !=
                         length + 3)
                     {
                         std::perror("writing buffer");

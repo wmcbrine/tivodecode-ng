@@ -35,7 +35,7 @@ class TiVoDecoder
         bool         isValid;
         TuringState *pTuring;
         HappyFile   *pFileIn;
-        FILE        *pFileOut;
+        HappyFile   *pFileOut;
 
         int do_header(uint8_t *arg_0, int *block_no, int *arg_8,
                       int *crypted, int *arg_10, int *arg_14);
@@ -43,7 +43,7 @@ class TiVoDecoder
         virtual bool process() = 0;
 
         TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
-                    FILE *pOutfile);
+                    HappyFile *pOutfile);
         virtual ~TiVoDecoder();
 
 } __attribute__((packed));

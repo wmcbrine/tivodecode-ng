@@ -9,10 +9,6 @@
 #include "tdconfig.h"
 #endif
 
-#ifdef WIN32
-#include <windows.h>
-#endif
-
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -71,8 +67,7 @@ int main(int argc, char *argv[])
     std::memset(&metaturing, 0, sizeof(metaturing));
     hoff_t current_meta_stream_pos = 0;
 
-    FILE *ofh = NULL;
-    HappyFile *hfh = NULL;
+    HappyFile *hfh = NULL, *ofh = NULL;
 
     TiVoStreamHeader header;
 
@@ -143,15 +138,8 @@ int main(int argc, char *argv[])
 
     if (!std::strcmp(tivofile, "-"))
     {
-// JKOZEE-Make sure stdin is set to binary on Windows
-#ifdef WIN32
-        int result = _setmode(_fileno(stdin), _O_BINARY);
-        if (result == -1) {
-            std::perror("Cannot set stdin to binary mode");
+        if (!hfh->attach(stdin))
             return 10;
-        }
-#endif
-        hfh->attach(stdin);
     }
     else
     {
@@ -162,22 +150,16 @@ int main(int argc, char *argv[])
         }
     }
 
+    ofh = new HappyFile;
 
     if (!outfile || !std::strcmp(outfile, "-"))
     {
-        // JKOZEE-Make sure stdout is set to binary on Windows
-        #ifdef WIN32
-        int result = _setmode(_fileno(stdout), _O_BINARY);
-        if (result == -1) {
-            std::perror("Cannot set stdout to binary mode");
+        if (!ofh->attach(stdout))
             return 10;
-        }
-        #endif
-        ofh = stdout;
     }
     else
     {
-        if (!(ofh = std::fopen(outfile, "wb")))
+        if (!ofh->open(outfile, "wb"))
         {
             std::perror("opening output file");
             return 7;
@@ -247,8 +229,8 @@ int main(int argc, char *argv[])
     hfh->close();
     delete hfh;
 
-    if (ofh != stdout)
-        std::fclose(ofh);
+    ofh->close();
+    delete ofh;
 
     return 0;
 }

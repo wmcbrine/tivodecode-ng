@@ -169,9 +169,9 @@ bool TiVoStreamChunk::read(HappyFile *file)
     return true;
 }
 
-bool TiVoStreamChunk::write(FILE *file)
+bool TiVoStreamChunk::write(HappyFile *file)
 {
-    if (std::fwrite(pData, 1, dataSize, file) != dataSize)
+    if (file->write(pData, dataSize) != dataSize)
         return false;
         
     return true; 

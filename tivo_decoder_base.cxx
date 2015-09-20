@@ -13,7 +13,7 @@
 #include "tivo_decoder_base.hxx"
 
 TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
-                         FILE *pOutfile)
+                         HappyFile *pOutfile)
 {
     isValid = false;
 

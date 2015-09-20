@@ -190,7 +190,7 @@ class TiVoDecoderTS : public TiVoDecoder
 
         virtual bool process();
         TiVoDecoderTS(TuringState *pTuringState, HappyFile *pInfile,
-                      FILE *pOutfile);
+                      HappyFile *pOutfile);
         ~TiVoDecoderTS();
 };
 
@@ -206,7 +206,7 @@ class TiVoDecoderTsStream
         uint8_t           stream_id;
         ts_stream_types stream_type;
 
-        FILE            *pOutfile;
+        HappyFile       *pOutfile;
 
         TS_Turing_Stuff turing_stuff;
         
