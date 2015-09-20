@@ -79,14 +79,14 @@ void TiVoDecoder_MPEG2_Parser::advanceBits(uint32_t n)
         _end_of_file = true;
 }
 
-int32_t TiVoDecoder_MPEG2_Parser::nextbits(uint32_t n)
+uint32_t TiVoDecoder_MPEG2_Parser::nextbits(uint32_t n)
 {
     uint32_t bit_ptr_copy = _bit_ptr;
     uint8_t  alignDelta   = bit_ptr_copy % 8;
     uint8_t  byte         = 0;
     int32_t  n_copy       = n;
     int32_t  nread        = 0;
-    int32_t  value        = 0;
+    uint32_t value        = 0;
 
     if (alignDelta)
     {

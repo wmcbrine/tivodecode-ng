@@ -41,7 +41,7 @@ class TiVoDecoder_MPEG2_Parser
 
         bool  byteAligned();
         void  advanceBits(uint32_t n);
-        int32_t nextbits(uint32_t n);
+        uint32_t nextbits(uint32_t n);
         int32_t readByte(uint32_t bit_pos, uint8_t &byte);
 
         void  next_start_code();
