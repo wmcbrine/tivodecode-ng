@@ -9,7 +9,7 @@
 class SHA1
 {
     private:
-        unsigned int state[5];
+        uint32_t state[5];
         unsigned int count[2];
         uint8_t buffer[64];
 

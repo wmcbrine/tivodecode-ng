@@ -43,13 +43,13 @@
 
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
-static void transform(unsigned int state[5], uint8_t buffer[64])
+static void transform(uint32_t state[5], uint8_t buffer[64])
 {
-    unsigned int a, b, c, d, e;
+    uint32_t a, b, c, d, e;
 
     typedef union {
         uint8_t c[64];
-        unsigned int l[16];
+        uint32_t l[16];
     } CHAR64LONG16;
 
     CHAR64LONG16 *block;
@@ -144,7 +144,7 @@ void SHA1::update(uint8_t *data, size_t len)
 
 void SHA1::final(uint8_t digest[20])
 {
-    unsigned int i, j;
+    unsigned int i;
     uint8_t finalcount[8];
 
     for (i = 0; i < 8; i++)
