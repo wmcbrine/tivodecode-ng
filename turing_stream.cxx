@@ -267,7 +267,7 @@ void TuringState::dump()
             "next        : " << active->next << "\n"
             "internal    : " << active->internal << "\n"
             "cipher_data :\n";
-        hexbulk(active->cipher_data, MAXSTREAM + sizeof(td_uint64_t));
+        hexbulk(active->cipher_data, MAXSTREAM + sizeof(uint64_t));
     }
 
     std::cerr << "\n\n";
