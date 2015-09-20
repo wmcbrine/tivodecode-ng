@@ -39,51 +39,8 @@ AC_CHECK_TYPES([size_t], [AC_CHECK_SIZEOF([size_t])])
 AC_CHECK_TYPES([unsigned long], [AC_CHECK_SIZEOF([unsigned long])])
 AC_CHECK_TYPES([unsigned long long], [AC_CHECK_SIZEOF([unsigned long long])])
 
-AC_CHECK_HEADERS([netinet/in.h winsock2.h getopt.h ctype.h], [], [], AC_INCLUDES_DEFAULT([]))
+AC_CHECK_HEADERS([getopt.h ctype.h], [], [], AC_INCLUDES_DEFAULT([]))
 AC_SEARCH_LIBS(getopt_long, [getopt gnugetopt])
-
-dnl BEGIN check for library containing ntohl - based on AC_SEARCH_LIBS
-dnl but specific for ntohl to make it work on win32
-dnl ntohl check {{{
-AC_PREREQ([2.13])
-AC_CACHE_CHECK([for library containing ntohl], [ac_cv_search_ntohl],
-[ac_func_search_save_LIBS="$LIBS"
-ac_cv_search_ntohl="no"
-AC_TRY_LINK(dnl
-[#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-],
-[ntohl(42)],
-[ac_cv_search_ntohl="none required"])
-test "$ac_cv_search_ntohl" = "no" && for i in socket wsock32; do
-LIBS="-l$i $ac_func_search_save_LIBS"
-AC_TRY_LINK(dnl
-[#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-],
-[ntohl(42)],
-[ac_cv_search_ntohl="-l$i"
-break])
-done
-LIBS="$ac_func_search_save_LIBS"])
-if test "$ac_cv_search_ntohl" != "no"; then
-  test "$ac_cv_search_ntohl" = "none required" || LIBS="$ac_cv_search_ntohl $LIBS"
-fi
-dnl }}} END check for library containing ntohl
 
 AC_CHECK_TYPES([struct option], [], [],
 [#ifdef HAVE_GETOPT_H

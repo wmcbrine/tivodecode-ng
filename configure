@@ -5796,7 +5796,7 @@ _ACEOF
 fi
 
 
-for ac_header in netinet/in.h winsock2.h getopt.h ctype.h
+for ac_header in getopt.h ctype.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_compile "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default
@@ -5866,76 +5866,6 @@ if test "$ac_res" != no; then :
 
 fi
 
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing ntohl" >&5
-$as_echo_n "checking for library containing ntohl... " >&6; }
-if ${ac_cv_search_ntohl+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS="$LIBS"
-ac_cv_search_ntohl="no"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-
-int
-main ()
-{
-ntohl(42)
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_ntohl="none required"
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-test "$ac_cv_search_ntohl" = "no" && for i in socket wsock32; do
-LIBS="-l$i $ac_func_search_save_LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-#ifdef HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-#ifdef HAVE_NETINET_IN_H
-#include <netinet/in.h>
-#endif
-#ifdef HAVE_WINSOCK2_H
-#include <winsock2.h>
-#endif
-
-int
-main ()
-{
-ntohl(42)
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_ntohl="-l$i"
-break
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-done
-LIBS="$ac_func_search_save_LIBS"
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_ntohl" >&5
-$as_echo "$ac_cv_search_ntohl" >&6; }
-if test "$ac_cv_search_ntohl" != "no"; then
-  test "$ac_cv_search_ntohl" = "none required" || LIBS="$ac_cv_search_ntohl $LIBS"
-fi
 
 ac_fn_c_check_type "$LINENO" "struct option" "ac_cv_type_struct_option" "#ifdef HAVE_GETOPT_H
 #include <getopt.h>

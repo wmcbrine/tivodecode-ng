@@ -12,16 +12,8 @@
    34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
 */
 
-/* #define SHA1HANDSOFF * Copies data before messing with it. */
-
-#ifdef HAVE_CONFIG_H
-# include "tdconfig.h"
-#endif
-#ifdef HAVE_NETINET_IN_H
-# include <netinet/in.h>
-#endif
-
 #include <cstring>
+#include <stdint.h>
 
 #include "sha1.hxx"
 
@@ -30,7 +22,9 @@
 /* blk0() and blk() perform the initial expand. */
 /* I got the idea of expanding during the round function from SSLeay */
 
-#define blk0(i) (block->l[i] = htonl (block->l[i]))
+#define blk0(i) (block->l[i] = (block->c[i << 2] << 24 | \
+    block->c[(i << 2) + 1] << 16 | block->c[(i << 2) + 2] << 8 | \
+    block->c[(i << 2) + 3]))
 
 #define blk(i) (block->l[i & 15] = rol (block->l[(i + 13) & 15] ^ \
     block->l[(i + 8) & 15] ^ block->l[(i + 2) & 15] ^ block->l[i & 15], 1))
@@ -38,7 +32,7 @@
 /* (R0 + R1), R2, R3, R4 are the different operations used in SHA1 */
 #define R0(v,w,x,y,z,i) z += ((w & (x ^ y)) ^ y) + blk0(i) + \
     0x5A827999 + rol(v, 5); w = rol(w, 30);
-#define R1(v,w,x,y,z,i) z += ((w & (x ^ y)) ^ y) + blk (i) + \
+#define R1(v,w,x,y,z,i) z += ((w & (x ^ y)) ^ y) + blk(i) + \
     0x5A827999 + rol(v, 5); w = rol(w, 30);
 #define R2(v,w,x,y,z,i) z += (w ^ x ^ y) + blk(i) + \
     0x6ED9EBA1 + rol(v, 5); w = rol(w, 30);
@@ -60,13 +54,7 @@ static void transform(unsigned int state[5], uint8_t buffer[64])
 
     CHAR64LONG16 *block;
 
-#ifdef SHA1HANDSOFF
-    static uint8_t workspace[64];
-    block = (CHAR64LONG16 *)workspace;
-    std::memcpy(block, buffer, 64);
-#else
     block = (CHAR64LONG16 *)buffer;
-#endif
 
     /* Copy state[] to working vars */
     a = state[0];
@@ -103,9 +91,6 @@ static void transform(unsigned int state[5], uint8_t buffer[64])
     state[2] += c;
     state[3] += d;
     state[4] += e;
-
-    /* Wipe variables */
-    a = b = c = d = e = 0;
 }
 
 /* sha1_init - Initialize new context */
@@ -184,13 +169,5 @@ void SHA1::final(uint8_t digest[20])
     }
 
     /* Wipe variables */
-    i = j = 0;
     std::memset(buffer, 0, 64);
-    std::memset(state, 0, 20);
-    std::memset(count, 0, 8);
-    std::memset(&finalcount, 0, 8);
-
-#ifdef SHA1HANDSOFF  /* make transform overwrite its own static vars */
-    transform(state, buffer);
-#endif
 }
