@@ -255,11 +255,3 @@ TiVo PS decrypt methodology
       to 15000 bytes.
 
     - Rinse and repeat.
-
-
-Notes on the code
-=================
-
-Since I was not an MPEG expert, I was quite verbose in my packet decode 
-and debug output. Much of this code can probably be cleaned up, or 
-outright removed as needed.
