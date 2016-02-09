@@ -473,7 +473,7 @@ bool TiVoDecoderTS::process()
         pid      = 0;
 
         pktCounter++;
-        VERBOSE("Packet : %d\n", pktCounter);
+        VVERBOSE("Packet : %d\n", pktCounter);
 
         TiVoDecoderTsPacket *pPkt = new TiVoDecoderTsPacket;
         if (!pPkt)
@@ -519,9 +519,9 @@ bool TiVoDecoderTS::process()
             return 10;
         }
         
-        if (IS_VERBOSE)
+        if (IS_VVERBOSE)
         {
-            VERBOSE("=============== Packet : %d ===============\n",
+            VVERBOSE("=============== Packet : %d ===============\n",
                     pPkt->packetId);
             pPkt->dump();
         }

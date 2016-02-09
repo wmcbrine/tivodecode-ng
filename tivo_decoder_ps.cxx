@@ -189,28 +189,28 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
                                     int block_no = 0;
                                     int crypted  = 0;
 
-                                    VERBOSE("\n\n---Turing : Key\n");
-                                    if ( IS_VERBOSE )
+                                    VVERBOSE("\n\n---Turing : Key\n");
+                                    if ( IS_VVERBOSE )
                                         hexbulk( (uint8_t *)&bytes[off], 16 );
-                                    VERBOSE("---Turing : header : block %d crypted 0x%08x\n", block_no, crypted );
+                                    VVERBOSE("---Turing : header : block %d crypted 0x%08x\n", block_no, crypted );
 
                                     if (do_header (&bytes[off], &block_no, NULL, &crypted, NULL, NULL))
                                     {
                                         VERBOSE( "do_header did not return 0!\n");
                                     }
 
-                                    VERBOSE("BBB : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
+                                    VVERBOSE("BBB : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
                                     VERBOSE("%zu : stream_no: %x, block_no: %d\n", (size_t)packet_start, code, block_no);
-                                    VERBOSE("---Turing : prepare : code 0x%02x block_no %d\n", code, block_no );
+                                    VVERBOSE("---Turing : prepare : code 0x%02x block_no %d\n", code, block_no );
 
                                     pTuring->prepare_frame(code, block_no);
 
-                                    VERBOSE("CCC : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
-                                    VERBOSE("---Turing : decrypt : crypted 0x%08x len %d\n", crypted, 4 );
+                                    VVERBOSE("CCC : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
+                                    VVERBOSE("---Turing : decrypt : crypted 0x%08x len %d\n", crypted, 4 );
 
                                     pTuring->decrypt_buffer((uint8_t *)&crypted, 4);
 
-                                    VERBOSE("DDD : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
+                                    VVERBOSE("DDD : code 0x%02x, blockno %d, crypted 0x%08x\n", code, block_no, crypted );
 
                                 }
 
@@ -264,7 +264,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
 
                     if (scramble == 3)
                     {
-                        VERBOSE("---Turing : decrypt : size %d\n", (int)packet_size );
+                        VVERBOSE("---Turing : decrypt : size %d\n", (int)packet_size );
 
                         pTuring->decrypt_buffer(packet_ptr, packet_size);
 

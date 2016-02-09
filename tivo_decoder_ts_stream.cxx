@@ -59,7 +59,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
 
     if ((true == pPkt->getPayloadStartIndicator()) || (0 != packets.size()))
     {
-        VERBOSE("Add PktID %d from PID 0x%04x to packet list : payloadStart "
+        VVERBOSE("Add PktID %d from PID 0x%04x to packet list : payloadStart "
                 "%d listCount %zu\n", pPkt->packetId, stream_pid, 
                 pPkt->getPayloadStartIndicator(), packets.size());
 
@@ -71,7 +71,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         for (pkt_iter = packets.begin(); pkt_iter != packets.end(); pkt_iter++)
         {
             pPkt2 = *pkt_iter;
-            VERBOSE("DEQUE : PktID %d from PID 0x%04x\n", pPkt2->packetId,
+            VVERBOSE("DEQUE : PktID %d from PID 0x%04x\n", pPkt2->packetId,
                     stream_pid);
 
             std::memcpy(&pesDecodeBuffer[pesDecodeBufferLen],
@@ -114,7 +114,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         // Do the PES headers end in this packet ?
         if (pesHeaderLength < pesDecodeBufferLen)
         {
-            VERBOSE("FLUSH BUFFERS\n");
+            VVERBOSE("FLUSH BUFFERS\n");
             flushBuffers = true;
 
             // For each packet, set the end point for PES headers in 
@@ -198,7 +198,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
     }
     else
     {
-        VERBOSE("Push Back : PayloadStartIndicator %d, packets.size() %zu \n", 
+        VVERBOSE("Push Back : PayloadStartIndicator %d, packets.size() %zu \n", 
             pPkt->getPayloadStartIndicator(), packets.size());
         flushBuffers = true;
         packets.push_back(pPkt);
@@ -206,7 +206,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
     
     if (true == flushBuffers)
     {        
-        VERBOSE("Flush packets for write\n");
+        VVERBOSE("Flush packets for write\n");
         
         // Loop through each buffered packet.
         // If it is encrypted, perform decryption and then write it out.
@@ -215,7 +215,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         {
             pPkt2 = *pkt_iter;
 
-            VERBOSE("Flushing packet %d\n", pPkt2->packetId);
+            VVERBOSE("Flushing packet %d\n", pPkt2->packetId);
 
             if (true == pPkt2->getScramblingControl())
             {
@@ -224,7 +224,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                     pPkt2->pesHdrOffset;
                 uint8_t decryptLen = TS_FRAME_SIZE - decryptOffset;
 
-                VERBOSE("Decrypting PktID %d from stream 0x%04x : "
+                VVERBOSE("Decrypting PktID %d from stream 0x%04x : "
                         "decrypt offset %d len %d\n", pPkt2->packetId, 
                         stream_pid, decryptOffset, decryptLen);
 
@@ -238,7 +238,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         
             if (IS_VVERBOSE)
             { 
-                VERBOSE("Writing PktID %d from stream 0x%04x\n",
+                VVERBOSE("Writing PktID %d from stream 0x%04x\n",
                         pPkt2->packetId, stream_pid);
                 pPkt2->dump();
             }
@@ -250,7 +250,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
             }
             else
             {
-                VERBOSE("Wrote PktID %d from stream 0x%04x\n",
+                VVERBOSE("Wrote PktID %d from stream 0x%04x\n",
                         pPkt2->packetId, stream_pid);
             }
 
