@@ -84,7 +84,7 @@ bool TiVoDecoderPS::process()
             else if (ret < 0)
             {
                 std::perror("processing frame");
-                return 10;
+                return false;
             }
         }
         else if (!first)
