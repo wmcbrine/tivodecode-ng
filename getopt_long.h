@@ -15,25 +15,25 @@ extern "C" {
 #include <getopt.h>
 #else
 /* These are picked up from the system's getopt() facility. */
-extern int	opterr;
-extern int	optind;
-extern int	optopt;
+extern int opterr;
+extern int optind;
+extern int optopt;
 extern char *optarg;
 #endif
 
 #if !defined(HAVE_GETOPT) || !defined(HAVE_INT_OPTRESET)
 /* Some systems have this, otherwise you need to define it somewhere. */
-extern int	optreset;
+extern int optreset;
 #endif
 
 #ifndef HAVE_STRUCT_OPTION
 
 struct option
 {
-	const char *name;
-	int			has_arg;
-	int		   *flag;
-	int			val;
+    const char *name;
+    int has_arg;
+    int *flag;
+    int val;
 };
 
 #define no_argument 0
@@ -42,9 +42,8 @@ struct option
 
 #ifndef HAVE_GETOPT_LONG
 
-extern int getopt_long(int argc, char *const argv[],
-			const char *optstring,
-			const struct option * longopts, int *longindex);
+extern int getopt_long(int argc, char *const argv[], const char *optstring,
+                       const struct option *longopts, int *longindex);
 #endif
 
 #ifdef __cplusplus
