@@ -14,14 +14,13 @@
 #include <cstring>
 #include <iostream>
 
-#include "getopt_long.h"
-
+#include "getopt_td.hxx"
 #include "cli_common.hxx"
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
 #include "tivo_decoder_ps.hxx"
 
-static struct option long_options[] = {
+static struct td_option long_options[] = {
     {"mak", 1, 0, 'm'},
     {"out", 1, 0, 'o'},
     {"version", 0, 0, 'V'},
@@ -47,7 +46,7 @@ static void do_help(const char *arg0, int exitval)
     std::exit(exitval);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, const char **argv)
 {
     int o_chunk_1 = 1;
     int o_chunk_2 = 0;
@@ -73,7 +72,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long(argc, argv, "m:o:Vh12", long_options, 0);
+        int c = getopt_td(argc, argv, "m:o:Vh12", long_options, 0);
 
         if (c == -1)
             break;
@@ -81,20 +80,20 @@ int main(int argc, char *argv[])
         switch (c)
         {
             case 'm':
-                std::strncpy(mak, optarg, 11);
+                std::strncpy(mak, td_optarg, 11);
                 mak[11] = '\0';
                 makgiven = 1;
                 break;
             case 'o':
                 //if the output file is to be stdout then the argv
                 //will be null and the next argc will be "-"
-                if (optarg == NULL && !std::strcmp(argv[optind + 1], "-"))
+                if (td_optarg == NULL && !std::strcmp(argv[td_optind + 1], "-"))
                 {
                     outfile = "-";
-                    optind++;
+                    td_optind++;
                 }
                 else
-                    outfile = optarg;
+                    outfile = td_optarg;
                 break;
             case 'h':
                 do_help(argv[0], 1);
@@ -122,10 +121,10 @@ int main(int argc, char *argv[])
     if (!makgiven)
         makgiven = get_mak_from_conf_file(mak);
         
-    if (optind < argc)
+    if (td_optind < argc)
     {
-        tivofile = argv[optind++];
-        if (optind < argc)
+        tivofile = argv[td_optind++];
+        if (td_optind < argc)
             do_help(argv[0], 4);
     }
 

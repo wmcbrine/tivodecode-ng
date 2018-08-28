@@ -14,20 +14,8 @@
 /* Define to 1 if you have the <ctype.h> header file. */
 #define HAVE_CTYPE_H 1
 
-/* Define to 1 if you have the `getopt' function. */
-//#define HAVE_GETOPT 1
-
-/* Define to 1 if you have the <getopt.h> header file. */
-//#define HAVE_GETOPT_H 1
-
-/* Define to 1 if you have the `getopt_long' function. */
-//#define HAVE_GETOPT_LONG 1
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
-
-/* Define to 1 if you have the global variable 'int optreset'. */
-#define HAVE_INT_OPTRESET 1
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
@@ -46,9 +34,6 @@
 
 /* Define to 1 if you have the <string.h> header file. */
 #define HAVE_STRING_H 1
-
-/* Define to 1 if the system has the type `struct option'. */
-//#define HAVE_STRUCT_OPTION 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1

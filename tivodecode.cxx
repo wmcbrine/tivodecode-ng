@@ -14,8 +14,7 @@
 #include <cstring>
 #include <iostream>
 
-#include "getopt_long.h"
-
+#include "getopt_td.hxx"
 #include "cli_common.hxx"
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
@@ -23,7 +22,7 @@
 
 int o_no_verify;
 
-static struct option long_options[] = {
+static struct td_option long_options[] = {
     {"mak", 1, 0, 'm'},
     {"out", 1, 0, 'o'},
     {"verbose", 0, 0, 'v'},
@@ -56,7 +55,7 @@ static void do_help(const char *arg0, int exitval)
     std::exit(exitval);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, const char **argv)
 {
     int o_no_video = 0;
     int o_dump_metadata = 0;
@@ -83,7 +82,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int c = getopt_long(argc, argv, "m:o:hnDxvVp:", long_options, 0);
+        int c = getopt_td(argc, argv, "m:o:hnDxvVp:", long_options, 0);
 
         if (c == -1)
             break;
@@ -91,16 +90,16 @@ int main(int argc, char *argv[])
         switch (c)
         {
             case 'm':
-                std::strncpy(mak, optarg, 11);
+                std::strncpy(mak, td_optarg, 11);
                 mak[11] = '\0';
                 makgiven = 1;
                 break;
             case 'p':
-                std::sscanf(optarg, "%d", &pktDump);
+                std::sscanf(td_optarg, "%d", &pktDump);
                 pktDumpMap[pktDump] = true;
                 break;
             case 'o':
-                outfile = optarg;
+                outfile = td_optarg;
                 break;
             case 'h':
                 do_help(argv[0], 1);
@@ -132,10 +131,10 @@ int main(int argc, char *argv[])
     if (!makgiven)
         makgiven = get_mak_from_conf_file(mak);
         
-    if (optind < argc)
+    if (td_optind < argc)
     {
-        tivofile = argv[optind++];
-        if (optind < argc)
+        tivofile = argv[td_optind++];
+        if (td_optind < argc)
             do_help(argv[0], 4);
     }
 

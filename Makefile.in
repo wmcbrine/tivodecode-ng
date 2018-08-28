@@ -141,8 +141,8 @@ am__v_AR_1 =
 libtivodecode_a_AR = $(AR) $(ARFLAGS)
 libtivodecode_a_LIBADD =
 am_libtivodecode_a_OBJECTS = hexlib.$(OBJEXT) md5.$(OBJEXT) \
-	sha1.$(OBJEXT) TuringFast.$(OBJEXT) happyfile.$(OBJEXT) \
-	cli_common.$(OBJEXT) tivo_parse.$(OBJEXT) \
+	sha1.$(OBJEXT) TuringFast.$(OBJEXT) getopt_td.$(OBJEXT) \
+	happyfile.$(OBJEXT) cli_common.$(OBJEXT) tivo_parse.$(OBJEXT) \
 	turing_stream.$(OBJEXT)
 libtivodecode_a_OBJECTS = $(am_libtivodecode_a_OBJECTS)
 PROGRAMS = $(bin_PROGRAMS)
@@ -228,7 +228,7 @@ CSCOPE = cscope
 AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/tdconfig.h.in \
 	AUTHORS COPYING ChangeLog INSTALL NEWS README compile depcomp \
-	getopt_long.c install-sh missing
+	install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -343,11 +343,11 @@ top_srcdir = @top_srcdir@
 lib_LIBRARIES = libtivodecode.a
 pkginclude_HEADERS = tivo_parse.hxx turing_stream.hxx Turing.hxx
 nodist_pkginclude_HEADERS = tdconfig.h
-libtivodecode_a_SOURCES = hexlib.cxx md5.cxx sha1.cxx TuringFast.cxx happyfile.cxx cli_common.cxx tivo_parse.cxx turing_stream.cxx TuringBoxes.hxx hexlib.hxx md5.hxx sha1.hxx happyfile.hxx cli_common.hxx
-tivodecode_SOURCES = tivodecode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx getopt_long.h happyfile.hxx tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
+libtivodecode_a_SOURCES = hexlib.cxx md5.cxx sha1.cxx TuringFast.cxx getopt_td.cxx happyfile.cxx cli_common.cxx tivo_parse.cxx turing_stream.cxx TuringBoxes.hxx hexlib.hxx md5.hxx sha1.hxx happyfile.hxx cli_common.hxx
+tivodecode_SOURCES = tivodecode.cxx tivo_decoder_base.cxx tivo_decoder_ts.cxx tivo_decoder_ts_pkt.cxx tivo_decoder_ts_stream.cxx tivo_decoder_ps.cxx tivo_decoder_mpeg_parser.cxx getopt_td.hxx happyfile.hxx tivo_decoder_base.hxx tivo_decoder_ts.hxx tivo_decoder_ps.hxx tivo_decoder_mpeg_parser.hxx
 tivodecode_LDADD = $(LIBOBJS) -L. -ltivodecode
 tivodecode_DEPENDENCIES = $(LIBOBJS) libtivodecode.a
-tdcat_SOURCES = tdcat.cxx getopt_long.h
+tdcat_SOURCES = tdcat.cxx getopt_td.hxx
 tdcat_LDADD = $(LIBOBJS) -L. -ltivodecode
 tdcat_DEPENDENCIES = $(LIBOBJS) libtivodecode.a
 EXTRA_DIST = tdconfig.h.win32
@@ -497,7 +497,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@$(DEPDIR)/getopt_long.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/getopt_td.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TuringFast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cli_common.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/happyfile.Po@am__quote@

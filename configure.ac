@@ -39,28 +39,5 @@ AC_CHECK_TYPES([size_t], [AC_CHECK_SIZEOF([size_t])])
 AC_CHECK_TYPES([unsigned long], [AC_CHECK_SIZEOF([unsigned long])])
 AC_CHECK_TYPES([unsigned long long], [AC_CHECK_SIZEOF([unsigned long long])])
 
-AC_CHECK_HEADERS([getopt.h ctype.h], [], [], AC_INCLUDES_DEFAULT([]))
-AC_SEARCH_LIBS(getopt_long, [getopt gnugetopt])
-
-AC_CHECK_TYPES([struct option], [], [],
-[#ifdef HAVE_GETOPT_H
-#include <getopt.h>
-#endif])
-
-AC_CACHE_CHECK([for optreset], pgac_cv_var_int_optreset,
-[AC_TRY_LINK([#include <unistd.h>],
-  [extern int optreset; optreset = 1;],
-  [pgac_cv_var_int_optreset=yes],
-  [pgac_cv_var_int_optreset=no])])
-if test x"$pgac_cv_var_int_optreset" = x"yes"; then
-  AC_DEFINE(HAVE_INT_OPTRESET, 1, [Define to 1 if you have the global variable 'int optreset'.])
-fi
-
-if test x"$ac_cv_type_struct_option" = xyes ; then
-  AC_REPLACE_FUNCS([getopt_long])
-else
-  AC_LIBOBJ(getopt_long)
-fi
-
 AC_OUTPUT(Makefile)
 
