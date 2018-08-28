@@ -1,6 +1,6 @@
 /*
  * tivodecode-ng
- * Copyright 2006-2015, Jeremy Drake et al.
+ * Copyright 2006-2018, Jeremy Drake et al.
  * See COPYING file for license terms
  */
 

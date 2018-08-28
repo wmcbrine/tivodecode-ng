@@ -1,5 +1,5 @@
-tivodecode-ng version 0.1
-Copyright 2006-2015, Jeremy Drake et al.
+tivodecode-ng version 0.2
+Copyright 2006-2018, Jeremy Drake et al.
 See COPYING for license terms.
 
 This project now uses autoconf for its build system.  See the INSTALL file for

@@ -1,6 +1,6 @@
 /*
  * tivodecode-ng
- * Copyright 2006-2015, Jeremy Drake et al.
+ * Copyright 2006-2018, Jeremy Drake et al.
  * See COPYING file for license terms
  */
 
@@ -15,7 +15,7 @@ TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
 
     if (!pTuringState || !pInfile || !pOutfile)
         return;
-        
+
     running  = true;
     pFileIn  = pInfile;
     pFileOut = pOutfile;

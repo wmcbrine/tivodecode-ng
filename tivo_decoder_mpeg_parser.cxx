@@ -1,6 +1,6 @@
 /*
  * tivodecode-ng
- * Copyright 2006-2015, Jeremy Drake et al.
+ * Copyright 2006-2018, Jeremy Drake et al.
  * See COPYING file for license terms
  */
 
@@ -16,8 +16,8 @@ TiVoDecoder_MPEG2_Parser::TiVoDecoder_MPEG2_Parser()
     _pBuffer = NULL;
     hdr_len = 0;
 
-    /* start codes */ 
-    slice_start_code        = 0x101; 
+    /* start codes */
+    slice_start_code        = 0x101;
 
     /* scalable modes */
     data_partitioning       = 0x0;

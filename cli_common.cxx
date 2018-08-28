@@ -73,7 +73,7 @@ void print_qualcomm_msg()
 void do_version(int exitval)
 {
     std::cerr << PACKAGE_STRING "\n"
-        "Copyright 2006-2015, Jeremy Drake et al.\n"
+        "Copyright 2006-2018, Jeremy Drake et al.\n"
         "See COPYING file in distribution for details\n\n";
     print_qualcomm_msg();
     std::exit(exitval);
