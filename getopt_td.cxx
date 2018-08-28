@@ -36,7 +36,7 @@
 #include "getopt_td.hxx"
 
 #include <cstdio>
-#include <string>
+#include <cstring>
 
 int td_optind = 1;
 const char *td_optarg = NULL;
@@ -153,7 +153,7 @@ int getopt_td(int argc, const char **argv, const char *optstring,
     /* short option */
     optopt = (int) *place++;
 
-    oli = strchr(optstring, optopt);
+    oli = std::strchr(optstring, optopt);
     if (!oli)
     {
         if (!*place)
