@@ -39,13 +39,13 @@
 #define PACKAGE_NAME "tivodecode-ng"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "tivodecode-ng 0.1"
+#define PACKAGE_STRING "tivodecode-ng 0.2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "tivodecode-ng"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.1"
+#define PACKAGE_VERSION "0.2"
 
 /* The size of `off_t', as computed by sizeof. */
 #define SIZEOF_OFF_T 4
@@ -60,7 +60,7 @@
 #define SIZEOF_UNSIGNED_LONG_LONG 8
 
 /* Version number of package */
-#define VERSION "0.1"
+#define VERSION "0.2"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
