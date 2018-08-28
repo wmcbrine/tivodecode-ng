@@ -5,9 +5,6 @@
  *
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
 
 #include <cstdio>
 #include <cstdlib>

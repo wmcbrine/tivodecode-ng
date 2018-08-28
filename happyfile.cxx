@@ -3,9 +3,6 @@
  * Copyright 2006-2015, Jeremy Drake et al.
  * See COPYING file for license terms
  */
-#ifdef HAVE_CONFIG_H
-# include "tdconfig.h"
-#endif
 
 #include <cerrno>
 #include <cstdio>

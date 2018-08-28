@@ -4,10 +4,6 @@
  * See COPYING file for license terms
  */
 
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
-
 #include <cstdio>
 
 #include "tivo_decoder_base.hxx"

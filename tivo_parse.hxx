@@ -1,10 +1,6 @@
 #ifndef TIVO_PARSE_HXX_
 #define TIVO_PARSE_HXX_
 
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
-
 #include "happyfile.hxx"
 #include "Turing.hxx"
 #include "turing_stream.hxx"

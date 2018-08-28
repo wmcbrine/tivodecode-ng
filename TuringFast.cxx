@@ -57,9 +57,6 @@ commercial product utilising any of the Turing family of encryption
 algorithms should show the words "Encryption by QUALCOMM" either on the
 product or in the associated documentation.
 */
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
 
 #include <cstdlib>
 

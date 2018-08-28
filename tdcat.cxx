@@ -5,9 +5,6 @@
  *
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
 
 #include <cstdio>
 #include <cstdlib>
@@ -199,7 +196,7 @@ int main(int argc, const char **argv)
             pChunks[i].setupTuringKey(&turing, (uint8_t*)mak);
             pChunks[i].setupMetadataKey(&metaturing, (uint8_t*)mak);
         }
-        else if (TIVO_CHUNK_ENCRYPTED_XML==pChunks[i].type)
+        else if (TIVO_CHUNK_ENCRYPTED_XML == pChunks[i].type)
         {
             uint16_t offsetVal = chunk_start - current_meta_stream_pos;
             pChunks[i].decryptMetadata(&metaturing, offsetVal);

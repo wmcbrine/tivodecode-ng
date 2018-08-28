@@ -1,10 +1,6 @@
 #ifndef __TIVO_DECODER_MPEG_PARSER_HXX__
 #define __TIVO_DECODER_MPEG_PARSER_HXX__
 
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
-
 #include <stdint.h>
 
 class TiVoDecoder_MPEG2_Parser

@@ -1,10 +1,6 @@
 #ifndef TIVO_DECODER_TS_HXX_
 #define TIVO_DECODER_TS_HXX_
 
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
-
 #include <cstdio>
 
 #include <deque>

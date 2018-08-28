@@ -1,10 +1,6 @@
 /* useful hex manipulation routines */
 /* Copyright C Qualcomm Inc 1997 */
 
-#ifdef HAVE_CONFIG_H
-# include "tdconfig.h"
-#endif
-
 #include <cctype>
 #include <cstdio>
 #include <iostream>

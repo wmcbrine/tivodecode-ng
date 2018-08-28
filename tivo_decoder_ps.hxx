@@ -1,10 +1,6 @@
 #ifndef TIVO_DECODER_PS_HXX_
 #define TIVO_DECODER_PS_HXX_
 
-#ifdef HAVE_CONFIG_H
-#include "tdconfig.h"
-#endif
-
 #include <cstdio>
 
 #include "tivo_decoder_base.hxx"
