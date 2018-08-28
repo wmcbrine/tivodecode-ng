@@ -23,12 +23,7 @@ choke me
 
   if test "$ICC" = no; then
     CFLAGS="$CFLAGS -Wall -Wpointer-arith -Winline"
-
-#    PGAC_PROG_CC_CFLAGS_OPT([-Wdeclaration-after-statement])
-#    PGAC_PROG_CC_CFLAGS_OPT([-Wendif-labels])
-#    PGAC_PROG_CC_CFLAGS_OPT([-Werror-implicit-function-declaration])
   fi
-#  PGAC_PROG_CC_CFLAGS_OPT([-fno-strict-aliasing])
 fi
 
 AC_SYS_LARGEFILE
