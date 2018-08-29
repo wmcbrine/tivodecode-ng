@@ -12,12 +12,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to 1 if the system has the type `unsigned long'. */
-#undef HAVE_UNSIGNED_LONG
-
-/* Define to 1 if the system has the type `unsigned long long'. */
-#undef HAVE_UNSIGNED_LONG_LONG
-
 /* Name of package */
 #undef PACKAGE
 
@@ -41,15 +35,6 @@
 
 /* The size of `off_t', as computed by sizeof. */
 #undef SIZEOF_OFF_T
-
-/* The size of `size_t', as computed by sizeof. */
-#undef SIZEOF_SIZE_T
-
-/* The size of `unsigned long', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_LONG
-
-/* The size of `unsigned long long', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_LONG_LONG
 
 /* Version number of package */
 #undef VERSION
