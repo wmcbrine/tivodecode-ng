@@ -5012,34 +5012,6 @@ fi
 
 
 
-if test x"$ac_cv_c_compiler_gnu" = x"yes"; then
-# ICC pretends to be GCC but it's lying; it doesn't support these options.
-# So we have to check if "GCC" is really ICC.
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-int
-main ()
-{
-#ifndef __INTEL_COMPILER
-choke me
-#endif
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_compile "$LINENO"; then :
-  ICC=yes
-else
-  ICC=no
-fi
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-  if test "$ICC" = no; then
-    CFLAGS="$CFLAGS -Wall -Wpointer-arith -Winline"
-  fi
-fi
-
 # Check whether --enable-largefile was given.
 if test "${enable_largefile+set}" = set; then :
   enableval=$enable_largefile;
