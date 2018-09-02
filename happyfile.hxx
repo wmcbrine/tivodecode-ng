@@ -9,22 +9,8 @@
 
 #include "tdconfig.h"
 
-#include <stddef.h>
-#include <stdlib.h>
-
-#ifdef HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-
-#ifdef HAVE_UNISTD_H
-# include <unistd.h>
-#endif
-
-#if defined(WIN32)
-# include <io.h>
-#endif
-
 #include <cstdio>
+#include <stdint.h>
 
 #ifndef RAWBUFSIZE
 #define RAWBUFSIZE 65536
@@ -34,14 +20,7 @@
 #define BUFFERSIZE 4096
 #endif
 
-#if SIZEOF_OFF_T == 8
-typedef off_t hoff_t;
-#elif defined (WIN32)
-typedef __int64 hoff_t;
-#else
-#warning Large file support is questionable on this platform
-typedef off_t hoff_t;
-#endif
+typedef int64_t hoff_t;
 
 class HappyFile
 {
