@@ -1,33 +1,4 @@
 /* tdconfig.h.  Generated from tdconfig.h.in by configure.  */
-/* tdconfig.h.in.  Generated from configure.in by autoheader.  */
-
-/* This file is generated from MingW ./configure, and with the following
- * changes to be valid for Visual C++ (and compatible):
- *
- * HAVE_CBRT, HAVE_FUNCNAME_FUNC, HAVE_FUNCNAME_FUNCTION, HAVE_GETOPT,
- * HAVE_GETOPT_H, HAVE_GETOPT_LONG, HAVE_RINT, HAVE_STRINGS_H, 
- * HAVE_STRTOLL, HAVE_STRTOULL, HAVE_STRUCT_OPTION, ENABLE_THREAD_SAFETY
- *
- * For now, also HAVE_IPV6, HAVE_UNISTD_H
- */
-
-/* Define to 1 if you have the <ctype.h> header file. */
-#define HAVE_CTYPE_H 1
-
-/* Define to 1 if you have the <inttypes.h> header file. */
-#define HAVE_INTTYPES_H 1
-
-/* Define to 1 if you have the <sys/types.h> header file. */
-#define HAVE_SYS_TYPES_H 1
-
-/* Define to 1 if you have the <unistd.h> header file. */
-//#define HAVE_UNISTD_H 1
-
-/* Define to 1 if the system has the type `unsigned long'. */
-#define HAVE_UNSIGNED_LONG 1
-
-/* Define to 1 if the system has the type `unsigned long long'. */
-#define HAVE_UNSIGNED_LONG_LONG 1
 
 /* Name of package */
 #define PACKAGE "tivodecode-ng"
@@ -47,47 +18,9 @@
 /* Define to the version of this package. */
 #define PACKAGE_VERSION "0.2"
 
-/* The size of `off_t', as computed by sizeof. */
-#define SIZEOF_OFF_T 4
-
-/* The size of `size_t', as computed by sizeof. */
-#define SIZEOF_SIZE_T 4
-
-/* The size of `unsigned long', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_LONG 4
-
-/* The size of `unsigned long long', as computed by sizeof. */
-#define SIZEOF_UNSIGNED_LONG_LONG 8
-
 /* Version number of package */
 #define VERSION "0.2"
 
 /* Define to 1 if your processor stores words with the most significant byte
    first (like Motorola and SPARC, unlike Intel and VAX). */
 /* #undef WORDS_BIGENDIAN */
-
-/* Define to 1 if on AIX 3.
-   System headers sometimes define this.
-   We just want to avoid a redefinition error message.  */
-#ifndef _ALL_SOURCE
-/* # undef _ALL_SOURCE */
-#endif
-
-/* Number of bits in a file offset, on hosts where this is settable. */
-/* #undef _FILE_OFFSET_BITS */
-
-/* Define to 2 if the system does not provide POSIX.1 features except with
-   this defined. */
-/* #undef _POSIX_1_SOURCE */
-
-/* Define to 1 if you need to in order for `stat' and other things to work. */
-/* #undef _POSIX_SOURCE */
-
-/* Define to `__inline__' or `__inline' if that's what the C compiler
-   calls it, or to nothing if 'inline' is not supported under any name.  */
-#ifndef __cplusplus
-/* #undef inline */
-#endif
-
-/* Define to `long int' if <sys/types.h> does not define. */
-/* #undef off_t */
