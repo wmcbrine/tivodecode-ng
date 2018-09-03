@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cinttypes>
 
 #include "hexlib.hxx"
 #include "tivo_parse.hxx"
@@ -24,7 +25,7 @@ TiVoDecoderTsPacket::TiVoDecoderTsPacket()
     pesHdrOffset    = 0;
     ts_packet_type  = TS_PID_TYPE_NONE;
     packetId        = 0;
-    
+
     std::memset(buffer, 0, TS_FRAME_SIZE);
     std::memset(&tsHeader, 0, sizeof(TS_Header));
     std::memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field));
@@ -383,7 +384,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
     if (IS_VVVERBOSE)
         std::fprintf(stderr, "BBB : stream_id 0x%02x, blockno %d, crypted 0x%08x\n",
                      stream_id, turing_stuff.block_no, turing_stuff.crypted);
-    VERBOSE("%lld : stream_id: %x, block_no: %d\n", pParent->pFileIn->tell(), stream_id, turing_stuff.block_no);
+    VERBOSE("%" PRId64 " : stream_id: %x, block_no: %d\n", pParent->pFileIn->tell(), stream_id, turing_stuff.block_no);
 
     pParent->pTuring->prepare_frame(stream_id, turing_stuff.block_no);
 
