@@ -13,7 +13,7 @@
 */
 
 #include <cstring>
-#include <stdint.h>
+#include <cstdint>
 
 #include "sha1.hxx"
 

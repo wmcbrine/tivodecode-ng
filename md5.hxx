@@ -30,7 +30,7 @@
 #ifndef _NETINET6_MD5_H_
 #define _NETINET6_MD5_H_
 
-#include <stdint.h>
+#include <cstdint>
 
 #define MD5_BUFLEN	64
 

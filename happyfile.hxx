@@ -10,7 +10,7 @@
 #include "tdconfig.h"
 
 #include <cstdio>
-#include <stdint.h>
+#include <cstdint>
 
 #ifndef RAWBUFSIZE
 #define RAWBUFSIZE 65536

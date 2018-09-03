@@ -1,7 +1,7 @@
 #ifndef __TIVO_DECODER_MPEG_PARSER_HXX__
 #define __TIVO_DECODER_MPEG_PARSER_HXX__
 
-#include <stdint.h>
+#include <cstdint>
 
 class TiVoDecoder_MPEG2_Parser
 {
@@ -17,7 +17,7 @@ class TiVoDecoder_MPEG2_Parser
 
         /* scalable modes */
         uint8_t data_partitioning;
-        
+
         /* private variables */
         uint8_t  progressive_sequence;
         uint8_t  repeat_first_field;
