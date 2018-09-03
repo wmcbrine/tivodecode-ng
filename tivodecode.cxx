@@ -127,7 +127,7 @@ int main(int argc, const char **argv)
 
     if (!makgiven)
         makgiven = get_mak_from_conf_file(mak);
-        
+
     if (td_optind < argc)
     {
         tivofile = argv[td_optind++];
@@ -217,8 +217,8 @@ int main(int argc, const char **argv)
 
         if (o_dump_metadata)
         {
-            char buf[25];
-            std::sprintf(buf, "%s-%02d-%04x.xml", "chunk", i, pChunks[i].id);
+            char buf[27];
+            std::sprintf(buf, "chunk-%02d-%04x.xml", i, pChunks[i].id);
 
             HappyFile *chunkfh = new HappyFile;
             if (!chunkfh->open(buf, "wb"))
@@ -248,7 +248,7 @@ int main(int argc, const char **argv)
         (hfh->seek(header.mpeg_offset) < 0))
     {
         std::perror("Error reading header");
-        return 8; // I dunno       
+        return 8; // I dunno
     }
 
     TiVoDecoder *pDecoder = NULL;
@@ -266,7 +266,7 @@ int main(int argc, const char **argv)
         std::perror("Unable to create TiVo Decoder");
         return 9;
     }
-    
+
     if (false == pDecoder->process())
     {
         std::perror("Failed to process file");
