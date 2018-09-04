@@ -1,5 +1,7 @@
-tivodecode originally by Jeremy Drake
-tivodecode-ng maintained by William McBrine
+tivodecode originally by Jeremy Drake. Portions derived from mpegcat by
+Kees Cook. Turing encryption by Greg Rose.
+
+tivodecode-ng maintained by William McBrine.
 
 Contributors include:
 Kees Cook
