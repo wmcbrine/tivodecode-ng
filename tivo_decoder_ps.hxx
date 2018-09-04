@@ -14,7 +14,7 @@ typedef enum
     PACK_NONE,
     PACK_SPECIAL,
     PACK_PES_SIMPLE,            // packet length == data length
-    PACK_PES_COMPLEX,           // crazy headers need skipping
+    PACK_PES_COMPLEX            // crazy headers need skipping
 }
 packet_type;
 
