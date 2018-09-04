@@ -42,15 +42,10 @@ typedef enum
 }
 TiVoChunkType;
 
-/* All elements are in big-endian format and are packed */
-
 class TiVoStreamHeader
 {
     public:
-        char     fileType[4];    /* the string 'TiVo' */
-        uint16_t dummy_0004;
         uint16_t dummy_0006;
-        uint16_t dummy_0008;
         uint32_t mpeg_offset;    /* 0-based offset of MPEG stream */
         uint16_t chunks;         /* Number of metadata chunks */
 
@@ -60,8 +55,7 @@ class TiVoStreamHeader
         uint16_t       size() { return sizeof(TiVoStreamHeader); };
 
         TiVoStreamHeader();
-
-} __attribute__((packed));
+};
 
 class TiVoStreamChunk
 {
@@ -83,7 +77,6 @@ class TiVoStreamChunk
 
         TiVoStreamChunk();
         ~TiVoStreamChunk();
-
-} __attribute__((packed));
+};
 
 #endif /* TIVO_PARSE_HXX_ */

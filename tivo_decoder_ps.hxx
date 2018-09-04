@@ -29,8 +29,6 @@ typedef struct
 }
 packet_tag_info;
 
-/* All elements are in big-endian format and are packed */
-
 class TiVoDecoderPS : public TiVoDecoder
 {
     private:
@@ -43,7 +41,6 @@ class TiVoDecoderPS : public TiVoDecoder
         TiVoDecoderPS(TuringState *pTuringState, HappyFile *pInfile,
                       HappyFile *pOutfile);
         ~TiVoDecoderPS();
-        
-} __attribute__((packed));
+};
 
 #endif /* TIVO_DECODER_PS_HXX_ */

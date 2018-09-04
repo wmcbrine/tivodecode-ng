@@ -20,8 +20,6 @@
     } \
 } while (0)
 
-/* All elements are in big-endian format and are packed */
-
 class TiVoDecoder
 {
     public:
@@ -40,8 +38,7 @@ class TiVoDecoder
         TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
                     HappyFile *pOutfile);
         virtual ~TiVoDecoder();
-
-} __attribute__((packed));
+};
 
 #endif /* TIVO_DECODER_HXX_ */
 

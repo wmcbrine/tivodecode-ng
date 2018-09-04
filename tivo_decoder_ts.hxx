@@ -59,37 +59,37 @@ typedef enum
 
 typedef struct _TS_Turing_Stuff
 {
-    int           block_no;
-    int           crypted;
+    int     block_no;
+    int     crypted;
     uint8_t unknown_field[4];
     uint8_t key[16];
-} __attribute__((packed)) TS_Turing_Stuff;
+} TS_Turing_Stuff;
 
 typedef struct _TS_header
 {
-    unsigned int sync_byte:8;
-    unsigned int transport_error_indicator:1;
-    unsigned int payload_unit_start_indicator:1;
-    unsigned int transport_priority:1;
-    unsigned int pid:13;
-    unsigned int transport_scrambling_control:2;
-    unsigned int adaptation_field_exists:1;
-    unsigned int payload_data_exists:1;
-    unsigned int continuity_counter:4;
-} __attribute__((packed)) TS_Header;
+    unsigned int sync_byte;
+    unsigned int transport_error_indicator;
+    unsigned int payload_unit_start_indicator;
+    unsigned int transport_priority;
+    unsigned int pid;
+    unsigned int transport_scrambling_control;
+    unsigned int adaptation_field_exists;
+    unsigned int payload_data_exists;
+    unsigned int continuity_counter;
+} TS_Header;
 
 typedef struct _TS_adaptation_field
 {
-    uint16_t adaptation_field_length:8;
-    uint16_t discontinuity_indicator:1;
-    uint16_t random_access_indicator:1;
-    uint16_t elementary_stream_priority_indicator:1;
-    uint16_t pcr_flag:1;
-    uint16_t opcr_flag:1;
-    uint16_t splicing_point_flag:1;
-    uint16_t transport_private_data_flag:1;
-    uint16_t adaptation_field_extension_flag:1;
-} __attribute__((packed)) TS_Adaptation_Field;
+    uint16_t adaptation_field_length;
+    uint16_t discontinuity_indicator;
+    uint16_t random_access_indicator;
+    uint16_t elementary_stream_priority_indicator;
+    uint16_t pcr_flag;
+    uint16_t opcr_flag;
+    uint16_t splicing_point_flag;
+    uint16_t transport_private_data_flag;
+    uint16_t adaptation_field_extension_flag;
+} TS_Adaptation_Field;
 
 typedef struct _TS_PAT_data
 {
@@ -98,32 +98,32 @@ typedef struct _TS_PAT_data
     uint8_t  section_number;
     uint8_t  last_section_number;
     uint16_t program_map_pid;
-} __attribute__((packed)) TS_PAT_data;
+} TS_PAT_data;
 
 typedef struct _TS_PES_Packet
 {
-    uint8_t marker_bits:2;
-    uint8_t scrambling_control:2;
-    uint8_t priority:1;
-    uint8_t data_alignment_indicator:1;
-    uint8_t copyright:1;
-    uint8_t original_or_copy:1;
-    uint8_t PTS_DTS_indicator:2;
-    uint8_t ESCR_flag:1;
-    uint8_t ES_rate_flag:1;
-    uint8_t DSM_trick_mode_flag:1;
-    uint8_t additional_copy_info_flag:1;
-    uint8_t CRC_flag:1;
-    uint8_t extension_flag:1;
+    uint8_t marker_bits;
+    uint8_t scrambling_control;
+    uint8_t priority;
+    uint8_t data_alignment_indicator;
+    uint8_t copyright;
+    uint8_t original_or_copy;
+    uint8_t PTS_DTS_indicator;
+    uint8_t ESCR_flag;
+    uint8_t ES_rate_flag;
+    uint8_t DSM_trick_mode_flag;
+    uint8_t additional_copy_info_flag;
+    uint8_t CRC_flag;
+    uint8_t extension_flag;
     unsigned int  PES_header_length;
-} __attribute__((packed)) PES_packet;
+} PES_packet;
 
 typedef struct _TS_Prog_Elements
 {
-    uint8_t      streamId;
-    uint16_t     pesPktLength;
+    uint8_t    streamId;
+    uint16_t   pesPktLength;
     PES_packet PES_hdr;
-} __attribute__((packed)) TS_Stream_Element;
+} TS_Stream_Element;
 
 typedef struct
 {
@@ -167,8 +167,6 @@ typedef std::map<uint32_t,bool>                       TsPktDump;
 typedef std::map<uint32_t,bool>::iterator             TsPktDump_iter;
 
 extern TsPktDump pktDumpMap;
-
-/* All elements are in big-endian format and are packed */
 
 class TiVoDecoderTS : public TiVoDecoder
 {

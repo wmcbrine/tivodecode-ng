@@ -39,33 +39,30 @@ uint16_t portable_ntohs(uint16_t val)
 
 TiVoStreamHeader::TiVoStreamHeader()
 {
-    std::memset(fileType, 0, 4);
-    dummy_0004  = 0;
     dummy_0006  = 0;
-    dummy_0008  = 0;
     mpeg_offset = 0;
     chunks      = 0;
 }
 
 bool TiVoStreamHeader::read(HappyFile *file)
 {
-    if (file->read(this, size()) != size())
+    uint8_t buffer[16];
+
+    if (file->read(buffer, 16) != 16)
     {
         std::perror("read header");
         return false;
     }
 
-    dummy_0004  = portable_ntohs(dummy_0004);
-    dummy_0006  = portable_ntohs(dummy_0006);
-    dummy_0008  = portable_ntohs(dummy_0008);
-    mpeg_offset = portable_ntohl(mpeg_offset);
-    chunks      = portable_ntohs(chunks);
-
-    if (std::strncmp(fileType, "TiVo", 4))
+    if (std::strncmp((char *)buffer, "TiVo", 4))
     {
         std::perror("Not a TiVo file!");
         return false;
     }
+
+    dummy_0006  = portable_ntohs(buffer + 6);
+    mpeg_offset = portable_ntohl(buffer + 10);
+    chunks      = portable_ntohs(buffer + 14);
 
     return true;
 }
@@ -85,11 +82,7 @@ void TiVoStreamHeader::dump()
         }
 
         std::fprintf(stderr, "TiVo Header : \n");
-        std::fprintf(stderr, "fileType    : %02x:%02x:%02x:%02x (%c%c%c%c)\n",
-                     fileType[0], fileType[1], fileType[2], fileType[3],
-                     fileType[0], fileType[1], fileType[2], fileType[3]);
 
-        std::fprintf(stderr, " dummy_0004 : 0x%04x\n", dummy_0004);
         std::fprintf(stderr, " dummy_0006 : 0x%04x\n", dummy_0006);
         std::fprintf(stderr, "     origin : %s\n",
                      (dummy_0006 & 0x40) ? "AUS/NZ" : "US" );
@@ -101,7 +94,6 @@ void TiVoStreamHeader::dump()
 
         std::fprintf(stderr, "  TiVo unit : %s\n", unit);
 
-        std::fprintf(stderr, "dummy_0008  : 0x%04x\n", dummy_0008);
         std::fprintf(stderr, "mpeg_offset : %d\n", mpeg_offset);
         std::fprintf(stderr, "chunks      : %d\n\n", chunks);
     }
@@ -138,24 +130,21 @@ TiVoStreamChunk::~TiVoStreamChunk()
 
 bool TiVoStreamChunk::read(HappyFile *file)
 {
-    if (file->read(this, size()) != size())
+    uint8_t buffer[12];
+
+    if (file->read(buffer, 12) != 12)
     {
         std::perror("read chunk");
         return false;
     }
 
-    chunkSize   = portable_ntohl(chunkSize);
-    dataSize    = portable_ntohl(dataSize);
-    id          = portable_ntohs(id);
-    type        = portable_ntohs(type);
+    chunkSize   = portable_ntohl(buffer);
+    dataSize    = portable_ntohl(buffer + 4);
+    id          = portable_ntohs(buffer + 8);
+    type        = portable_ntohs(buffer + 10);
 
-    uint16_t readSize = chunkSize - size();
+    uint16_t readSize = chunkSize - 12;
     pData = new uint8_t[readSize];
-    if (NULL == pData)
-    {
-        std::perror("chunk data alloc");
-        return false;
-    }
 
     if (file->read(pData, readSize) != readSize)
     {
