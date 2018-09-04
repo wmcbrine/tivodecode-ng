@@ -50,12 +50,10 @@ int getopt_td(int argc, const char **argv, const char *optstring,
 {
     static const char *place = EMSG;   /* option letter processing */
     const char *oli;                   /* option letter list index */
-    int opterr, optopt, optreset;
+    int optopt;
 
-    if (optreset || !*place)
+    if (!*place)
     {                            /* update scanning pointer */
-        optreset = 0;
-
         if (td_optind >= argc)
         {
             place = EMSG;
@@ -106,10 +104,6 @@ int getopt_td(int argc, const char **argv, const char *optstring,
                         {
                             if (optstring[0] == ':')
                                 return BADARG;
-                            if (opterr)
-                                std::fprintf(stderr,
-                                   "%s: option requires an argument -- %s\n",
-                                        argv[0], place);
                             place = EMSG;
                             td_optind++;
                             return BADCH;
@@ -140,10 +134,6 @@ int getopt_td(int argc, const char **argv, const char *optstring,
                     }
                 }
             }
-
-            if (opterr && optstring[0] != ':')
-                std::fprintf(stderr,
-                             "%s: illegal option -- %s\n", argv[0], place);
             place = EMSG;
             td_optind++;
             return BADCH;
@@ -158,9 +148,6 @@ int getopt_td(int argc, const char **argv, const char *optstring,
     {
         if (!*place)
             ++td_optind;
-        if (opterr && *optstring != ':')
-            std::fprintf(stderr,
-                         "%s: illegal option -- %c\n", argv[0], optopt);
         return BADCH;
     }
 
@@ -179,9 +166,6 @@ int getopt_td(int argc, const char **argv, const char *optstring,
             place = EMSG;
             if (*optstring == ':')
                 return BADARG;
-            if (opterr)
-                std::fprintf(stderr, "%s: option requires an argument -- %c\n",
-                             argv[0], optopt);
             return BADCH;
         }
         else
