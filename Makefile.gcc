@@ -18,8 +18,6 @@ endif
 PREFIX = /usr/local
 
 #--------------------------------------------------------------
-# Defaults are for the standard curses setup:
-
 # RM is the Delete command ("rm" or "del", as appropriate), and SEP is the
 # separator for multi-statement lines... some systems require ";", while
 # others need "&&".
@@ -28,10 +26,12 @@ ifeq ($(OS),Windows_NT)
 	RM = del
 	SEP = &&
 	E = .exe
+	LFLAGS = -static-libgcc -static-libstdc++
 else
 	RM = rm -f
 	SEP = ;
 	E =
+	LFLAGS =
 endif
 
 O = o
@@ -54,11 +54,11 @@ $(OBJS1) $(OBJS2) $(OBJS3): %.o: %.cxx
 	$(CXX) $(OPTS) -c $<
 
 tivodecode$(E):	tivodecode.$(O) $(OBJS1) $(OBJS2)
-	$(CXX) -o tivodecode$(E) tivodecode.$(O) $(OBJS1) $(OBJS2)
+	$(CXX) $(LFLAGS) -o tivodecode$(E) tivodecode.$(O) $(OBJS1) $(OBJS2)
 	$(POST)
 
 tdcat$(E):	tdcat.$(O) $(OBJS1)
-	$(CXX) -o tdcat$(E) tdcat.$(O) $(OBJS1)
+	$(CXX) $(LFLAGS) -o tdcat$(E) tdcat.$(O) $(OBJS1)
 	$(POST)
 
 dep:
