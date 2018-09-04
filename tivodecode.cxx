@@ -92,7 +92,7 @@ int main(int argc, const char **argv)
                 makgiven = 1;
                 break;
             case 'p':
-                std::sscanf(td_optarg, "%d", &pktDump);
+                std::sscanf(td_optarg, "%u", &pktDump);
                 pktDumpMap[pktDump] = true;
                 break;
             case 'o':

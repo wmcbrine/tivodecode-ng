@@ -48,29 +48,29 @@ TiVoStreamHeader::TiVoStreamHeader()
 }
 
 bool TiVoStreamHeader::read(HappyFile *file)
-{    
+{
     if (file->read(this, size()) != size())
     {
         std::perror("read header");
         return false;
-    }    
-    
+    }
+
     dummy_0004  = portable_ntohs(dummy_0004);
     dummy_0006  = portable_ntohs(dummy_0006);
     dummy_0008  = portable_ntohs(dummy_0008);
-    mpeg_offset = portable_ntohl(mpeg_offset);   
+    mpeg_offset = portable_ntohl(mpeg_offset);
     chunks      = portable_ntohs(chunks);
-    
+
     if (std::strncmp(fileType, "TiVo", 4))
     {
         std::perror("Not a TiVo file!");
-        return false;    
+        return false;
     }
 
     return true;
 }
 
-void TiVoStreamHeader::dump(uint8_t dbgLevel)
+void TiVoStreamHeader::dump()
 {
     if (IS_VERBOSE)
     {
@@ -137,32 +137,32 @@ TiVoStreamChunk::~TiVoStreamChunk()
 }
 
 bool TiVoStreamChunk::read(HappyFile *file)
-{    
+{
     if (file->read(this, size()) != size())
     {
         std::perror("read chunk");
         return false;
-    }    
+    }
 
     chunkSize   = portable_ntohl(chunkSize);
     dataSize    = portable_ntohl(dataSize);
     id          = portable_ntohs(id);
     type        = portable_ntohs(type);
 
-    uint16_t readSize = chunkSize - size(); 
+    uint16_t readSize = chunkSize - size();
     pData = new uint8_t[readSize];
     if (NULL == pData)
     {
         std::perror("chunk data alloc");
         return false;
     }
-    
+
     if (file->read(pData, readSize) != readSize)
     {
         std::perror("read chunk data");
         return false;
-    }     
-    
+    }
+
     return true;
 }
 
@@ -170,11 +170,11 @@ bool TiVoStreamChunk::write(HappyFile *file)
 {
     if (file->write(pData, dataSize) != dataSize)
         return false;
-        
-    return true; 
+
+    return true;
 }
 
-void TiVoStreamChunk::dump(uint8_t dbgLevel)
+void TiVoStreamChunk::dump()
 {
     if (IS_VERBOSE)
     {
@@ -186,7 +186,7 @@ void TiVoStreamChunk::dump(uint8_t dbgLevel)
         std::fprintf(stderr, "type        : (0x%08x) %d\n", type, type);
 
         hexbulk(pData, dataSize);
-        
+
         std::fprintf(stderr, "\n\n" );
     }
 }

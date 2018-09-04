@@ -102,7 +102,6 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
 {
     uint16_t pat_field           = 0;
     uint16_t section_length      = 0;
-    uint16_t transport_stream_id = 0;
     uint8_t *pPtr                = NULL;
 
     if (!pPkt)
@@ -144,7 +143,6 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         return -1;
     }
 
-    transport_stream_id = portable_ntohs(pPtr);
     pPtr += 2;
     section_length -= 2;
 
@@ -443,16 +441,9 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
     return 0;
 }
 
-int TiVoDecoderTS::handlePkt_AudioVideo(TiVoDecoderTsPacket *pPkt)
-{
-    return 0;
-}
-
 bool TiVoDecoderTS::process()
 {
     int err         = 0;
-    uint16_t pid      = 0;
-    hoff_t position = 0;
     TiVoDecoderTsStream *pStream = NULL;
     TsStreams_it        stream_iter;
     TsPktDump_iter      pktDump_iter;
@@ -466,8 +457,6 @@ bool TiVoDecoderTS::process()
     while (running)
     {
         err      = 0;
-        position = pFileIn->tell();
-        pid      = 0;
 
         pktCounter++;
         VVERBOSE("Packet : %d\n", pktCounter);
@@ -505,7 +494,7 @@ bool TiVoDecoderTS::process()
                          pktCounter, readSize);
             return 10;
         }
-        
+
         pktDump_iter = pktDumpMap.find(pktCounter);
         o_pkt_dump   = (pktDump_iter != pktDumpMap.end()) ? true : false;
 
@@ -515,15 +504,13 @@ bool TiVoDecoderTS::process()
                          pktCounter);
             return 10;
         }
-        
+
         if (IS_VVERBOSE)
         {
             VVERBOSE("=============== Packet : %d ===============\n",
                     pPkt->packetId);
             pPkt->dump();
         }
-
-        pid = pPkt->getPID();
 
         switch (pPkt->ts_packet_type)
         {
@@ -563,12 +550,6 @@ bool TiVoDecoderTS::process()
                         err = handlePkt_TiVo(pPkt);
                         if (err)
                             std::perror("handlePkt_Tivo failed");
-                    }
-                    else
-                    {
-                        err = handlePkt_AudioVideo(pPkt);
-                        if (err)
-                            std::perror("handlePkt_AudoVideo failed");
                     }
                 }
                 break;

@@ -47,7 +47,7 @@ TiVoChunkType;
 class TiVoStreamHeader
 {
     public:
-        char   fileType[4];    /* the string 'TiVo' */
+        char     fileType[4];    /* the string 'TiVo' */
         uint16_t dummy_0004;
         uint16_t dummy_0006;
         uint16_t dummy_0008;
@@ -56,14 +56,14 @@ class TiVoStreamHeader
 
         TiVoFormatType getFormatType();
         bool           read(HappyFile *file);
-        void           dump(uint8_t dbgLevel=0);
-        uint16_t         size() { return sizeof(TiVoStreamHeader); };
+        void           dump();
+        uint16_t       size() { return sizeof(TiVoStreamHeader); };
 
         TiVoStreamHeader();
 
 } __attribute__((packed));
 
-class TiVoStreamChunk 
+class TiVoStreamChunk
 {
     public:
         uint32_t chunkSize;  /* Size of chunk */
@@ -71,16 +71,16 @@ class TiVoStreamChunk
         uint16_t id;         /* Chunk ID */
         uint16_t type;       /* Subtype */
         uint8_t  *pData;     /* Variable length data */
-        
-        bool   read(HappyFile *file);
-        bool   write(HappyFile *file);
-        void   dump(uint8_t dbgLevel=0);
+
+        bool     read(HappyFile *file);
+        bool     write(HappyFile *file);
+        void     dump();
         uint16_t size() { return sizeof(TiVoStreamChunk) - sizeof(uint8_t*); };
-        
-        void   setupTuringKey(TuringState *pTuring, uint8_t *pMAK);
-        void   setupMetadataKey(TuringState *pTuring, uint8_t *pMAK);
-        void   decryptMetadata(TuringState *pTuring, uint16_t offsetVal);
-        
+
+        void     setupTuringKey(TuringState *pTuring, uint8_t *pMAK);
+        void     setupMetadataKey(TuringState *pTuring, uint8_t *pMAK);
+        void     decryptMetadata(TuringState *pTuring, uint16_t offsetVal);
+
         TiVoStreamChunk();
         ~TiVoStreamChunk();
 

@@ -154,18 +154,18 @@ class TiVoDecoderTS;
 class TiVoDecoderTsStream;
 class TiVoDecoderTsPacket;
 
-typedef std::deque<uint16_t>                              TsLengths;
-typedef std::deque<uint16_t>::iterator                    TsLengths_it;
+typedef std::deque<uint16_t>                          TsLengths;
+typedef std::deque<uint16_t>::iterator                TsLengths_it;
 
-typedef std::deque<TiVoDecoderTsPacket*>                TsPackets;
-typedef std::deque<TiVoDecoderTsPacket*>::iterator      TsPackets_it;
+typedef std::deque<TiVoDecoderTsPacket*>              TsPackets;
+typedef std::deque<TiVoDecoderTsPacket*>::iterator    TsPackets_it;
 
-typedef std::map<int, TiVoDecoderTsStream*>             TsStreams;
-typedef std::map<int, TiVoDecoderTsStream*>::iterator   TsStreams_it;
+typedef std::map<int, TiVoDecoderTsStream*>           TsStreams;
+typedef std::map<int, TiVoDecoderTsStream*>::iterator TsStreams_it;
 
-typedef std::map<uint32_t,bool>                           TsPktDump;
-typedef std::map<uint32_t,bool>::iterator                 TsPktDump_iter;
-    
+typedef std::map<uint32_t,bool>                       TsPktDump;
+typedef std::map<uint32_t,bool>::iterator             TsPktDump_iter;
+
 extern TsPktDump pktDumpMap;
 
 /* All elements are in big-endian format and are packed */
@@ -181,7 +181,6 @@ class TiVoDecoderTS : public TiVoDecoder
         int handlePkt_PAT(TiVoDecoderTsPacket *pPkt);
         int handlePkt_PMT(TiVoDecoderTsPacket *pPkt);
         int handlePkt_TiVo(TiVoDecoderTsPacket *pPkt);
-        int handlePkt_AudioVideo(TiVoDecoderTsPacket *pPkt);
 
         virtual bool process();
         TiVoDecoderTS(TuringState *pTuringState, HappyFile *pInfile,
@@ -196,17 +195,17 @@ class TiVoDecoderTsStream
         TsPackets       packets;
         TsLengths       pesHdrLengths;
 
-        uint8_t           stream_type_id;
-        uint16_t          stream_pid;
-        uint8_t           stream_id;
+        uint8_t         stream_type_id;
+        uint16_t        stream_pid;
+        uint8_t         stream_id;
         ts_stream_types stream_type;
 
         HappyFile       *pOutfile;
 
         TS_Turing_Stuff turing_stuff;
-        
-        uint8_t           pesDecodeBuffer[TS_FRAME_SIZE * 10];
-        
+
+        uint8_t         pesDecodeBuffer[TS_FRAME_SIZE * 10];
+
         void            setDecoder(TiVoDecoderTS *pDecoder);
         bool            addPkt(TiVoDecoderTsPacket *pPkt);
         bool            getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen);
@@ -220,18 +219,18 @@ class TiVoDecoderTsPacket
 {
     public:
         static int          globalBufferLen;
-        static uint8_t        globalBuffer[TS_FRAME_SIZE * 3];
+        static uint8_t      globalBuffer[TS_FRAME_SIZE * 3];
 
         TiVoDecoderTsStream *pParent;
-        uint32_t              packetId;
+        uint32_t            packetId;
 
         bool                isValid;
         bool                isPmt;
         bool                isTiVo;
 
-        uint8_t               buffer[TS_FRAME_SIZE];
-        uint8_t               payloadOffset;
-        uint8_t               pesHdrOffset;
+        uint8_t             buffer[TS_FRAME_SIZE];
+        uint8_t             payloadOffset;
+        uint8_t             pesHdrOffset;
         TS_Header           tsHeader;
         TS_Adaptation_Field tsAdaptation;
         ts_packet_pid_types ts_packet_type;
