@@ -9,7 +9,7 @@ tivodecode_DEPENDENCIES=$(LIBOBJS) libtivodecode.a
 tdcat_SOURCES=tdcat.cxx getopt_td.hxx
 tdcat_LDADD=$(LIBOBJS) -L. -ltivodecode
 tdcat_DEPENDENCIES=$(LIBOBJS) libtivodecode.a
-EXTRA_DIST=tdconfig.h.win32
+EXTRA_DIST=tdconfig.h.out
 
 clean-local:
 	-rm -rf *.xml *.ts
