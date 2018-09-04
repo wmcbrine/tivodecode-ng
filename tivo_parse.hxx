@@ -45,7 +45,7 @@ TiVoChunkType;
 class TiVoStreamHeader
 {
     public:
-        uint16_t dummy_0006;
+        uint16_t flags;
         uint32_t mpeg_offset;    /* 0-based offset of MPEG stream */
         uint16_t chunks;         /* Number of metadata chunks */
 

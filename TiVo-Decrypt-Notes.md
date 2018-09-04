@@ -13,7 +13,7 @@ The header
         char           filetype[4];
         /* all fields are in network byte order */
         unsigned short dummy_0004;
-        unsigned short dummy_0006;
+        unsigned short flags;
         unsigned short dummy_0008;
         unsigned char  mpeg_offset[4]; /* unsigned int */
         unsigned short chunks;
@@ -27,20 +27,20 @@ Points of interest
 
 - dummy_0004 is unknown, at the moment.
 
-- dummy_0006 & 0x80 is always zero
+- flags & 0x80 is always zero
 
-- dummy_0006 & 0x40 == 0x40 seems to mean NZ/AUS file.
-- dummy_0006 & 0x40 == 0x00 seems to mean US file.
+- flags & 0x40 == 0x40 seems to mean NZ/AUS file.
+- flags & 0x40 == 0x00 seems to mean US file.
 
-- dummy_0006 & 0x20 == 0x20 seems to mean TS file.
-- dummy_0006 & 0x20 == 0x00 seems to mean PS file.
+- flags & 0x20 == 0x20 seems to mean TS file.
+- flags & 0x20 == 0x00 seems to mean PS file.
 
-- dummy_0006 & 0x10 == 0x10 seems to mean HD file.
-- dummy_0006 & 0x10 == 0x00 seems to mean SD file.
+- flags & 0x10 == 0x10 seems to mean HD file.
+- flags & 0x10 == 0x00 seems to mean SD file.
 
-- dummy_0006 & 0x0F == 0x0D seems to mean Series3 unit.
-- dummy_0006 & 0x05 == 0x05 seems to mean DVD capable unit.
-- dummy_0006 & 0x05 == 0x01 seems to mean Series2 unit.
+- flags & 0x0F == 0x0D seems to mean Series3 unit.
+- flags & 0x05 == 0x05 seems to mean DVD capable unit.
+- flags & 0x05 == 0x01 seems to mean Series2 unit.
 
 - dummy_0008 is unknown, at the moment.
 

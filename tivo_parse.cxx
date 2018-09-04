@@ -39,7 +39,7 @@ uint16_t portable_ntohs(uint16_t val)
 
 TiVoStreamHeader::TiVoStreamHeader()
 {
-    dummy_0006  = 0;
+    flags       = 0;
     mpeg_offset = 0;
     chunks      = 0;
 }
@@ -60,7 +60,7 @@ bool TiVoStreamHeader::read(HappyFile *file)
         return false;
     }
 
-    dummy_0006  = portable_ntohs(buffer + 6);
+    flags       = portable_ntohs(buffer + 6);
     mpeg_offset = portable_ntohl(buffer + 10);
     chunks      = portable_ntohs(buffer + 14);
 
@@ -73,7 +73,7 @@ void TiVoStreamHeader::dump()
     {
         const char *unit;
 
-        switch (dummy_0006 & 0x0F)
+        switch (flags & 0x0F)
         {
             case 0x0D : unit = "Series3";     break;
             case 0x05 : unit = "DVD-capable"; break;
@@ -83,14 +83,14 @@ void TiVoStreamHeader::dump()
 
         std::fprintf(stderr, "TiVo Header : \n");
 
-        std::fprintf(stderr, " dummy_0006 : 0x%04x\n", dummy_0006);
+        std::fprintf(stderr, " flags : 0x%04x\n", flags);
         std::fprintf(stderr, "     origin : %s\n",
-                     (dummy_0006 & 0x40) ? "AUS/NZ" : "US" );
+                     (flags & 0x40) ? "AUS/NZ" : "US" );
         std::fprintf(stderr, "     format : %s\n",
-                     (dummy_0006 & 0x20) ? "Transport Stream" :
+                     (flags & 0x20) ? "Transport Stream" :
                      "Program Stream" );
         std::fprintf(stderr, "     source : %s\n",
-                     (dummy_0006 & 0x10) ? "HDTV" : "SDTV");
+                     (flags & 0x10) ? "HDTV" : "SDTV");
 
         std::fprintf(stderr, "  TiVo unit : %s\n", unit);
 
@@ -101,7 +101,7 @@ void TiVoStreamHeader::dump()
 
 TiVoFormatType TiVoStreamHeader::getFormatType()
 {
-    if (dummy_0006 & 0x20)
+    if (flags & 0x20)
     {
         return TIVO_FORMAT_TS;
     }
