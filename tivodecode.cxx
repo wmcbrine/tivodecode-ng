@@ -46,9 +46,8 @@ static void do_help(const char *arg0, int exitval)
         " -x, --no-video,   don't decode video, exit after metadata\n"
         " -V, --version,    print the version information and exit\n"
         " -h, --help,       print this help and exit\n\n"
-        "The file names specified for the output file or the "
-        "tivo file may be -, which\n"
-        "means stdout or stdin respectively\n\n";
+        "The file name specified for the tivo file may be -, which means "
+        "stdin.\n\n";
     std::exit(exitval);
 }
 

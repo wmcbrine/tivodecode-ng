@@ -37,9 +37,8 @@ static void do_help(const char *arg0, int exitval)
         " -h, --help,       print this help and exit\n\n"
         " -1, --chunk-1     output chunk 1 (default if unspecified)\n"
         " -2, --chunk-2     output chunk 2\n\n"
-        "The file names specified for the output file or the tivo "
-        "file may be -, which\n"
-        "means stdout or stdin respectively\n\n";
+        "The file name specified for the tivo file may be -, which means "
+        "stdin.\n\n";
     std::exit(exitval);
 }
 
