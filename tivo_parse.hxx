@@ -52,7 +52,6 @@ class TiVoStreamHeader
         TiVoFormatType getFormatType();
         bool           read(HappyFile *file);
         void           dump();
-        uint16_t       size() { return sizeof(TiVoStreamHeader); };
 
         TiVoStreamHeader();
 };
@@ -69,7 +68,6 @@ class TiVoStreamChunk
         bool     read(HappyFile *file);
         bool     write(HappyFile *file);
         void     dump();
-        uint16_t size() { return sizeof(TiVoStreamChunk) - sizeof(uint8_t*); };
 
         void     setupTuringKey(TuringState *pTuring, uint8_t *pMAK);
         void     setupMetadataKey(TuringState *pTuring, uint8_t *pMAK);

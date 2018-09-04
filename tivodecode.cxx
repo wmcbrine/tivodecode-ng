@@ -190,7 +190,7 @@ int main(int argc, const char **argv)
 
     for (int32_t i = 0; i < header.chunks; i++)
     {
-        hoff_t chunk_start = hfh->tell() + pChunks[i].size();
+        hoff_t chunk_start = hfh->tell() + 12;
 
         if (false == pChunks[i].read(hfh))
         {
