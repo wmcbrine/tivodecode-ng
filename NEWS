@@ -1,3 +1,8 @@
+tivodecode-ng 0.2:
+    * Builds on Windows with MinGW; builds without configure.
+
+    * Removed much cruft; fully C++.
+
 tivodecode-ng 0.1:
     * Improved transport stream support.
 
