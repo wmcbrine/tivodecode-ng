@@ -2,6 +2,8 @@
 # tivodecode-ng Makefile (top) for Microsoft Visual C++
 #------------------------------------------------------
 
+### THIS DOESN'T WORK YET - USE MINGW ###
+
 LIBS = user32.lib advapi32.lib
 COMPILER = $(CC) -nologo -c -O2 -D__WIN32__
 
