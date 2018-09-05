@@ -229,6 +229,8 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                                      decryptLen))
                 {
                     std::perror("Packet decrypt fails");
+                    delete pPkt2;
+                    packets.clear();
                     return false;
                 }
             }

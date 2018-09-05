@@ -13,14 +13,14 @@
 int hexbulk(uint8_t *buf, int n)
 {
     int i = 0;
-    int j = 0;
-    char ch;
-    char hexdigit[5];
-    std::string hexstr = "";
-    std::string strstr = "";
-    
+
     while (i < n)
     {
+        int j = 0;
+        char ch;
+        char hexdigit[5];
+        std::string hexstr = "";
+        std::string strstr = "";
         for (j = 0; (j < COLS) && (i < n); j++, i++)
         {
             ch = buf[i];
