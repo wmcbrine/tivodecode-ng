@@ -29,7 +29,7 @@ ifeq ($(OS),Windows_NT)
 	RM = del
 	SEP = &&
 	E = .exe
-	LFLAGS = -static-libgcc -static-libstdc++
+	LFLAGS = -static
 else
 	RM = rm -f
 	SEP = ;
