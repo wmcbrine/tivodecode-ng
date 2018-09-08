@@ -10,6 +10,7 @@
 
 #ifdef WIN32
 # include <fcntl.h>
+# include <io.h>
 #endif
 
 #include "happyfile.hxx"
