@@ -462,12 +462,6 @@ bool TiVoDecoderTS::process()
         VVERBOSE("Packet : %d\n", pktCounter);
 
         TiVoDecoderTsPacket *pPkt = new TiVoDecoderTsPacket;
-        if (!pPkt)
-        {
-            std::perror("failed to allocate TS packet");
-            return 10;
-        }
-        
         pPkt->packetId = pktCounter;
 
         int readSize = pPkt->read(pFileIn);
@@ -479,7 +473,7 @@ bool TiVoDecoderTS::process()
             std::fprintf(stderr,
                          "Error TS packet read : pkt %d : size read %d",
                          pktCounter, readSize);
-            return 10;
+            return false;
         }
         else if (readSize == 0)
         {
@@ -492,7 +486,7 @@ bool TiVoDecoderTS::process()
             std::fprintf(stderr,
                          "Error TS packet read : pkt %d : size read %d",
                          pktCounter, readSize);
-            return 10;
+            return false;
         }
 
         pktDump_iter = pktDumpMap.find(pktCounter);
@@ -502,7 +496,7 @@ bool TiVoDecoderTS::process()
         {
             std::fprintf(stderr, "packet decode fails : pktId %d\n",
                          pktCounter);
-            return 10;
+            return false;
         }
 
         if (IS_VVERBOSE)
@@ -557,7 +551,7 @@ bool TiVoDecoderTS::process()
             default:
             {
                 std::perror("Unknown Packet Type");
-                return 10;
+                return false;
             }
         }
 
