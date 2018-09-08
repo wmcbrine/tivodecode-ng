@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cinttypes>
+#include <algorithm>
 
 #include "hexlib.hxx"
 #include "tivo_parse.hxx"
@@ -57,7 +58,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
         std::memmove(globalBuffer, globalBuffer + TS_FRAME_SIZE,
                      globalBufferLen);
 
-        size = min(globalBufferLen, TS_FRAME_SIZE);
+        size = std::min(globalBufferLen, TS_FRAME_SIZE);
         std::memcpy(buffer, globalBuffer, size);
     }
     else
