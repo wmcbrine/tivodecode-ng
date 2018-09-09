@@ -33,11 +33,11 @@ class TiVoDecoderPS : public TiVoDecoder
 {
     private:
         uint32_t marker;
-        
+
     public:
         virtual bool process();
         int process_frame(uint8_t code, hoff_t packet_start);
-    
+
         TiVoDecoderPS(TuringState *pTuringState, HappyFile *pInfile,
                       HappyFile *pOutfile);
         ~TiVoDecoderPS();

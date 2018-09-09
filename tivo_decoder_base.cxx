@@ -28,7 +28,7 @@ TiVoDecoder::~TiVoDecoder()
 }
 
 /**
- * This is from analyzing the TiVo directshow dll.  Most of the 
+ * This is from analyzing the TiVo directshow dll.  Most of the
  * parameters I have no idea what they are for.
  *
  * @param arg_0     pointer to the 16 byte private data section of the
@@ -46,7 +46,7 @@ TiVoDecoder::~TiVoDecoder()
  * @param arg_14    no clue
  *
  * @return count of particular bits which are zero.  They should all be 1,
- * so the return value should be zero. I would consider a non-zero 
+ * so the return value should be zero. I would consider a non-zero
  * return an error.
  */
 

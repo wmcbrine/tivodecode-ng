@@ -186,8 +186,8 @@ bool TiVoDecoderTsPacket::decode()
         std::perror("Packet not valid");
         return false;
     }
-    
-    // TS packet streams are big endian, and we may be running on little 
+
+    // TS packet streams are big endian, and we may be running on little
     // endian platform.
 
     payloadOffset = 0;
@@ -229,29 +229,29 @@ bool TiVoDecoderTsPacket::decode()
 
         tsAdaptation.adaptation_field_length = buffer[payloadOffset];
         payloadOffset++;
-        
+
         uint8_t ts_adapt_val = portable_ntohs(&buffer[payloadOffset]);
 
         tsAdaptation.discontinuity_indicator =
             (ts_adapt_val & 0x80) >> 7;
         tsAdaptation.random_access_indicator =
             (ts_adapt_val & 0x40) >> 6;
-        tsAdaptation.elementary_stream_priority_indicator = 
+        tsAdaptation.elementary_stream_priority_indicator =
             (ts_adapt_val & 0x20) >> 5;
         tsAdaptation.pcr_flag = (ts_adapt_val & 0x10) >> 4;
         tsAdaptation.opcr_flag = (ts_adapt_val & 0x08) >> 3;
         tsAdaptation.splicing_point_flag = (ts_adapt_val & 0x04) >> 2;
         tsAdaptation.transport_private_data_flag = (ts_adapt_val & 0x02) >> 1;
         tsAdaptation.adaptation_field_extension_flag = (ts_adapt_val & 0x01);
-        
+
         payloadOffset += (tsAdaptation.adaptation_field_length);
     }
-        
+
     return true;
 }
 
 void TiVoDecoderTsPacket::dump()
-{   
+{
     const char *pidType;
 
     if (!(IS_VVERBOSE))
@@ -301,9 +301,9 @@ void TiVoDecoderTsPacket::dump()
         }
     }
 
-    std::fprintf(stderr, "%-15s : %s   : PktID %d\n", 
+    std::fprintf(stderr, "%-15s : %s   : PktID %d\n",
                  "TS Pkt header", pidType, packetId);
-    std::fprintf(stderr, "%-15s : %s   : Valid Decode %d\n", 
+    std::fprintf(stderr, "%-15s : %s   : Valid Decode %d\n",
                  "TS Pkt header", pidType, isValid);
     std::fprintf(stderr, "%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
                  "sync_byte", tsHeader.sync_byte);
@@ -311,17 +311,17 @@ void TiVoDecoderTsPacket::dump()
                  "transport_error_indicator",
                  tsHeader.transport_error_indicator);
     std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
-                 "payload_unit_start_indicator", 
+                 "payload_unit_start_indicator",
                  tsHeader.payload_unit_start_indicator);
     std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
                  "transport_priority", tsHeader.transport_priority);
     std::fprintf(stderr, "%-15s : %-25.25s : 0x%04x\n", "TS Pkt header",
                  "pid", tsHeader.pid);
     std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
-                 "transport_scrambling_control", 
+                 "transport_scrambling_control",
                  tsHeader.transport_scrambling_control);
     std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
-                 "adaptation_field_exists", 
+                 "adaptation_field_exists",
                  tsHeader.adaptation_field_exists);
     std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Pkt header",
                  "payload_data_exists", tsHeader.payload_data_exists);
@@ -331,16 +331,16 @@ void TiVoDecoderTsPacket::dump()
     if (tsHeader.adaptation_field_exists)
     {
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                     "adaptation_field_length", 
+                     "adaptation_field_length",
                      tsAdaptation.adaptation_field_length);
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                     "discontinuity_indicator", 
+                     "discontinuity_indicator",
                      tsAdaptation.discontinuity_indicator);
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                     "random_access_indicator", 
+                     "random_access_indicator",
                      tsAdaptation.random_access_indicator);
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                     "elementary_stream_priority_indicator", 
+                     "elementary_stream_priority_indicator",
                      tsAdaptation.elementary_stream_priority_indicator);
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
                      "pcr_flag", tsAdaptation.pcr_flag);
@@ -349,10 +349,10 @@ void TiVoDecoderTsPacket::dump()
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
                      "splicing_point_flag", tsAdaptation.splicing_point_flag);
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                     "transport_private_data_flag", 
+                     "transport_private_data_flag",
                      tsAdaptation.transport_private_data_flag);
         std::fprintf(stderr, "%-15s : %-25.25s : %06d\n", "TS Adaptation",
-                     "adaptation_field_extension_flag", 
+                     "adaptation_field_extension_flag",
                      tsAdaptation.adaptation_field_extension_flag);
     }
 
@@ -404,7 +404,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
     if (IS_VVVERBOSE)
     {
         std::fprintf(stderr, "---Decrypted transport packet\n");
-    
+
         hexbulk(pBuffer, bufferLen);
     }
 

@@ -116,7 +116,7 @@ int main(int argc, const char **argv)
 
     if (!makgiven)
         makgiven = get_mak_from_conf_file(mak);
-        
+
     if (td_optind < argc)
     {
         tivofile = argv[td_optind++];

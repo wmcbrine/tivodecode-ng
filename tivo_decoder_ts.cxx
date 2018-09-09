@@ -176,13 +176,13 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         patData.program_map_pid = pat_field & 0x1FFF;
         VERBOSE("%-15s : Program PID : 0x%x (%d)\n", "TS ProgAssocTbl",
                 patData.program_map_pid, patData.program_map_pid );
-                
+
         // locate previous stream definition
         // if lookup fails, create a new stream
         TsStreams_it stream_iter = streams.find(patData.program_map_pid);
         if (stream_iter == streams.end())
         {
-            VERBOSE("Creating new stream for PMT PID 0x%04x\n", 
+            VERBOSE("Creating new stream for PMT PID 0x%04x\n",
                     patData.program_map_pid);
 
             TiVoDecoderTsStream *pStream =
@@ -193,7 +193,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         }
         else
         {
-            VERBOSE("Re-use existing stream for PMT PID 0x%04x\n", 
+            VERBOSE("Re-use existing stream for PMT PID 0x%04x\n",
                     patData.program_map_pid);
         }
 
@@ -530,7 +530,7 @@ bool TiVoDecoderTS::process()
                          stream_iter != streams.end(); stream_iter++)
                     {
                         pStream = stream_iter->second;
-                        if ((pPkt->getPID() == pStream->stream_pid) && 
+                        if ((pPkt->getPID() == pStream->stream_pid) &&
                             (TS_STREAM_TYPE_PRIVATE_DATA ==
                              pStream->stream_type))
                         {
@@ -569,7 +569,7 @@ bool TiVoDecoderTS::process()
             if (false == pStream->addPkt(pPkt))
             {
                 std::fprintf(stderr,
-                    "Failed to add packet to stream : pktId %d\n", 
+                    "Failed to add packet to stream : pktId %d\n",
                     pPkt->packetId);
             }
             else

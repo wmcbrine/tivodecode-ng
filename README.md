@@ -33,7 +33,7 @@ is no %USERPROFILE% set.
 Usage
 -----
 
-tivodecode is the main executable, while tdcat is also provided, for an 
+tivodecode is the main executable, while tdcat is also provided, for an
 easier way to handle the metadata.
 
 

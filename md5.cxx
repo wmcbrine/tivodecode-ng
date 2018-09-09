@@ -356,7 +356,7 @@ void MD5::calc(uint8_t *b64)
     ROUND2(C, D, A, B, 7, Sg, 31);
     ROUND2(B, C, D, A, 12, Sh, 32);
 
-    
+
     ROUND3(A, B, C, D, 5, Si, 33);
     ROUND3(D, A, B, C, 8, Sj, 34);
     ROUND3(C, D, A, B, 11, Sk, 35);

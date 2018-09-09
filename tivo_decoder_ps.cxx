@@ -38,11 +38,11 @@ static packet_tag_info packet_tags[] = {
 };
 
 TiVoDecoderPS::TiVoDecoderPS(
-        TuringState *pTuringState, 
-        HappyFile *pInfile, 
+        TuringState *pTuringState,
+        HappyFile *pInfile,
         HappyFile *pOutfile) :
-    TiVoDecoder(pTuringState, 
-        pInfile, 
+    TiVoDecoder(pTuringState,
+        pInfile,
         pOutfile)
 {
     marker = 0xFFFFFFFF;
@@ -62,7 +62,7 @@ bool TiVoDecoderPS::process()
 
     bool first = true;
     uint8_t byte = 0x00;
-    
+
     while (running)
     {
         if ((marker & 0xFFFFFF00) == 0x100)
@@ -102,7 +102,7 @@ bool TiVoDecoderPS::process()
         }
 
         first = false;
-    }    
+    }
 
     VERBOSE("PS Process\n");
     return true;
@@ -114,7 +114,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
         uint64_t align;
         uint8_t packet_buffer[65536 + sizeof(uint64_t) + 2];
     } aligned_buf;
-    
+
     uint8_t bytes[32];
     int looked_ahead = 0;
     int i;
@@ -146,7 +146,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
                     //            copyright  dsm_trick
                     //              copy       addtl copy
 
-                    if ((bytes[2] >> 6) != 0x2) 
+                    if ((bytes[2] >> 6) != 0x2)
                     {
                         VERBOSE("PES (0x%02X) header mark != 0x2: 0x%x "
                                 "(is this an MPEG2-PS file?)\n",
