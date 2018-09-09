@@ -1,9 +1,7 @@
-#-----------------------------
-# tivodecode-ng Makefile (top)
-#-----------------------------
-
-# For building without configure -- copy tdconfig.h.out to tdconfig.h,
-# then do "make -f Makefile.gcc".
+#-----------------------------------------------
+# tivodecode-ng Makefile for GCC/GNU make et al.
+# Usage: mingw32-make -f Makefile.gcc
+#-----------------------------------------------
 
 # General options (passed to mmail/Makefile and interfac/Makefile). POST
 # is for any post-processing that needs doing.

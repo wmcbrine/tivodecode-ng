@@ -1,4 +1,5 @@
-/* tdconfig.h.  Generated from tdconfig.h.in by configure.  */
+/* For use with Makefile.gcc or Makefile.msv -- will be overwritten by
+   configure. */
 
 /* Name of package */
 #define PACKAGE "tivodecode-ng"

@@ -1,6 +1,7 @@
-#------------------------------------------------------
-# tivodecode-ng Makefile (top) for Microsoft Visual C++
-#------------------------------------------------------
+#------------------------------------------------
+# tivodecode-ng Makefile for Microsoft Visual C++
+# Usage: nmake -f Makefile.msv
+#------------------------------------------------
 
 LIBS = user32.lib advapi32.lib
 COMPILER = $(CC) -nologo -c -O2 -DWIN32 -EHsc

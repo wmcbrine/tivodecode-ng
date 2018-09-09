@@ -1,4 +1,4 @@
-tivodecode-ng version 0.2
+tivodecode-ng version 0.3
 =========================
 
 Copyright 2006-2018, Jeremy Drake et al.
@@ -21,7 +21,6 @@ You can build tivodecode-ng with autoconf:
 
 Or without:
 
-    cp tdconfig.h.out tdconfig,h
     make -f Makefile.gcc
 
 You can specify the MAK either on the command line (which takes

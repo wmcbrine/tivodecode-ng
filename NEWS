@@ -1,3 +1,6 @@
+tivodecode-ng 0.3:
+    * Builds on Windows with MSVC; no manual copying of tdconfig.h.
+
 tivodecode-ng 0.2:
     * Builds on Windows with MinGW; builds without configure.
 
