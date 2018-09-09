@@ -174,11 +174,6 @@ int main(int argc, const char **argv)
     header.dump();
 
     TiVoStreamChunk *pChunks = new TiVoStreamChunk[header.chunks];
-    if (NULL == pChunks)
-    {
-        std::perror("allocate TiVoStreamChunks");
-        return 9;
-    }
 
     for (int32_t i = 0; i < header.chunks; i++)
     {
