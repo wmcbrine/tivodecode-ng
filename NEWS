@@ -1,6 +1,9 @@
 tivodecode-ng 0.3:
     * Builds on Windows with MSVC; no manual copying of tdconfig.h.
 
+    * Fix for recovery from decrypt error; fix for bad MAK returning
+      success. By Hugh Mackworth.
+
 tivodecode-ng 0.2:
     * Builds on Windows with MinGW; builds without configure.
 
