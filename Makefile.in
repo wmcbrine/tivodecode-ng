@@ -137,7 +137,7 @@ ARFLAGS = cru
 AM_V_AR = $(am__v_AR_@AM_V@)
 am__v_AR_ = $(am__v_AR_@AM_DEFAULT_V@)
 am__v_AR_0 = @echo "  AR      " $@;
-am__v_AR_1 =
+am__v_AR_1 = 
 libtivodecode_a_AR = $(AR) $(ARFLAGS)
 libtivodecode_a_LIBADD =
 am_libtivodecode_a_OBJECTS = hexlib.$(OBJEXT) md5.$(OBJEXT) \
@@ -160,11 +160,11 @@ am__v_P_1 = :
 AM_V_GEN = $(am__v_GEN_@AM_V@)
 am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
 am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 =
+am__v_GEN_1 = 
 AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
-am__v_at_1 =
+am__v_at_1 = 
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -174,26 +174,26 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 AM_V_CXX = $(am__v_CXX_@AM_V@)
 am__v_CXX_ = $(am__v_CXX_@AM_DEFAULT_V@)
 am__v_CXX_0 = @echo "  CXX     " $@;
-am__v_CXX_1 =
+am__v_CXX_1 = 
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
-am__v_CXXLD_1 =
+am__v_CXXLD_1 = 
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 AM_V_CC = $(am__v_CC_@AM_V@)
 am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
 am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 =
+am__v_CC_1 = 
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 AM_V_CCLD = $(am__v_CCLD_@AM_V@)
 am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
 am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 =
+am__v_CCLD_1 = 
 SOURCES = $(libtivodecode_a_SOURCES) $(tdcat_SOURCES) \
 	$(tivodecode_SOURCES)
 DIST_SOURCES = $(libtivodecode_a_SOURCES) $(tdcat_SOURCES) \
@@ -227,7 +227,7 @@ CTAGS = ctags
 CSCOPE = cscope
 AM_RECURSIVE_TARGETS = cscope
 am__DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/tdconfig.h.in \
-	AUTHORS COPYING ChangeLog INSTALL NEWS README compile depcomp \
+	AUTHORS COPYING ChangeLog INSTALL NEWS compile depcomp \
 	install-sh missing
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
@@ -393,7 +393,7 @@ tdconfig.h: stamp-h1
 stamp-h1: $(srcdir)/tdconfig.h.in $(top_builddir)/config.status
 	@rm -f stamp-h1
 	cd $(top_builddir) && $(SHELL) ./config.status tdconfig.h
-$(srcdir)/tdconfig.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(srcdir)/tdconfig.h.in: @MAINTAINER_MODE_TRUE@ $(am__configure_deps) 
 	($(am__cd) $(top_srcdir) && $(AUTOHEADER))
 	rm -f stamp-h1
 	touch $@
@@ -432,7 +432,7 @@ uninstall-libLIBRARIES:
 clean-libLIBRARIES:
 	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
 
-libtivodecode.a: $(libtivodecode_a_OBJECTS) $(libtivodecode_a_DEPENDENCIES) $(EXTRA_libtivodecode_a_DEPENDENCIES)
+libtivodecode.a: $(libtivodecode_a_OBJECTS) $(libtivodecode_a_DEPENDENCIES) $(EXTRA_libtivodecode_a_DEPENDENCIES) 
 	$(AM_V_at)-rm -f libtivodecode.a
 	$(AM_V_AR)$(libtivodecode_a_AR) libtivodecode.a $(libtivodecode_a_OBJECTS) $(libtivodecode_a_LIBADD)
 	$(AM_V_at)$(RANLIB) libtivodecode.a
@@ -479,11 +479,11 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
-tdcat$(EXEEXT): $(tdcat_OBJECTS) $(tdcat_DEPENDENCIES) $(EXTRA_tdcat_DEPENDENCIES)
+tdcat$(EXEEXT): $(tdcat_OBJECTS) $(tdcat_DEPENDENCIES) $(EXTRA_tdcat_DEPENDENCIES) 
 	@rm -f tdcat$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(tdcat_OBJECTS) $(tdcat_LDADD) $(LIBS)
 
-tivodecode$(EXEEXT): $(tivodecode_OBJECTS) $(tivodecode_DEPENDENCIES) $(EXTRA_tivodecode_DEPENDENCIES)
+tivodecode$(EXEEXT): $(tivodecode_OBJECTS) $(tivodecode_DEPENDENCIES) $(EXTRA_tivodecode_DEPENDENCIES) 
 	@rm -f tivodecode$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(tivodecode_OBJECTS) $(tivodecode_LDADD) $(LIBS)
 
