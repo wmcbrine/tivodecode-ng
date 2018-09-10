@@ -6,9 +6,9 @@
 # General options. POST is for any post-processing that needs doing.
 
 ifeq ($(DEBUG),Y)
-	OPTS = -g -Wall -Wextra -pedantic -Wno-variadic-macros
+	OPTS = -g -Wall -Wextra -pedantic
 else
-	OPTS = -O2 -Wall -pedantic -Wno-variadic-macros
+	OPTS = -O2 -Wall -pedantic
 	POST = strip $@
 endif
 
