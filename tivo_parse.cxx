@@ -15,7 +15,7 @@ bool o_pkt_dump;
 
 uint32_t get32(uint8_t *pVal)
 {
-    return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
+    return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2] << 8) | pVal[3];
 }
 
 uint16_t get16(uint8_t *pVal)
