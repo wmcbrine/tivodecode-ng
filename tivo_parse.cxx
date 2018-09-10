@@ -13,23 +13,23 @@
 int o_verbose;
 bool o_pkt_dump;
 
-uint32_t portable_ntohl(uint8_t *pVal)
+uint32_t get32(uint8_t *pVal)
 {
     return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
 }
 
-uint32_t portable_ntohl(uint32_t val)
+uint32_t get32(uint32_t val)
 {
     uint8_t *pVal = (uint8_t*) &val;
     return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
 }
 
-uint16_t portable_ntohs(uint8_t *pVal)
+uint16_t get16(uint8_t *pVal)
 {
     return (pVal[0] << 8) | pVal[1];
 }
 
-uint16_t portable_ntohs(uint16_t val)
+uint16_t get16(uint16_t val)
 {
     uint8_t *pVal = (uint8_t*) &val;
     return (pVal[0] << 8) | pVal[1];
@@ -60,9 +60,9 @@ bool TiVoStreamHeader::read(HappyFile *file)
         return false;
     }
 
-    flags       = portable_ntohs(buffer + 6);
-    mpeg_offset = portable_ntohl(buffer + 10);
-    chunks      = portable_ntohs(buffer + 14);
+    flags       = get16(buffer + 6);
+    mpeg_offset = get32(buffer + 10);
+    chunks      = get16(buffer + 14);
 
     return true;
 }
@@ -138,10 +138,10 @@ bool TiVoStreamChunk::read(HappyFile *file)
         return false;
     }
 
-    chunkSize   = portable_ntohl(buffer);
-    dataSize    = portable_ntohl(buffer + 4);
-    id          = portable_ntohs(buffer + 8);
-    type        = portable_ntohs(buffer + 10);
+    chunkSize   = get32(buffer);
+    dataSize    = get32(buffer + 4);
+    id          = get16(buffer + 8);
+    type        = get16(buffer + 10);
 
     uint16_t readSize = chunkSize - 12;
     pData = new uint8_t[readSize];

@@ -5,8 +5,8 @@
 #include "Turing.hxx"
 #include "turing_stream.hxx"
 
-extern uint16_t portable_ntohs(uint8_t *pVal);
-extern uint32_t portable_ntohl(uint8_t *pVal);
+extern uint16_t get16(uint8_t *pVal);
+extern uint32_t get32(uint8_t *pVal);
 
 #define static_strlen(str) (sizeof(str) - 1)
 

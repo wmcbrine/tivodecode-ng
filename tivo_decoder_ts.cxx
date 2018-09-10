@@ -127,7 +127,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         pPtr++;
     }
 
-    pat_field = portable_ntohs(pPtr);
+    pat_field = get16(pPtr);
     section_length = pat_field & 0x03ff;
     pPtr += 2;
 
@@ -166,12 +166,12 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
 
     while (section_length > 0)
     {
-        pat_field = portable_ntohs(pPtr);
+        pat_field = get16(pPtr);
         VERBOSE("%-15s : Program Num : %d\n", "TS ProgAssocTbl", pat_field);
         pPtr += 2;
         section_length -= 2;
 
-        pat_field = portable_ntohs(pPtr);
+        pat_field = get16(pPtr);
 
         patData.program_map_pid = pat_field & 0x1FFF;
         VERBOSE("%-15s : Program PID : 0x%x (%d)\n", "TS ProgAssocTbl",
@@ -227,7 +227,7 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
     // advance past table_id field
     pPtr++;
 
-    pmt_field = portable_ntohs(pPtr);
+    pmt_field = get16(pPtr);
     section_length = pmt_field & 0x0fff;
 
     // advance past section_length
@@ -282,14 +282,14 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
         pPtr++;
         section_length--;
 
-        pmt_field = portable_ntohs(pPtr);
+        pmt_field = get16(pPtr);
         streamPid = pmt_field & 0x1fff;
 
         // advance past elementary field
         pPtr += 2;
         section_length -= 2;
 
-        pmt_field      = portable_ntohs(pPtr);
+        pmt_field      = get16(pPtr);
         es_info_length = pmt_field & 0x0fff;
 
         // advance past ES info length field
@@ -356,7 +356,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 
     VERBOSE("\n");
 
-    validator = portable_ntohl(pPtr);
+    validator = get32(pPtr);
     if (validator != 0x5469566f)
     {
         std::perror("Invalid TiVo private data validator");
@@ -383,7 +383,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 
     while (stream_bytes > 0)
     {
-        pid = portable_ntohs(pPtr);
+        pid = get16(pPtr);
         stream_bytes -= 2;
         pPtr += 2;  // advance past pid
 

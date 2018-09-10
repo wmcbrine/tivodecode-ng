@@ -250,9 +250,9 @@ class TiVoDecoderTsPacket
         inline bool   isTsPacket()
             { return (buffer[0] == 0x47) ? true : false; }
         inline uint16_t getPID()
-            { uint16_t val = portable_ntohs(&buffer[1]); return val & 0x1FFF; }
+            { uint16_t val = get16(&buffer[1]); return val & 0x1FFF; }
         inline bool   getPayloadStartIndicator()
-            { uint16_t val = portable_ntohs(&buffer[1]); return (val & 0x4000) ?
+            { uint16_t val = get16(&buffer[1]); return (val & 0x4000) ?
               true: false; }
         inline bool   getScramblingControl()
             { return (buffer[3] &  0xC0) ? true : false; }

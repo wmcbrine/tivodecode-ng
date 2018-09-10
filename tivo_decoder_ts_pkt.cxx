@@ -193,7 +193,7 @@ bool TiVoDecoderTsPacket::decode()
     payloadOffset = 0;
     std::memset(&tsHeader, 0, sizeof(TS_Header));
 
-    uint32_t ts_hdr_val = portable_ntohl(&buffer[payloadOffset]);
+    uint32_t ts_hdr_val = get32(&buffer[payloadOffset]);
     payloadOffset += 4;
 
     tsHeader.sync_byte                    = (ts_hdr_val & 0xff000000) >> 24;
@@ -230,7 +230,7 @@ bool TiVoDecoderTsPacket::decode()
         tsAdaptation.adaptation_field_length = buffer[payloadOffset];
         payloadOffset++;
 
-        uint8_t ts_adapt_val = portable_ntohs(&buffer[payloadOffset]);
+        uint8_t ts_adapt_val = get16(&buffer[payloadOffset]);
 
         tsAdaptation.discontinuity_indicator =
             (ts_adapt_val & 0x80) >> 7;
