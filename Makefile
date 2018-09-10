@@ -1,10 +1,9 @@
 #-----------------------------------------------
 # tivodecode-ng Makefile for GCC/GNU make et al.
-# Usage: mingw32-make -f Makefile.gcc
+# This file will be overwritten by configure.
 #-----------------------------------------------
 
-# General options (passed to mmail/Makefile and interfac/Makefile). POST
-# is for any post-processing that needs doing.
+# General options. POST is for any post-processing that needs doing.
 
 ifeq ($(DEBUG),Y)
 	OPTS = -g -Wall -Wextra -pedantic -Wno-variadic-macros
