@@ -18,20 +18,8 @@ uint32_t get32(uint8_t *pVal)
     return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
 }
 
-uint32_t get32(uint32_t val)
-{
-    uint8_t *pVal = (uint8_t*) &val;
-    return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2]<<8) | pVal[3];
-}
-
 uint16_t get16(uint8_t *pVal)
 {
-    return (pVal[0] << 8) | pVal[1];
-}
-
-uint16_t get16(uint16_t val)
-{
-    uint8_t *pVal = (uint8_t*) &val;
     return (pVal[0] << 8) | pVal[1];
 }
 
