@@ -1,8 +1,6 @@
 #ifndef TIVO_DECODER_PS_HXX_
 #define TIVO_DECODER_PS_HXX_
 
-#include <cstdio>
-
 #include "tivo_decoder_base.hxx"
 
 //============================

@@ -66,7 +66,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
         size = pInfile->read(buffer, TS_FRAME_SIZE);
         globalBufferLen = 0;
 
-        VVERBOSE("Read handler : size %d\n", size);
+        if (IS_VVERBOSE)
+            std::cerr << "Read handler : size " << size << "\n";
     }
 
     if (0 == size)
@@ -121,7 +122,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             {
                 size = pInfile->read(globalBuffer, TS_FRAME_SIZE * 3);
 
-                VVERBOSE("Read handler : size %d\n", size);
+                if (IS_VVERBOSE)
+                    std::cerr << "Read handler : size " << size << "\n";
 
                 if (0 == size)
                 {
@@ -129,9 +131,9 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
                     isValid = true;
                     return 0;
                 }
-                else if ((TS_FRAME_SIZE*3) != size)
+                else if ((TS_FRAME_SIZE * 3) != size)
                 {
-                    std::cerr << "Read error : TS Frame Size*3 : "
+                    std::cerr << "Read error : TS Frame Size * 3 : "
                               << TS_FRAME_SIZE * 3 << ", Size Read "
                               << size << "\n";
 
@@ -374,7 +376,10 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
         std::cerr << "BBB : stream_id " << stream_id << ", blockno "
                   << turing_stuff.block_no << ", crypted "
                   << turing_stuff.crypted << "\n";
-    VERBOSE("%" PRId64 " : stream_id: %x, block_no: %d\n", pParent->pFileIn->tell(), stream_id, turing_stuff.block_no);
+    if (IS_VERBOSE)
+        std::cerr << pParent->pFileIn->tell() << " : stream_id: "
+                  << stream_id << ", block_no: "
+                  << turing_stuff.block_no << "\n";
 
     pParent->pTuring->prepare_frame(stream_id, turing_stuff.block_no);
 

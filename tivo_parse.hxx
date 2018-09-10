@@ -17,9 +17,9 @@ extern bool o_pkt_dump;
 #define IS_VVERBOSE    ( (o_pkt_dump) || (o_verbose >= 2) )
 #define IS_VVVERBOSE   ( (o_pkt_dump) || (o_verbose >= 3) )
 
-#define VERBOSE(...)   if (IS_VERBOSE)   { std::fprintf(stderr, __VA_ARGS__); }
-#define VVERBOSE(...)  if (IS_VVERBOSE)  { std::fprintf(stderr, __VA_ARGS__); }
-#define VVVERBOSE(...) if (IS_VVVERBOSE) { std::fprintf(stderr, __VA_ARGS__); }
+#define VERBOSE(s)   if (IS_VERBOSE)   { std::cerr << (s); }
+#define VVERBOSE(s)  if (IS_VVERBOSE)  { std::cerr << (s); }
+#define VVVERBOSE(s) if (IS_VVVERBOSE) { std::cerr << (s); }
 
 /*
  * Initial header formats lifted from ezrec's posting:

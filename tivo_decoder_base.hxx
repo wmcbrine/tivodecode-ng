@@ -1,8 +1,6 @@
 #ifndef TIVO_DECODER_HXX_
 #define TIVO_DECODER_HXX_
 
-#include <cstdio>
-
 #include "tivo_parse.hxx"
 #include "turing_stream.hxx"
 

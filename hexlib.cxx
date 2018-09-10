@@ -2,7 +2,6 @@
 /* Copyright C Qualcomm Inc 1997 */
 
 #include <cctype>
-#include <cstdio>
 #include <iostream>
 #include <string>
 

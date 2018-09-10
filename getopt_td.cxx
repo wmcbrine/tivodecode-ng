@@ -35,7 +35,6 @@
 
 #include "getopt_td.hxx"
 
-#include <cstdio>
 #include <cstring>
 
 int td_optind = 1;

@@ -4,8 +4,6 @@
  * See COPYING file for license terms
  */
 
-#include <cstdio>
-
 #include "tivo_decoder_base.hxx"
 
 TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,

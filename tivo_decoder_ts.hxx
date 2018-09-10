@@ -1,8 +1,6 @@
 #ifndef TIVO_DECODER_TS_HXX_
 #define TIVO_DECODER_TS_HXX_
 
-#include <cstdio>
-
 #include <deque>
 #include <map>
 using namespace std;

@@ -6,7 +6,6 @@
  * derived from mpegcat, copyright 2006 Kees Cook, used with permission
  */
 
-#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
