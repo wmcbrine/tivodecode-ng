@@ -4,8 +4,8 @@
  * See COPYING file for license terms
  */
 
-#include <cstdio>
 #include <cstring>
+#include <iostream>
 
 #include "hexlib.hxx"
 #include "tivo_parse.hxx"
@@ -92,8 +92,8 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         bool pesParse = getPesHdrLength(pesDecodeBuffer, pesDecodeBufferLen);
         if (false == pesParse)
         {
-            std::fprintf(stderr, "failed to parse PES headers : pktID %d\n",
-                         pPkt->packetId);
+            std::cerr << "failed to parse PES headers : pktID "
+                      << pPkt->packetId << "\n";
             return false;
         }
 

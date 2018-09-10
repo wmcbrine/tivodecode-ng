@@ -4,8 +4,8 @@
  * See COPYING file for license terms
  */
 
-#include <cstdio>
 #include <cstring>
+#include <iostream>
 
 #include "hexlib.hxx"
 #include "tivo_parse.hxx"
@@ -69,21 +69,17 @@ void TiVoStreamHeader::dump()
             default   : unit = "Unknown";
         }
 
-        std::fprintf(stderr, "TiVo Header : \n");
-
-        std::fprintf(stderr, " flags : 0x%04x\n", flags);
-        std::fprintf(stderr, "     origin : %s\n",
-                     (flags & 0x40) ? "AUS/NZ" : "US" );
-        std::fprintf(stderr, "     format : %s\n",
-                     (flags & 0x20) ? "Transport Stream" :
-                     "Program Stream" );
-        std::fprintf(stderr, "     source : %s\n",
-                     (flags & 0x10) ? "HDTV" : "SDTV");
-
-        std::fprintf(stderr, "  TiVo unit : %s\n", unit);
-
-        std::fprintf(stderr, "mpeg_offset : %d\n", mpeg_offset);
-        std::fprintf(stderr, "chunks      : %d\n\n", chunks);
+        std::cerr << "TiVo Header : \n"
+                  << " flags : " << flags
+                  << "\n     origin : "
+                  << ((flags & 0x40) ? "AUS/NZ" : "US")
+                  << "\n     format : "
+                  << ((flags & 0x20) ? "Transport Stream" : "Program Stream")
+                  << "\n     source : "
+                  << ((flags & 0x10) ? "HDTV" : "SDTV")
+                  << "\n  TiVo unit : " << unit
+                  << "\nmpeg_offset : " << mpeg_offset
+                  << "\nchunks      : " << chunks << "\n\n";
     }
 }
 
@@ -155,16 +151,14 @@ void TiVoStreamChunk::dump()
 {
     if (IS_VERBOSE)
     {
-        std::fprintf(stderr, "TiVo Chunk  : (0x%08x) %d\n", id, id);
-        std::fprintf(stderr, "chunkSize   : (0x%08x) %d\n", chunkSize,
-                     chunkSize);
-        std::fprintf(stderr, "dataSize    : (0x%08x) %d\n", dataSize,
-                     dataSize);
-        std::fprintf(stderr, "type        : (0x%08x) %d\n", type, type);
+        std::cerr << "TiVo Chunk  : " << id
+                  << "\nchunkSize   : " << chunkSize
+                  << "\ndataSize    : " << dataSize
+                  << "\ntype        : " << type << "\n\n";
 
         hexbulk(pData, dataSize);
 
-        std::fprintf(stderr, "\n\n" );
+        std::cerr << "\n\n";
     }
 }
 

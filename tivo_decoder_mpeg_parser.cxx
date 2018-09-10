@@ -4,7 +4,7 @@
  * See COPYING file for license terms
  */
 
-#include <cstdio>
+#include <iostream>
 
 #include "tivo_decoder_mpeg_parser.hxx"
 
@@ -115,7 +115,7 @@ uint32_t TiVoDecoder_MPEG2_Parser::nextbits(uint32_t n)
         if (nread == 0)
         {
             _end_of_file = true;
-            std::fprintf(stderr, "EOF\n");
+            std::cerr << "EOF\n";
             return -1;
         }
 

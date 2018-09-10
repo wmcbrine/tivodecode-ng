@@ -4,8 +4,8 @@
  * See COPYING file for license terms
  */
 
-#include <cstdio>
 #include <cstring>
+#include <iostream>
 
 #include "hexlib.hxx"
 #include "tivo_parse.hxx"
@@ -470,9 +470,8 @@ bool TiVoDecoderTS::process()
 
         if (readSize < 0)
         {
-            std::fprintf(stderr,
-                         "Error TS packet read : pkt %d : size read %d",
-                         pktCounter, readSize);
+            std::cerr << "Error TS packet read : pkt " << pktCounter
+                      << " : size read " << readSize;
             return false;
         }
         else if (readSize == 0)
@@ -483,9 +482,8 @@ bool TiVoDecoderTS::process()
         }
         else if (TS_FRAME_SIZE != readSize)
         {
-            std::fprintf(stderr,
-                         "Error TS packet read : pkt %d : size read %d",
-                         pktCounter, readSize);
+            std::cerr << "Error TS packet read : pkt " << pktCounter
+                      << " : size read " << readSize;
             return false;
         }
 
@@ -494,8 +492,8 @@ bool TiVoDecoderTS::process()
 
         if (false == pPkt->decode())
         {
-            std::fprintf(stderr, "packet decode fails : pktId %d\n",
-                         pktCounter);
+            std::cerr << "packet decode fails : pktId "
+                      << pktCounter << "\n";
             return false;
         }
 
@@ -568,9 +566,8 @@ bool TiVoDecoderTS::process()
             pStream = stream_iter->second;
             if (false == pStream->addPkt(pPkt))
             {
-                std::fprintf(stderr,
-                    "Failed to add packet to stream : pktId %d\n",
-                    pPkt->packetId);
+                std::cerr << "Failed to add packet to stream : pktId "
+                          << pPkt->packetId << "\n";
             }
             else
             {
