@@ -175,7 +175,7 @@ int main(int argc, const char **argv)
 
     TiVoStreamChunk *pChunks = new TiVoStreamChunk[header.chunks];
 
-    for (int32_t i = 0; i < header.chunks; i++)
+    for (uint16_t i = 0; i < header.chunks; i++)
     {
         hoff_t chunk_start = hfh->tell() + 12;
 

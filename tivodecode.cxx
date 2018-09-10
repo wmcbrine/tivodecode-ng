@@ -182,7 +182,7 @@ int main(int argc, const char **argv)
 
     TiVoStreamChunk *pChunks = new TiVoStreamChunk[header.chunks];
 
-    for (int32_t i = 0; i < header.chunks; i++)
+    for (uint16_t i = 0; i < header.chunks; i++)
     {
         hoff_t chunk_start = hfh->tell() + 12;
 
@@ -212,7 +212,7 @@ int main(int argc, const char **argv)
         if (o_dump_metadata)
         {
             char buf[27];
-            std::sprintf(buf, "chunk-%02d-%04x.xml", i, pChunks[i].id);
+            std::sprintf(buf, "chunk-%02u-%04x.xml", i, pChunks[i].id);
 
             HappyFile *chunkfh = new HappyFile;
             if (!chunkfh->open(buf, "wb"))
