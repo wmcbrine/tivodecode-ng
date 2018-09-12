@@ -1,4 +1,4 @@
-tivodecode-ng version 0.3
+tivodecode-ng version 0.4
 =========================
 
 Copyright 2006-2018, Jeremy Drake et al.
@@ -19,9 +19,13 @@ You can build tivodecode-ng with autoconf:
     make
     make install
 
-Or without:
+or without, if the default makefile is compatible with your system:
 
-    make -f Makefile.gcc
+    make
+
+or with Microsoft Visual C++:
+
+    nmake -f Makefile.msv
 
 You can specify the MAK either on the command line (which takes
 precedence), or in a config file called "~/.tivodecode_mak". On Windows,
