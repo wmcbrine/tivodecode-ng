@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 #include <string>
 
 #include "cli_common.hxx"
@@ -20,7 +21,6 @@ static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 
 bool get_mak_from_conf_file(char *mak)
 {
-    FILE *mak_file = NULL;
     const char *home_dir = std::getenv(HOME_ENV_NAME);
 
     if (!home_dir)
@@ -29,38 +29,14 @@ bool get_mak_from_conf_file(char *mak)
     std::string mak_fname = home_dir;
     mak_fname += MAK_DOTFILE_NAME;
 
-    if ((mak_file = std::fopen(mak_fname.c_str(), "r")))
+    std::ifstream mak_file(mak_fname);
+    if (mak_file.good())
     {
-        if (std::fread(mak, 1, 11, mak_file) >= 10)
-        {
-            int i;
-            for (i = 11; i >= 10 && (mak[i] == '\0' || std::isspace(mak[i]));
-                 --i)
-            {
-                mak[i] = '\0';
-            }
-        }
-        else if (std::ferror(mak_file))
-        {
-            std::perror("reading mak config file");
-            goto fail;
-        }
-        else
-        {
-            std::cerr << "mak too short in mak config file\n";
-            goto fail;
-        }
-
-        std::fclose(mak_file);
+        mak_file.get(mak, 11);
+        if (mak_file.gcount() >= 10)
+            return true;
     }
-    else
-        goto fail;
 
-    return true;
-
-fail:
-    if (mak_file)
-        std::fclose(mak_file);
     return false;
 }
 
