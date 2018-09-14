@@ -268,5 +268,3 @@ void TuringState::dump()
 
     std::cerr << "\n\n";
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

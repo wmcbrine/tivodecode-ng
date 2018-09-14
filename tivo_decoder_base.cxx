@@ -116,5 +116,3 @@ int TiVoDecoder::do_header(uint8_t *arg_0, int *block_no, int *arg_8,
 
     return var_4;
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

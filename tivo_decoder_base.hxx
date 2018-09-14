@@ -39,5 +39,3 @@ class TiVoDecoder
 };
 
 #endif /* TIVO_DECODER_HXX_ */
-
-/* vi:set ai ts=4 sw=4 expandtab: */

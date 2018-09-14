@@ -341,5 +341,3 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
 
     return -1;
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

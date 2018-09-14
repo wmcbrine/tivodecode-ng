@@ -390,5 +390,3 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
 
     return true;
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

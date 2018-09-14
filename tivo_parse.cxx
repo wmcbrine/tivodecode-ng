@@ -194,5 +194,3 @@ void TiVoStreamChunk::decryptMetadata(TuringState *pTuring, uint16_t offsetVal)
 //    std::cerr << "METADATA TURING DECRYPT : AFTER DECRYPT\n";
 //    pTuring->dump();
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

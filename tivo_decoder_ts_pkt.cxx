@@ -401,5 +401,3 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
 
     return true;
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

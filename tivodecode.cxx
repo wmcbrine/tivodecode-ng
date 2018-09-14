@@ -268,5 +268,3 @@ int main(int argc, const char **argv)
 
     return 0;
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

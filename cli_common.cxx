@@ -1,7 +1,5 @@
 #include "tdconfig.h"
 
-#include <cctype>
-#include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -53,5 +51,3 @@ void do_version(int exitval)
     print_qualcomm_msg();
     std::exit(exitval);
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */

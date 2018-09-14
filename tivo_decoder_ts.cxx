@@ -598,5 +598,3 @@ bool TiVoDecoderTS::process()
 
     return true;
 }
-
-/* vi:set ai ts=4 sw=4 expandtab: */
