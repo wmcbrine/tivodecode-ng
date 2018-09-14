@@ -1,3 +1,9 @@
+tivodecode-ng 0.4
+-----------------
+  * Have to flush stdout with MSVC.
+
+  * Some tidying up; more C++-ish. See git log for details.
+
 tivodecode-ng 0.3
 -----------------
   * Builds on Windows with MSVC; no manual copying of tdconfig.h.
