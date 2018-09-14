@@ -284,13 +284,9 @@ void TiVoDecoderTsPacket::dump()
         case TS_PID_TYPE_AUDIO_VIDEO_PRIVATE_DATA:
         {
             if (true == isPmtPkt())
-            {
                 pidType = "Program Map Table";
-            }
             else
-            {
                 pidType = "Audio/Video/PrivateData";
-            }
 
             break;
         }

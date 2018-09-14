@@ -57,9 +57,7 @@ int TiVoDecoder::do_header(uint8_t *arg_0, int *block_no, int *arg_8,
         var_4++;
 
     if (arg_10)
-    {
         *arg_10 = (arg_0[0x0] & 0x78) >> 3;
-    }
 
     if (arg_14)
     {

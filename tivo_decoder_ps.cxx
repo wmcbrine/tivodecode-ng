@@ -71,13 +71,9 @@ bool TiVoDecoderPS::process()
             int ret = process_frame(byte, position);
 
             if (ret == 1)
-            {
                 marker = 0xFFFFFFFF;
-            }
             else if (ret == 0)
-            {
                 pFileOut->write(&byte, 1);
-            }
             else if (ret < 0)
             {
                 std::perror("processing frame");
@@ -85,9 +81,7 @@ bool TiVoDecoderPS::process()
             }
         }
         else if (!first)
-        {
             pFileOut->write(&byte, 1);
-        }
 
         marker <<= 8;
 
@@ -97,9 +91,7 @@ bool TiVoDecoderPS::process()
             running = false;
         }
         else
-        {
             marker |= byte;
-        }
 
         first = false;
     }
@@ -178,9 +170,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
 
                                 //packet seq counter flag
                                 if (bytes[ext_byte] & 0x20)
-                                {
                                     off += 4;
-                                }
 
                                 //private data flag
                                 if (bytes[ext_byte] & 0x80)
@@ -242,9 +232,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
 
                                 // STD buffer flag
                                 if (bytes[ext_byte] & 0x10)
-                                {
                                     off += 2;
-                                }
 
                                 // extension flag 2
                                 if (bytes[ext_byte] & 0x1)
@@ -259,9 +247,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
                     }
                 }
                 else
-                {
                     LOOK_AHEAD (pFileIn, bytes, 2);
-                }
 
                 length = bytes[1] | (bytes[0] << 8);
 

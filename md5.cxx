@@ -166,7 +166,7 @@ void MD5::loop(const uint8_t *input, size_t len)
         calc(md5_buf);
 
         for (i = gap; i + MD5_BUFLEN <= len; i += MD5_BUFLEN)
-        calc((uint8_t *) (input + i));
+            calc((uint8_t *) (input + i));
 
         md5_i = (unsigned int)len - i;
         std::memmove(md5_buf, input + i, md5_i);
@@ -185,9 +185,7 @@ void MD5::pad()
     /* Don't count up padding. Keep md5_n. */
     gap = MD5_BUFLEN - md5_i;
     if (gap > 8)
-    {
         std::memmove(md5_buf + md5_i, md5_paddat, gap - sizeof(md5_n8));
-    }
     else
     {
         /* including gap == 8 */

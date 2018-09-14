@@ -195,9 +195,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                                      "payload\n");
                         }
                         else
-                        {
                             VVERBOSE("  pes hdr len : inside payload\n" );
-                        }
 
                         break;
                     }
@@ -280,9 +278,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         packets.clear();
     }
     else
-    {
         VERBOSE("Do NOT flush packets for write\n");
-    }
 
     return true;
 }

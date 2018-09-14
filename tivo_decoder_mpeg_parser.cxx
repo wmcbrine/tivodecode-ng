@@ -72,7 +72,7 @@ void TiVoDecoder_MPEG2_Parser::advanceBits(uint32_t n)
     _bit_ptr += n;
     hdr_len  += n;
 
-    if (_bit_ptr >= (_buffer_length*8))
+    if (_bit_ptr >= (_buffer_length * 8))
         _end_of_file = true;
 }
 
@@ -125,9 +125,7 @@ uint32_t TiVoDecoder_MPEG2_Parser::nextbits(uint32_t n)
     }
 
     if (n_copy < 0)
-    {
         value = value >> (0 - n_copy);
-    }
 
     return value;
 }
@@ -162,14 +160,10 @@ void TiVoDecoder_MPEG2_Parser::next_start_code()
         if (0x000001 == nextbits(24))
             break;
         else if (0x000000 == nextbits(24))
-        {
             advanceBits(8);
-        }
         else
             break;
     }
-
-    return;
 }
 
 // =========================================================================
@@ -483,9 +477,7 @@ void TiVoDecoder_MPEG2_Parser::pes_header(uint16_t &len)
     advanceBits(16);
 
     if (true == extensionPresent)
-    {
         pes_header_extension(len);
-    }
 
     next_start_code();
     len = hdr_len;
@@ -710,9 +702,8 @@ void TiVoDecoder_MPEG2_Parser::pes_header_extension(uint16_t &len)
     }
 
     while (0xFF == nextbits(8))
-    {
         advanceBits(8);
-    }
+
     len = hdr_len;
 }
 
@@ -782,5 +773,4 @@ void TiVoDecoder_MPEG2_Parser::slice(uint16_t &len)
 void TiVoDecoder_MPEG2_Parser::macroblock(uint16_t &len)
 {
     len = hdr_len;
-    return;
 }

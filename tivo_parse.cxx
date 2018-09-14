@@ -85,14 +85,7 @@ void TiVoStreamHeader::dump()
 
 TiVoFormatType TiVoStreamHeader::getFormatType()
 {
-    if (flags & 0x20)
-    {
-        return TIVO_FORMAT_TS;
-    }
-    else
-    {
-        return TIVO_FORMAT_PS;
-    }
+    return (flags & 0x20) ? TIVO_FORMAT_TS : TIVO_FORMAT_PS;
 }
 
 // ===================================================================

@@ -134,9 +134,7 @@ int main(int argc, const char **argv)
     }
 
     if (!makgiven || !tivofile)
-    {
         do_help(argv[0], 5);
-    }
 
     hfh = new HappyFile;
 
@@ -173,9 +171,7 @@ int main(int argc, const char **argv)
     print_qualcomm_msg();
 
     if (false == header.read(hfh))
-    {
         return(8);
-    }
 
     header.dump();
 
@@ -246,13 +242,9 @@ int main(int argc, const char **argv)
 
     TiVoDecoder *pDecoder = NULL;
     if (TIVO_FORMAT_PS == header.getFormatType())
-    {
         pDecoder = new TiVoDecoderPS(&turing, hfh, ofh);
-    }
     else if (TIVO_FORMAT_TS == header.getFormatType())
-    {
         pDecoder = new TiVoDecoderTS(&turing, hfh, ofh);
-    }
 
     if (NULL == pDecoder)
     {

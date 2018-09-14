@@ -113,9 +113,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
     pPtr = &pPkt->buffer[pPkt->payloadOffset];
 
     if (pPkt->getPayloadStartIndicator())
-    {
         pPtr++; // advance past pointer field
-    }
 
     if (*pPtr != 0x00)
     {
@@ -123,9 +121,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         return -1;
     }
     else
-    {
         pPtr++;
-    }
 
     pat_field = get16(pPtr);
     section_length = pat_field & 0x03ff;
@@ -226,9 +222,7 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
     pPtr = &pPkt->buffer[pPkt->payloadOffset];
 
     if (pPkt->getPayloadStartIndicator())
-    {
         pPtr++; // advance past pointer field
-    }
 
     // advance past table_id field
     pPtr++;
@@ -580,9 +574,7 @@ bool TiVoDecoderTS::process()
 
         stream_iter = streams.find(pPkt->getPID());
         if (stream_iter == streams.end())
-        {
             std::perror("Can not locate packet stream by PID");
-        }
         else
         {
             if (IS_VVERBOSE)

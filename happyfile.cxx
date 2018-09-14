@@ -122,9 +122,7 @@ int HappyFile::seek(hoff_t offset)
     }
 
     if (read(junk_buf, t) != (size_t)t)
-    {
         return -1;
-    }
 
     return 0;
 }

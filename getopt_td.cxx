@@ -68,9 +68,7 @@ int getopt_td(int argc, const char **argv, const char *optstring,
         }
 
         if (place[1] == '\0')
-        {
             return -1;
-        }
 
         place++;
 

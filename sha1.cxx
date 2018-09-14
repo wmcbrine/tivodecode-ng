@@ -133,9 +133,7 @@ void SHA1::update(uint8_t *data, size_t len)
         j = 0;
     }
     else
-    {
         i = 0;
-    }
 
     std::memcpy(&buffer[j], &data[i], len - i);
 }
@@ -156,9 +154,7 @@ void SHA1::final(uint8_t digest[20])
     update((uint8_t *)"\200", 1);
 
     while ((count[0] & 504) != 448)
-    {
         update((uint8_t *)"\0", 1);
-    }
 
     update(finalcount, 8);  /* Should cause a transform() */
 
