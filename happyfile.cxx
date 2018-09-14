@@ -56,7 +56,7 @@ int HappyFile::close()
     if (!attached)
         return std::fclose(fh);
     else
-        return 0;
+        return std::fflush(fh);
 }
 
 size_t HappyFile::read(void *ptr, size_t size)
