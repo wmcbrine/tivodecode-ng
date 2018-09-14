@@ -61,6 +61,10 @@ tivodecode 0.3pre1
     N to N+1, such that the offset into Packet N+1 can be determined
     where the decrypt needs to start.
 
+tivodecode 0.2pre4
+------------------
+  * ?
+
 tivodecode 0.2pre3
 ------------------
 
