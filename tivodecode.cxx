@@ -54,7 +54,7 @@ int main(int argc, const char **argv)
 {
     int o_no_video = 0;
     int o_dump_metadata = 0;
-    int makgiven = 0;
+    bool makgiven = false;
     uint32_t pktDump = 0;
 
     const char *tivofile = NULL;
@@ -87,7 +87,7 @@ int main(int argc, const char **argv)
             case 'm':
                 std::strncpy(mak, td_optarg, 11);
                 mak[11] = '\0';
-                makgiven = 1;
+                makgiven = true;
                 break;
             case 'p':
                 std::sscanf(td_optarg, "%u", &pktDump);

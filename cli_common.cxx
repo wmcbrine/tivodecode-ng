@@ -18,7 +18,7 @@
 
 static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
 
-int get_mak_from_conf_file(char *mak)
+bool get_mak_from_conf_file(char *mak)
 {
     FILE *mak_file = NULL;
     const char *home_dir = std::getenv(HOME_ENV_NAME);
@@ -56,12 +56,12 @@ int get_mak_from_conf_file(char *mak)
     else
         goto fail;
 
-    return 1;
+    return true;
 
 fail:
     if (mak_file)
         std::fclose(mak_file);
-    return 0;
+    return false;
 }
 
 void print_qualcomm_msg()

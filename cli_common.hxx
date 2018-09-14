@@ -2,7 +2,7 @@
 #define TD_CLI_COMMON_H__
 
 /* mak better be a 12-byte buffer */
-int get_mak_from_conf_file(char *mak);
+bool get_mak_from_conf_file(char *mak);
 
 void do_version(int exitval);
 void print_qualcomm_msg();

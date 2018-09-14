@@ -46,7 +46,7 @@ int main(int argc, const char **argv)
     int o_chunk_1 = 1;
     int o_chunk_2 = 0;
 
-    int makgiven = 0;
+    bool makgiven = false;
 
     const char *tivofile = NULL;
     const char *outfile  = NULL;
@@ -77,7 +77,7 @@ int main(int argc, const char **argv)
             case 'm':
                 std::strncpy(mak, td_optarg, 11);
                 mak[11] = '\0';
-                makgiven = 1;
+                makgiven = true;
                 break;
             case 'o':
                 //if the output file is to be stdout then the argv
