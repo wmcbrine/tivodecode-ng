@@ -302,16 +302,16 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
                         // scan video buffer for Slices.  If no slices are
                         // found, the MAK is wrong.
                         if (!o_no_verify && code == 0xe0) {
-                            int slice_count=0;
+                            int slice_count = 0;
                             size_t offset;
 
                             for (offset = sizeof(uint64_t); offset + 4 < packet_size; offset++)
                             {
                                 if (aligned_buf.packet_buffer[offset] == 0x00 &&
-                                    aligned_buf.packet_buffer[offset+1] == 0x00 &&
-                                    aligned_buf.packet_buffer[offset+2] == 0x01 &&
-                                    aligned_buf.packet_buffer[offset+3] >= 0x01 &&
-                                    aligned_buf.packet_buffer[offset+3] <= 0xAF)
+                                    aligned_buf.packet_buffer[offset + 1] == 0x00 &&
+                                    aligned_buf.packet_buffer[offset + 2] == 0x01 &&
+                                    aligned_buf.packet_buffer[offset + 3] >= 0x01 &&
+                                    aligned_buf.packet_buffer[offset + 3] <= 0xAF)
                                 {
                                     slice_count++;
                                 }

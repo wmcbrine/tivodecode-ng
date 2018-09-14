@@ -13,7 +13,7 @@
 #include "tivo_parse.hxx"
 #include "tivo_decoder_ts.hxx"
 
-int TiVoDecoderTsPacket::globalBufferLen=0;
+int TiVoDecoderTsPacket::globalBufferLen = 0;
 uint8_t TiVoDecoderTsPacket::globalBuffer[];
 
 TiVoDecoderTsPacket::TiVoDecoderTsPacket()

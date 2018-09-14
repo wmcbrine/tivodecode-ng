@@ -85,7 +85,7 @@ type==0 is a clear-text copyright notice.
     </salt>
     </license>
 
-type==1 is an encrypted copy of the TiVo XML metadata for this file.
+type == 1 is an encrypted copy of the TiVo XML metadata for this file.
 
 The encryption scheme used here is the metadata variant (see "Crytpo"
 below) of the Turing stream cipher.

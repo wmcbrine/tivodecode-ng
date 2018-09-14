@@ -340,11 +340,11 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
 
 int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 {
-    uint8_t  *pPtr        = NULL;
-    unsigned int   validator    = 0;
-    uint16_t pid          = 0;
-    uint8_t  stream_id    = 0;
-    uint16_t stream_bytes = 0;
+    uint8_t *pPtr          = NULL;
+    unsigned int validator = 0;
+    uint16_t pid           = 0;
+    uint8_t  stream_id     = 0;
+    uint16_t stream_bytes  = 0;
 
     if (!pPkt)
     {
@@ -465,10 +465,10 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 
 bool TiVoDecoderTS::process()
 {
-    int err         = 0;
+    int err = 0;
     TiVoDecoderTsStream *pStream = NULL;
-    TsStreams_it        stream_iter;
-    TsPktDump_iter      pktDump_iter;
+    TsStreams_it stream_iter;
+    TsPktDump_iter pktDump_iter;
 
     if (false == isValid)
     {
@@ -478,7 +478,7 @@ bool TiVoDecoderTS::process()
 
     while (running)
     {
-        err      = 0;
+        err = 0;
 
         pktCounter++;
         if (IS_VVERBOSE)

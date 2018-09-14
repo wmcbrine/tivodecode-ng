@@ -196,7 +196,7 @@ void Turing::IV(const uint8_t iv[], const int ivlength)
     if ((ivlength & 0x03) != 0 || (ivlength + 4 * keylen) > MAXKIV)
 	std::abort();
     /* first copy in the IV, mixing as we go */
-    for (i = j = 0; j < ivlength; j +=4)
+    for (i = j = 0; j < ivlength; j += 4)
 	R[i++] = fixedS(BYTE2WORD(&iv[j]));
     /* now continue with the premixed key */
     for (j = 0 /* i continues */; j < keylen; ++j)
