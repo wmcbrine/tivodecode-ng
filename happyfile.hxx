@@ -46,7 +46,7 @@ class HappyFile
         size_t write(void *ptr, size_t size);
 
         int64_t tell();
-        int seek(int64_t offset);
+        bool seek(int64_t offset);
 
         HappyFile();
         ~HappyFile();

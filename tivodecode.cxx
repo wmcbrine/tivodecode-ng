@@ -231,7 +231,7 @@ int main(int argc, const char **argv)
         std::exit(0);
 
     if ((hfh->tell() > header.mpeg_offset) ||
-        (hfh->seek(header.mpeg_offset) < 0))
+        !hfh->seek(header.mpeg_offset))
     {
         std::perror("Error reading header");
         return 8; // I dunno

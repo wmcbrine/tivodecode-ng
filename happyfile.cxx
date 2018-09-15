@@ -117,7 +117,7 @@ int64_t HappyFile::tell()
     return pos;
 }
 
-int HappyFile::seek(int64_t offset)
+bool HappyFile::seek(int64_t offset)
 {
     static char junk_buf[4096];
 
@@ -127,11 +127,11 @@ int HappyFile::seek(int64_t offset)
     for (s = 0; s < u; s++)
     {
         if (read(junk_buf, 4096) != 4096)
-            return -1;
+            return false;
     }
 
     if (read(junk_buf, t) != (size_t)t)
-        return -1;
+        return false;
 
-    return 0;
+    return true;
 }
