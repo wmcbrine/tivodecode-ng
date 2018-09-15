@@ -60,25 +60,22 @@ int TiVoDecoder::do_header(uint8_t *arg_0, int *block_no, int *arg_8,
         *arg_10 = (arg_0[0x0] & 0x78) >> 3;
 
     if (arg_14)
-    {
-        *arg_14  = (arg_0[0x0] & 0x07) << 1;
-        *arg_14 |= (arg_0[0x1] & 0x80) >> 7;
-    }
+        *arg_14 = ((arg_0[0x0] & 0x07) << 1)
+                | ((arg_0[0x1] & 0x80) >> 7);
 
     if (!(arg_0[1] & 0x40))
         var_4++;
 
     if (block_no)
     {
-        *block_no  = (arg_0[0x1] & 0x3f) << 0x12;
-        *block_no |= (arg_0[0x2] & 0xff) << 0xa;
-        *block_no |= (arg_0[0x3] & 0xc0) << 0x2;
+        *block_no = ((arg_0[0x1] & 0x3f) << 0x12)
+                  | ((arg_0[0x2] & 0xff) << 0xa)
+                  | ((arg_0[0x3] & 0xc0) << 0x2)
+                  | ((arg_0[0x3] & 0x1f) << 0x3)
+                  | ((arg_0[0x4] & 0xe0) >> 0x5);
 
         if (!(arg_0[3] & 0x20))
             var_4++;
-
-        *block_no |= (arg_0[0x3] & 0x1f) << 0x3;
-        *block_no |= (arg_0[0x4] & 0xe0) >> 0x5;
     }
 
     if (!(arg_0[4] & 0x10))
@@ -86,29 +83,27 @@ int TiVoDecoder::do_header(uint8_t *arg_0, int *block_no, int *arg_8,
 
     if (arg_8)
     {
-        *arg_8  = (arg_0[0x4] & 0x0f) << 0x14;
-        *arg_8 |= (arg_0[0x5] & 0xff) << 0xc;
-        *arg_8 |= (arg_0[0x6] & 0xf0) << 0x4;
+        *arg_8 = ((arg_0[0x4] & 0x0f) << 0x14)
+               | ((arg_0[0x5] & 0xff) << 0xc)
+               | ((arg_0[0x6] & 0xf0) << 0x4)
+               | ((arg_0[0x6] & 0x07) << 0x5)
+               | ((arg_0[0x7] & 0xf8) >> 0x3);
 
         if (!(arg_0[6] & 0x8))
             var_4++;
-
-        *arg_8 |= (arg_0[0x6] & 0x07) << 0x5;
-        *arg_8 |= (arg_0[0x7] & 0xf8) >> 0x3;
     }
 
     if (crypted)
     {
-        *crypted  = (arg_0[0xb] & 0x03) << 0x1e;
-        *crypted |= (arg_0[0xc] & 0xff) << 0x16;
-        *crypted |= (arg_0[0xd] & 0xfc) << 0xe;
+        *crypted = ((arg_0[0xb] & 0x03) << 0x1e)
+                 | ((arg_0[0xc] & 0xff) << 0x16)
+                 | ((arg_0[0xd] & 0xfc) << 0xe)
+                 | ((arg_0[0xd] & 0x01) << 0xf)
+                 | ((arg_0[0xe] & 0xff) << 0x7)
+                 | ((arg_0[0xf] & 0xfe) >> 0x1);
 
         if (!(arg_0[0xd] & 0x2))
             var_4++;
-
-        *crypted |= (arg_0[0xd] & 0x01) << 0xf;
-        *crypted |= (arg_0[0xe] & 0xff) << 0x7;
-        *crypted |= (arg_0[0xf] & 0xfe) >> 0x1;
     }
 
     if (!(arg_0[0xf] & 0x1))
