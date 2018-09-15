@@ -16,7 +16,7 @@
 #include "tivo_decoder_ts.hxx"
 #include "tivo_decoder_ps.hxx"
 
-int o_no_verify;
+bool o_no_verify = false;
 
 static struct td_option long_options[] = {
     {"mak", 1, 0, 'm'},
@@ -52,8 +52,8 @@ static void do_help(const char *arg0, int exitval)
 
 int main(int argc, const char **argv)
 {
-    int o_no_video = 0;
-    int o_dump_metadata = 0;
+    bool o_no_video = false;
+    bool o_dump_metadata = false;
     bool makgiven = false;
     uint32_t pktDump = 0;
 
@@ -101,13 +101,13 @@ int main(int argc, const char **argv)
                 o_verbose++;
                 break;
             case 'n':
-                o_no_verify = 1;
+                o_no_verify = true;
                 break;
             case 'D' :
-                o_dump_metadata = 1;
+                o_dump_metadata = true;
                 break;
             case 'x':
-                o_no_video = 1;
+                o_no_video = true;
                 break;
             case '?':
                 do_help(argv[0], 2);

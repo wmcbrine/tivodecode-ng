@@ -40,7 +40,7 @@ void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream *pStream)
 int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 {
     int size = 0;
-    int loss_of_sync = 0;
+    bool loss_of_sync = false;
 
     if (!pInfile)
     {
@@ -88,7 +88,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
     if (buffer[0] != 'G')
     {
-        loss_of_sync = 1;
+        loss_of_sync = true;
         std::cerr << "loss_of_sync\n";
 
         if (globalBufferLen == 0)
@@ -167,8 +167,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
         if (globalBuffer[0] == 'G' && globalBuffer[TS_FRAME_SIZE] == 'G' &&
             globalBuffer[TS_FRAME_SIZE * 2] == 'G')
         {
-            loss_of_sync = 0;
-            std::cerr << "found 3 syncs in a row, loss_of_sync = 0\n";
+            loss_of_sync = false;
+            std::cerr << "found 3 syncs in a row, loss_of_sync = false\n";
 
             size = TS_FRAME_SIZE;
             std::memcpy(buffer, globalBuffer, size);

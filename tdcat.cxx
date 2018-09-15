@@ -43,8 +43,8 @@ static void do_help(const char *arg0, int exitval)
 
 int main(int argc, const char **argv)
 {
-    int o_chunk_1 = 1;
-    int o_chunk_2 = 0;
+    bool o_chunk_1 = true;
+    bool o_chunk_2 = false;
 
     bool makgiven = false;
 
@@ -98,12 +98,12 @@ int main(int argc, const char **argv)
                 do_version(10);
                 break;
             case '1':
-                o_chunk_1 = 1;
-                o_chunk_2 = 0;
+                o_chunk_1 = true;
+                o_chunk_2 = false;
                 break;
             case '2':
-                o_chunk_1 = 0;
-                o_chunk_2 = 1;
+                o_chunk_1 = false;
+                o_chunk_2 = true;
                 break;
             default:
                 do_help(argv[0], 3);
@@ -157,7 +157,7 @@ int main(int argc, const char **argv)
     }
 
     if (!o_chunk_1 && !o_chunk_2)
-        o_chunk_1 = 1;
+        o_chunk_1 = true;
 
     print_qualcomm_msg();
 

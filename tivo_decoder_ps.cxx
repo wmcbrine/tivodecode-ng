@@ -12,7 +12,7 @@
 #include "tivo_decoder_ps.hxx"
 
 extern int o_verbose;
-extern int o_no_verify;
+extern bool o_no_verify;
 
 static packet_tag_info packet_tags[] = {
     {0x00, 0x00, PACK_SPECIAL},     // pic start
@@ -306,7 +306,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
                                 if (slice_count > 8)
                                 {
                                     // disable future verification
-                                    o_no_verify = 1;
+                                    o_no_verify = true;
                                 }
                             }
                             if (!o_no_verify)
