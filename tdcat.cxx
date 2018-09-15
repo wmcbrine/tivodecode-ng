@@ -61,11 +61,9 @@ int main(int argc, const char **argv)
     std::memset(&metaturing, 0, sizeof(metaturing));
     hoff_t current_meta_stream_pos = 0;
 
-    HappyFile *hfh = NULL, *ofh = NULL;
-
     TiVoStreamHeader header;
 
-    while (1)
+    while (true)
     {
         int c = getopt_td(argc, argv, "m:o:Vh12", long_options, 0);
 
@@ -126,7 +124,7 @@ int main(int argc, const char **argv)
     if (!makgiven || !tivofile)
         do_help(argv[0], 5);
 
-    hfh = new HappyFile;
+    HappyFile *hfh = new HappyFile;
 
     if (!std::strcmp(tivofile, "-"))
     {
@@ -142,7 +140,7 @@ int main(int argc, const char **argv)
         }
     }
 
-    ofh = new HappyFile;
+    HappyFile *ofh = new HappyFile;
 
     if (!outfile || !std::strcmp(outfile, "-"))
     {
