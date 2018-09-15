@@ -39,16 +39,19 @@ class HappyFile
         void init();
 
     public:
-        int open(const char *filename, const char *mode);
-        int attach(FILE *fh);
+        bool open(const char *filename, const char *mode);
+        bool attach(FILE *fh);
 
-        int close();
+        void close();
 
         size_t read(void *ptr, size_t size);
         size_t write(void *ptr, size_t size);
 
         hoff_t tell();
         int seek(hoff_t offset);
+
+        HappyFile();
+        ~HappyFile();
 };
 
 #endif

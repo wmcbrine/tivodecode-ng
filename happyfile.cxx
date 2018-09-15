@@ -15,6 +15,15 @@
 
 #include "happyfile.hxx"
 
+HappyFile::HappyFile()
+{
+}
+
+HappyFile::~HappyFile()
+{
+    close();
+}
+
 void HappyFile::init()
 {
     std::setvbuf(fh, rawbuf, _IOFBF, RAWBUFSIZE);
@@ -23,42 +32,40 @@ void HappyFile::init()
     buffer_fill = 0;
 }
 
-int HappyFile::open(const char *filename, const char *mode)
+bool HappyFile::open(const char *filename, const char *mode)
 {
     fh = std::fopen(filename, mode);
     if (!fh)
-        return 0;
+        return false;
     attached = false;
     init();
-    return 1;
+    return true;
 }
 
-int HappyFile::attach(FILE *handle)
+bool HappyFile::attach(FILE *handle)
 {
     fh = handle;
     attached = true;
 
 // JKOZEE-Make sure pipe is set to binary on Windows
 #ifdef WIN32
-    int result = _setmode(_fileno(handle), _O_BINARY);
-    if (result == -1) {
+    if (-1 == _setmode(_fileno(handle), _O_BINARY))
+    {
         std::perror("Cannot set pipe to binary mode");
-        return 0;
+        return false;
     }
 #endif
 
     init();
-    return 1;
+    return true;
 }
 
-int HappyFile::close()
+void HappyFile::close()
 {
     if (!attached)
-        return std::fclose(fh);
+        std::fclose(fh);
     else if (fh == stdout)
-        return std::fflush(fh);
-
-    return 0;
+        std::fflush(fh);
 }
 
 size_t HappyFile::read(void *ptr, size_t size)

@@ -211,10 +211,7 @@ int main(int argc, const char **argv)
 
     metaturing.destruct();
 
-    hfh->close();
     delete hfh;
-
-    ofh->close();
     delete ofh;
 
     return 0;

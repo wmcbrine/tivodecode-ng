@@ -182,9 +182,7 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
         }
 
         if (active->block_id != (unsigned int) block_id)
-        {
             prepare_frame_helper(stream_id, block_id);
-        }
     }
     else
     {
