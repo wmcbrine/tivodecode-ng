@@ -20,18 +20,16 @@
 #define BUFFERSIZE 4096
 #endif
 
-typedef int64_t hoff_t;
-
 class HappyFile
 {
     private:
         FILE *fh;
         bool attached;
-        hoff_t pos;
+        int64_t pos;
 
         /* buffer stuff */
-        hoff_t buffer_start;
-        hoff_t buffer_fill;
+        int64_t buffer_start;
+        int64_t buffer_fill;
 
         char rawbuf[RAWBUFSIZE];
         char buffer[BUFFERSIZE];
@@ -47,8 +45,8 @@ class HappyFile
         size_t read(void *ptr, size_t size);
         size_t write(void *ptr, size_t size);
 
-        hoff_t tell();
-        int seek(hoff_t offset);
+        int64_t tell();
+        int seek(int64_t offset);
 
         HappyFile();
         ~HappyFile();

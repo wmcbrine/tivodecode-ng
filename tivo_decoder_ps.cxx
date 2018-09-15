@@ -67,7 +67,7 @@ bool TiVoDecoderPS::process()
     {
         if ((marker & 0xFFFFFF00) == 0x100)
         {
-            hoff_t position = pFileIn->tell();
+            int64_t position = pFileIn->tell();
             int ret = process_frame(byte, position);
 
             if (ret == 1)
@@ -100,7 +100,7 @@ bool TiVoDecoderPS::process()
     return true;
 }
 
-int TiVoDecoderPS::process_frame(uint8_t code, hoff_t packet_start)
+int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 {
     static union {
         uint64_t align;

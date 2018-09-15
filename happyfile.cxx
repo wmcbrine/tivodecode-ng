@@ -75,10 +75,10 @@ size_t HappyFile::read(void *ptr, size_t size)
     if (size == 0)
         return 0;
 
-    if ((pos + (hoff_t)size) - buffer_start <= buffer_fill)
+    if ((pos + (int64_t)size) - buffer_start <= buffer_fill)
     {
         std::memcpy(ptr, buffer + (pos - buffer_start), size);
-        pos += (hoff_t)size;
+        pos += (int64_t)size;
         return size;
     }
     else if (pos < buffer_start + buffer_fill)
@@ -91,19 +91,19 @@ size_t HappyFile::read(void *ptr, size_t size)
     do
     {
         buffer_start += buffer_fill;
-        buffer_fill = (hoff_t)std::fread(buffer, 1, BUFFERSIZE, fh);
+        buffer_fill = (int64_t)std::fread(buffer, 1, BUFFERSIZE, fh);
 
         if (buffer_fill == 0)
             break;
 
         std::memcpy((char *)ptr + nbytes, buffer,
-                    (hoff_t)(size - nbytes) < buffer_fill ?
+                    (int64_t)(size - nbytes) < buffer_fill ?
                     (size - nbytes) : (size_t)buffer_fill);
-        nbytes += (hoff_t)(size - nbytes) < buffer_fill ?
+        nbytes += (int64_t)(size - nbytes) < buffer_fill ?
                   (size - nbytes) : (size_t)buffer_fill;
     } while (nbytes < size);
 
-    pos += (hoff_t)nbytes;
+    pos += (int64_t)nbytes;
     return nbytes;
 }
 
@@ -112,18 +112,18 @@ size_t HappyFile::write(void *ptr, size_t size)
     return std::fwrite(ptr, 1, size, fh);
 }
 
-hoff_t HappyFile::tell()
+int64_t HappyFile::tell()
 {
     return pos;
 }
 
-int HappyFile::seek(hoff_t offset)
+int HappyFile::seek(int64_t offset)
 {
     static char junk_buf[4096];
 
     int t = (int)((offset - pos) & 0xfff);
-    hoff_t u = (offset - pos) >> 12;
-    hoff_t s;
+    int64_t u = (offset - pos) >> 12;
+    int64_t s;
     for (s = 0; s < u; s++)
     {
         if (read(junk_buf, 4096) != 4096)

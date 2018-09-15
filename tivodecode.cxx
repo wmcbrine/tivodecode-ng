@@ -68,7 +68,7 @@ int main(int argc, const char **argv)
 
     TuringState metaturing;
     std::memset(&metaturing, 0, sizeof(metaturing));
-    hoff_t current_meta_stream_pos = 0;
+    int64_t current_meta_stream_pos = 0;
 
     TiVoStreamHeader header;
     pktDumpMap.clear();
@@ -177,7 +177,7 @@ int main(int argc, const char **argv)
 
     for (uint16_t i = 0; i < header.chunks; i++)
     {
-        hoff_t chunk_start = hfh->tell() + 12;
+        int64_t chunk_start = hfh->tell() + 12;
 
         if (false == pChunks[i].read(hfh))
         {
