@@ -6,6 +6,6 @@
 
 #include <cstdint>
 
-int hexbulk(uint8_t *, int n);
+void hexbulk(uint8_t *, int n);
 
 #endif

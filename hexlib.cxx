@@ -9,7 +9,7 @@
 
 #define COLS 16
 
-int hexbulk(uint8_t *buf, int n)
+void hexbulk(uint8_t *buf, int n)
 {
     int i = 0;
 
@@ -41,6 +41,4 @@ int hexbulk(uint8_t *buf, int n)
 
         std::cerr << hexstr << " " << strstr << "\n";
     }
-
-    return 0;
 }
