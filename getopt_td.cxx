@@ -127,13 +127,7 @@ int getopt_td(int argc, const char **argv, const char *optstring,
 
                     place = EMSG;
 
-                    if (longopts[i].flag == NULL)
-                        return longopts[i].val;
-                    else
-                    {
-                        *longopts[i].flag = longopts[i].val;
-                        return 0;
-                    }
+                    return longopts[i].shortopt;
                 }
             }
             place = EMSG;

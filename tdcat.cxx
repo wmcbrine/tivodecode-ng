@@ -17,13 +17,13 @@
 #include "tivo_decoder_ps.hxx"
 
 static struct td_option long_options[] = {
-    {"mak", 1, 0, 'm'},
-    {"out", 1, 0, 'o'},
-    {"version", 0, 0, 'V'},
-    {"help", 0, 0, 'h'},
-    {"chunk-1", 0, 0, '1'},
-    {"chunk-2", 0, 0, '2'},
-    {0, 0, 0, 0}
+    {"mak", true, 'm'},
+    {"out", true, 'o'},
+    {"version", false, 'V'},
+    {"help", false, 'h'},
+    {"chunk-1", false, '1'},
+    {"chunk-2", false, '2'},
+    {0, false, 0}
 };
 
 static void do_help(const char *arg0, int exitval)

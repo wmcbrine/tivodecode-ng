@@ -12,9 +12,8 @@ extern const char *td_optarg;
 struct td_option
 {
     const char *name;
-    int has_arg;
-    int *flag;
-    int val;
+    bool has_arg;
+    int shortopt;
 };
 
 extern int getopt_td(int argc, const char **argv, const char *optstring,

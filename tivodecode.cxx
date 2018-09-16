@@ -19,16 +19,16 @@
 bool o_no_verify = false;
 
 static struct td_option long_options[] = {
-    {"mak", 1, 0, 'm'},
-    {"out", 1, 0, 'o'},
-    {"verbose", 0, 0, 'v'},
-    {"pkt-dump", 1, 0, 'p'},
-    {"metadata", 0, 0, 'D'},
-    {"no-verify", 0, 0, 'n'},
-    {"no-video", 0, 0, 'x'},
-    {"version", 0, 0, 'V'},
-    {"help", 0, 0, 'h'},
-    {0, 0, 0, 0}
+    {"mak", true, 'm'},
+    {"out", true, 'o'},
+    {"verbose", false, 'v'},
+    {"pkt-dump", true, 'p'},
+    {"metadata", false, 'D'},
+    {"no-verify", false, 'n'},
+    {"no-video", false, 'x'},
+    {"version", false, 'V'},
+    {"help", false, 'h'},
+    {0, false, 0}
 };
 
 static void do_help(const char *arg0, int exitval)
