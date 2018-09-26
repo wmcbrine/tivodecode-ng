@@ -356,7 +356,8 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
                           << " : Ancillary Data header\n";
             parser.ancillary_data(len);
         }
-        else if (startCode >= 0x101 && startCode <= 0x1AF)
+        else if (startCode >= SLICE_START_CODE_MIN &&
+                 startCode <= SLICE_START_CODE_MAX)
         {
             if (IS_VVERBOSE)
                 std::cerr << "  TS PES Packet   : " << startCode
