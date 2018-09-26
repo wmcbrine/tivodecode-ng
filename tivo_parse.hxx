@@ -8,8 +8,6 @@
 extern uint16_t get16(uint8_t *pVal);
 extern uint32_t get32(uint8_t *pVal);
 
-#define static_strlen(str) (sizeof(str) - 1)
-
 extern int  o_verbose;
 extern bool o_pkt_dump;
 

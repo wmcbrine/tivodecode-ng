@@ -86,8 +86,6 @@ void TuringState::setup_key(uint8_t *buffer, size_t buffer_length,
     context.final(turingkey);
 }
 
-#define static_strlen(str) (sizeof(str) - 1)
-
 void TuringState::setup_metadata_key(uint8_t *buffer,
                                      size_t buffer_length, char *mak)
 {
@@ -99,7 +97,7 @@ void TuringState::setup_metadata_key(uint8_t *buffer,
     char metakey[33];
 
     md5.init();
-    md5.loop(media_mak_prefix, static_strlen(media_mak_prefix));
+    md5.loop(media_mak_prefix, sizeof(media_mak_prefix) - 1);
     md5.loop((uint8_t *)mak, strlen(mak));
 
     md5.pad();
