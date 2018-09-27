@@ -64,8 +64,6 @@ product or in the associated documentation.
 #define MAXKEY      32  /* bytes*/
 #define MAXKIV	    48  /* bytes*/
 #define LFSRLEN	    17  /* words*/
-#define OUTLEN      20  /* bytes*/
-#define POLY      0x4D  /* x^8 + x^6 + x^3 + x^2 + 1 */
 
 #include <cstdint>
 
