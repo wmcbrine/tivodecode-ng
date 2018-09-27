@@ -142,11 +142,11 @@ void MD5::init()
 
 void MD5::loop(const uint8_t *input, size_t len)
 {
-    unsigned int gap, i;
+    size_t gap, i;
 
     if (md5_nl + len * 8 < md5_nl)
         md5_nh++;
-    md5_nl += (unsigned int)len * 8;		/* byte to bit */
+    md5_nl += len * 8;		/* byte to bit */
     gap = MD5_BUFLEN - md5_i;
 
     if (len >= gap)
@@ -157,19 +157,19 @@ void MD5::loop(const uint8_t *input, size_t len)
         for (i = gap; i + MD5_BUFLEN <= len; i += MD5_BUFLEN)
             calc((uint8_t *) (input + i));
 
-        md5_i = (unsigned int)len - i;
+        md5_i = len - i;
         std::memmove(md5_buf, input + i, md5_i);
     }
     else
     {
         std::memmove(md5_buf + md5_i, input, len);
-        md5_i += (unsigned int)len;
+        md5_i += len;
     }
 }
 
 void MD5::pad()
 {
-    unsigned int gap;
+    size_t gap;
 
     /* Don't count up padding. Keep md5_n. */
     gap = MD5_BUFLEN - md5_i;

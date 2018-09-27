@@ -32,7 +32,7 @@
 
 #include <cstdint>
 
-const unsigned int MD5_BUFLEN = 64;
+const size_t MD5_BUFLEN = 64;
 
 class MD5
 {
@@ -52,7 +52,7 @@ class MD5
             uint8_t md5_count8[8];
         } md5_count;
 
-        unsigned int md5_i;
+        size_t md5_i;
         uint8_t md5_buf[MD5_BUFLEN];
 
         void calc(uint8_t *);
