@@ -61,9 +61,9 @@ product or in the associated documentation.
 #ifndef TURING_H
 #define TURING_H 1
 
-#define MAXKEY      32  /* bytes*/
-#define MAXKIV	    48  /* bytes*/
-#define LFSRLEN	    17  /* words*/
+const int MAXKEY = 32;  /* bytes*/
+const int MAXKIV = 48;  /* bytes*/
+const int LFSRLEN = 17; /* words*/
 
 #include <cstdint>
 
@@ -81,24 +81,5 @@ class Turing
         void IV(const uint8_t iv[], const int ivlength);
         int  gen(uint8_t *buf);  /* returns number of bytes of mask generated */
 };
-
-/* some useful macros -- big-endian */
-#define B(x,i) ((uint8_t)(((x) >> (24 - 8 * i)) & 0xFF))
-
-#define WORD2BYTE(w, b) { \
-    (b)[3] = B(w, 3); \
-    (b)[2] = B(w, 2); \
-    (b)[1] = B(w, 1); \
-    (b)[0] = B(w, 0); \
-}
-
-#define BYTE2WORD(b) ( \
-    (((uint32_t)(b)[0] & 0xFF) << 24) | \
-    (((uint32_t)(b)[1] & 0xFF) << 16) | \
-    (((uint32_t)(b)[2] & 0xFF) << 8) | \
-    (((uint32_t)(b)[3] & 0xFF)) \
-)
-
-#define ROTL(w,x) (((w) << (x))|((w) >> (32 - (x))))
 
 #endif

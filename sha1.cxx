@@ -17,7 +17,10 @@
 
 #include "sha1.hxx"
 
-#define rol(value, bits) (((value) << (bits)) | ((value) >> (32 - (bits))))
+inline uint32_t rol(uint32_t value, int bits)
+{
+    return (value << bits) | (value >> (32 - bits));
+}
 
 /* blk0() and blk() perform the initial expand. */
 /* I got the idea of expanding during the round function from SSLeay */

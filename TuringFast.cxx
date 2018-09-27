@@ -63,10 +63,36 @@ product or in the associated documentation.
 #include "Turing.hxx"		/* interface definitions */
 #include "TuringBoxes.hxx"
 
+inline uint8_t BYTE(uint32_t x, int i)
+{
+    return (x >> (24 - 8 * i)) & 0xFF;
+}
+
+inline void WORD2BYTE(uint32_t w, uint8_t *b)
+{
+    b[3] = BYTE(w, 3);
+    b[2] = BYTE(w, 2);
+    b[1] = BYTE(w, 1);
+    b[0] = BYTE(w, 0);
+}
+
+inline uint32_t BYTE2WORD(const uint8_t *b)
+{
+    return b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3];
+}
+
+inline uint32_t ROTL(uint32_t w, int x)
+{
+    return (w << x) | (w >> (32 - x));
+}
+
 /* give correct offset for the current position of the register,
  * where logically R[0] is at position "zero".
  */
-#define OFF(zero, i) (((zero) + (i)) % LFSRLEN)
+inline int OFF(int zero, int i)
+{
+    return (zero + i) % LFSRLEN;
+}
 
 /* step the LFSR */
 /* After stepping, "zero" moves right one place */
@@ -83,30 +109,37 @@ static uint32_t fixedS(uint32_t w)
 {
     uint32_t b;
 
-    b = Sbox[B(w, 0)]; w = ((w ^      Qbox[b])      & 0x00FFFFFF) | (b << 24);
-    b = Sbox[B(w, 1)]; w = ((w ^ ROTL(Qbox[b], 8))  & 0xFF00FFFF) | (b << 16);
-    b = Sbox[B(w, 2)]; w = ((w ^ ROTL(Qbox[b], 16)) & 0xFFFF00FF) | (b << 8);
-    b = Sbox[B(w, 3)]; w = ((w ^ ROTL(Qbox[b], 24)) & 0xFFFFFF00) | b;
+    b = Sbox[BYTE(w, 0)];
+    w = ((w ^      Qbox[b])      & 0x00FFFFFF) | (b << 24);
+    b = Sbox[BYTE(w, 1)];
+    w = ((w ^ ROTL(Qbox[b], 8))  & 0xFF00FFFF) | (b << 16);
+    b = Sbox[BYTE(w, 2)];
+    w = ((w ^ ROTL(Qbox[b], 16)) & 0xFFFF00FF) | (b << 8);
+    b = Sbox[BYTE(w, 3)];
+    w = ((w ^ ROTL(Qbox[b], 24)) & 0xFFFFFF00) | b;
+
     return w;
 }
 
 /*
  * Push a word through the keyed S-boxes.
  */
-#define S(w, b) (S0[B((w), ((0 + b) & 0x3))] \
-               ^ S1[B((w), ((1 + b) & 0x3))] \
-               ^ S2[B((w), ((2 + b) & 0x3))] \
-               ^ S3[B((w), ((3 + b) & 0x3))])
+#define S(w, b) (S0[BYTE((w), ((0 + b) & 0x3))] \
+               ^ S1[BYTE((w), ((1 + b) & 0x3))] \
+               ^ S2[BYTE((w), ((2 + b) & 0x3))] \
+               ^ S3[BYTE((w), ((3 + b) & 0x3))])
 
 /* two variants of the Pseudo-Hadamard Transform */
 
 /* Mix 5 words in place */
-#define PHT(A, B, C, D, E) { \
-    (E) += (A) + (B) + (C) + (D); \
-    (A) += (E); \
-    (B) += (E); \
-    (C) += (E); \
-    (D) += (E); \
+inline void PHT(uint32_t &A, uint32_t &B, uint32_t &C,
+                uint32_t &D, uint32_t &E)
+{
+    E += A + B + C + D;
+    A += E;
+    B += E;
+    C += E;
+    D += E;
 }
 
 /* General word-wide n-PHT */
@@ -145,7 +178,7 @@ void Turing::key(const uint8_t key[], const int keylength)
 	w = 0;
 	k = j;
 	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[B(K[i], 0) ^ k];
+	    k = Sbox[BYTE(K[i], 0) ^ k];
 	    w ^= ROTL(Qbox[k], i + 0);
 	}
 	S0[j] = (w & 0x00FFFFFFUL) | (k << 24);
@@ -154,7 +187,7 @@ void Turing::key(const uint8_t key[], const int keylength)
 	w = 0;
 	k = j;
 	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[B(K[i], 1) ^ k];
+	    k = Sbox[BYTE(K[i], 1) ^ k];
 	    w ^= ROTL(Qbox[k], i + 8);
 	}
 	S1[j] = (w & 0xFF00FFFFUL) | (k << 16);
@@ -163,7 +196,7 @@ void Turing::key(const uint8_t key[], const int keylength)
 	w = 0;
 	k = j;
 	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[B(K[i], 2) ^ k];
+	    k = Sbox[BYTE(K[i], 2) ^ k];
 	    w ^= ROTL(Qbox[k], i + 16);
 	}
 	S2[j] = (w & 0xFFFF00FFUL) | (k << 8);
@@ -172,7 +205,7 @@ void Turing::key(const uint8_t key[], const int keylength)
 	w = 0;
 	k = j;
 	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[B(K[i], 3) ^ k];
+	    k = Sbox[BYTE(K[i], 3) ^ k];
 	    w ^= ROTL(Qbox[k], i + 24);
 	}
 	S3[j] = (w & 0xFFFFFF00UL) | k;

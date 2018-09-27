@@ -44,66 +44,6 @@
 #define md5_nh  md5_count.md5_count64.md5_count32_msw
 #define md5_n8  md5_count.md5_count8
 
-#define SHIFT(X, s) (((X) << (s)) | ((X) >> (32 - (s))))
-
-#define F(X, Y, Z) (((X) & (Y)) | ((~X) & (Z)))
-#define G(X, Y, Z) (((X) & (Z)) | ((Y) & (~Z)))
-#define H(X, Y, Z) ((X) ^ (Y) ^ (Z))
-#define I(X, Y, Z) ((Y) ^ ((X) | (~Z)))
-
-#define ROUND1(a, b, c, d, k, s, i) \
-do { \
-    (a) = (a) + F((b), (c), (d)) + X[(k)] + T[(i)]; \
-    (a) = SHIFT((a), (s)); \
-    (a) = (b) + (a); \
-} while (0)
-
-#define ROUND2(a, b, c, d, k, s, i) \
-do { \
-    (a) = (a) + G((b), (c), (d)) + X[(k)] + T[(i)]; \
-    (a) = SHIFT((a), (s)); \
-    (a) = (b) + (a); \
-} while (0)
-
-#define ROUND3(a, b, c, d, k, s, i) \
-do { \
-    (a) = (a) + H((b), (c), (d)) + X[(k)] + T[(i)]; \
-    (a) = SHIFT((a), (s)); \
-    (a) = (b) + (a); \
-} while (0)
-
-#define ROUND4(a, b, c, d, k, s, i) \
-do { \
-    (a) = (a) + I((b), (c), (d)) + X[(k)] + T[(i)]; \
-    (a) = SHIFT((a), (s)); \
-    (a) = (b) + (a); \
-} while (0)
-
-#define Sa   7
-#define Sb  12
-#define Sc  17
-#define Sd  22
-
-#define Se   5
-#define Sf   9
-#define Sg  14
-#define Sh  20
-
-#define Si   4
-#define Sj  11
-#define Sk  16
-#define Sl  23
-
-#define Sm   6
-#define Sn  10
-#define So  15
-#define Sp  21
-
-#define MD5_A0  0x67452301
-#define MD5_B0  0xefcdab89
-#define MD5_C0  0x98badcfe
-#define MD5_D0  0x10325476
-
 /* Integer part of 4294967296 times abs(sin(i)), where i is in radians. */
 static const uint32_t T[65] = {
     0,
@@ -139,15 +79,72 @@ static const uint8_t md5_paddat[MD5_BUFLEN] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
+inline uint32_t SHIFT(uint32_t X, int s)
+{
+    return (X << s) | (X >> (32 - s));
+}
+
+inline uint32_t F(uint32_t X, uint32_t Y, uint32_t Z)
+{
+    return (X & Y) | (~X & Z);
+}
+
+inline uint32_t G(uint32_t X, uint32_t Y, uint32_t Z)
+{
+    return (X & Z) | (Y & ~Z);
+}
+
+inline uint32_t H(uint32_t X, uint32_t Y, uint32_t Z)
+{
+    return X ^ Y ^ Z;
+}
+
+inline uint32_t I(uint32_t X, uint32_t Y, uint32_t Z)
+{
+    return Y ^ (X | ~Z);
+}
+
+inline void ROUND1(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+                   uint32_t d, int k, int s, int i)
+{
+    a += F(b, c, d) + X[k] + T[i];
+    a = SHIFT(a, s);
+    a += b;
+}
+
+inline void ROUND2(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+                   uint32_t d, int k, int s, int i)
+{
+    a += G(b, c, d) + X[k] + T[i];
+    a = SHIFT(a, s);
+    a += b;
+}
+
+inline void ROUND3(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+                   uint32_t d, int k, int s, int i)
+{
+    a += H(b, c, d) + X[k] + T[i];
+    a = SHIFT(a, s);
+    a += b;
+}
+
+inline void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+                   uint32_t d, int k, int s, int i)
+{
+    a += I(b, c, d) + X[k] + T[i];
+    a = SHIFT(a, s);
+    a += b;
+}
+
 void MD5::init()
 {
     md5_nl = 0;
     md5_nh = 0;
     md5_i = 0;
-    md5_sta = MD5_A0;
-    md5_stb = MD5_B0;
-    md5_stc = MD5_C0;
-    md5_std = MD5_D0;
+    md5_sta = 0x67452301;
+    md5_stb = 0xefcdab89;
+    md5_stc = 0x98badcfe;
+    md5_std = 0x10325476;
     std::memset(md5_buf, 0, sizeof(md5_buf));
 }
 
@@ -320,74 +317,74 @@ void MD5::calc(uint8_t *b64)
     y[63] = b64[60];
 #endif
 
-    ROUND1(A, B, C, D, 0, Sa, 1);
-    ROUND1(D, A, B, C, 1, Sb, 2);
-    ROUND1(C, D, A, B, 2, Sc, 3);
-    ROUND1(B, C, D, A, 3, Sd, 4);
-    ROUND1(A, B, C, D, 4, Sa, 5);
-    ROUND1(D, A, B, C, 5, Sb, 6);
-    ROUND1(C, D, A, B, 6, Sc, 7);
-    ROUND1(B, C, D, A, 7, Sd, 8);
-    ROUND1(A, B, C, D, 8, Sa, 9);
-    ROUND1(D, A, B, C, 9, Sb, 10);
-    ROUND1(C, D, A, B, 10, Sc, 11);
-    ROUND1(B, C, D, A, 11, Sd, 12);
-    ROUND1(A, B, C, D, 12, Sa, 13);
-    ROUND1(D, A, B, C, 13, Sb, 14);
-    ROUND1(C, D, A, B, 14, Sc, 15);
-    ROUND1(B, C, D, A, 15, Sd, 16);
+    ROUND1(X, A, B, C, D, 0, 7, 1);
+    ROUND1(X, D, A, B, C, 1, 12, 2);
+    ROUND1(X, C, D, A, B, 2, 17, 3);
+    ROUND1(X, B, C, D, A, 3, 22, 4);
+    ROUND1(X, A, B, C, D, 4, 7, 5);
+    ROUND1(X, D, A, B, C, 5, 12, 6);
+    ROUND1(X, C, D, A, B, 6, 17, 7);
+    ROUND1(X, B, C, D, A, 7, 22, 8);
+    ROUND1(X, A, B, C, D, 8, 7, 9);
+    ROUND1(X, D, A, B, C, 9, 12, 10);
+    ROUND1(X, C, D, A, B, 10, 17, 11);
+    ROUND1(X, B, C, D, A, 11, 22, 12);
+    ROUND1(X, A, B, C, D, 12, 7, 13);
+    ROUND1(X, D, A, B, C, 13, 12, 14);
+    ROUND1(X, C, D, A, B, 14, 17, 15);
+    ROUND1(X, B, C, D, A, 15, 22, 16);
 
-    ROUND2(A, B, C, D, 1, Se, 17);
-    ROUND2(D, A, B, C, 6, Sf, 18);
-    ROUND2(C, D, A, B, 11, Sg, 19);
-    ROUND2(B, C, D, A, 0, Sh, 20);
-    ROUND2(A, B, C, D, 5, Se, 21);
-    ROUND2(D, A, B, C, 10, Sf, 22);
-    ROUND2(C, D, A, B, 15, Sg, 23);
-    ROUND2(B, C, D, A, 4, Sh, 24);
-    ROUND2(A, B, C, D, 9, Se, 25);
-    ROUND2(D, A, B, C, 14, Sf, 26);
-    ROUND2(C, D, A, B, 3, Sg, 27);
-    ROUND2(B, C, D, A, 8, Sh, 28);
-    ROUND2(A, B, C, D, 13, Se, 29);
-    ROUND2(D, A, B, C, 2, Sf, 30);
-    ROUND2(C, D, A, B, 7, Sg, 31);
-    ROUND2(B, C, D, A, 12, Sh, 32);
+    ROUND2(X, A, B, C, D, 1, 5, 17);
+    ROUND2(X, D, A, B, C, 6, 9, 18);
+    ROUND2(X, C, D, A, B, 11, 14, 19);
+    ROUND2(X, B, C, D, A, 0, 20, 20);
+    ROUND2(X, A, B, C, D, 5, 5, 21);
+    ROUND2(X, D, A, B, C, 10, 9, 22);
+    ROUND2(X, C, D, A, B, 15, 14, 23);
+    ROUND2(X, B, C, D, A, 4, 20, 24);
+    ROUND2(X, A, B, C, D, 9, 5, 25);
+    ROUND2(X, D, A, B, C, 14, 9, 26);
+    ROUND2(X, C, D, A, B, 3, 14, 27);
+    ROUND2(X, B, C, D, A, 8, 20, 28);
+    ROUND2(X, A, B, C, D, 13, 5, 29);
+    ROUND2(X, D, A, B, C, 2, 9, 30);
+    ROUND2(X, C, D, A, B, 7, 14, 31);
+    ROUND2(X, B, C, D, A, 12, 20, 32);
 
 
-    ROUND3(A, B, C, D, 5, Si, 33);
-    ROUND3(D, A, B, C, 8, Sj, 34);
-    ROUND3(C, D, A, B, 11, Sk, 35);
-    ROUND3(B, C, D, A, 14, Sl, 36);
-    ROUND3(A, B, C, D, 1, Si, 37);
-    ROUND3(D, A, B, C, 4, Sj, 38);
-    ROUND3(C, D, A, B, 7, Sk, 39);
-    ROUND3(B, C, D, A, 10, Sl, 40);
-    ROUND3(A, B, C, D, 13, Si, 41);
-    ROUND3(D, A, B, C, 0, Sj, 42);
-    ROUND3(C, D, A, B, 3, Sk, 43);
-    ROUND3(B, C, D, A, 6, Sl, 44);
-    ROUND3(A, B, C, D, 9, Si, 45);
-    ROUND3(D, A, B, C, 12, Sj, 46);
-    ROUND3(C, D, A, B, 15, Sk, 47);
-    ROUND3(B, C, D, A, 2, Sl, 48);
+    ROUND3(X, A, B, C, D, 5, 4, 33);
+    ROUND3(X, D, A, B, C, 8, 11, 34);
+    ROUND3(X, C, D, A, B, 11, 16, 35);
+    ROUND3(X, B, C, D, A, 14, 23, 36);
+    ROUND3(X, A, B, C, D, 1, 4, 37);
+    ROUND3(X, D, A, B, C, 4, 11, 38);
+    ROUND3(X, C, D, A, B, 7, 16, 39);
+    ROUND3(X, B, C, D, A, 10, 23, 40);
+    ROUND3(X, A, B, C, D, 13, 4, 41);
+    ROUND3(X, D, A, B, C, 0, 11, 42);
+    ROUND3(X, C, D, A, B, 3, 16, 43);
+    ROUND3(X, B, C, D, A, 6, 23, 44);
+    ROUND3(X, A, B, C, D, 9, 4, 45);
+    ROUND3(X, D, A, B, C, 12, 11, 46);
+    ROUND3(X, C, D, A, B, 15, 16, 47);
+    ROUND3(X, B, C, D, A, 2, 23, 48);
 
-    ROUND4(A, B, C, D, 0, Sm, 49);
-    ROUND4(D, A, B, C, 7, Sn, 50);
-    ROUND4(C, D, A, B, 14, So, 51);
-    ROUND4(B, C, D, A, 5, Sp, 52);
-    ROUND4(A, B, C, D, 12, Sm, 53);
-    ROUND4(D, A, B, C, 3, Sn, 54);
-    ROUND4(C, D, A, B, 10, So, 55);
-    ROUND4(B, C, D, A, 1, Sp, 56);
-    ROUND4(A, B, C, D, 8, Sm, 57);
-    ROUND4(D, A, B, C, 15, Sn, 58);
-    ROUND4(C, D, A, B, 6, So, 59);
-    ROUND4(B, C, D, A, 13, Sp, 60);
-    ROUND4(A, B, C, D, 4, Sm, 61);
-    ROUND4(D, A, B, C, 11, Sn, 62);
-    ROUND4(C, D, A, B, 2, So, 63);
-    ROUND4(B, C, D, A, 9, Sp, 64);
+    ROUND4(X, A, B, C, D, 0, 6, 49);
+    ROUND4(X, D, A, B, C, 7, 10, 50);
+    ROUND4(X, C, D, A, B, 14, 15, 51);
+    ROUND4(X, B, C, D, A, 5, 21, 52);
+    ROUND4(X, A, B, C, D, 12, 6, 53);
+    ROUND4(X, D, A, B, C, 3, 10, 54);
+    ROUND4(X, C, D, A, B, 10, 15, 55);
+    ROUND4(X, B, C, D, A, 1, 21, 56);
+    ROUND4(X, A, B, C, D, 8, 6, 57);
+    ROUND4(X, D, A, B, C, 15, 10, 58);
+    ROUND4(X, C, D, A, B, 6, 15, 59);
+    ROUND4(X, B, C, D, A, 13, 21, 60);
+    ROUND4(X, A, B, C, D, 4, 6, 61);
+    ROUND4(X, D, A, B, C, 11, 10, 62);
+    ROUND4(X, C, D, A, B, 2, 15, 63);
+    ROUND4(X, B, C, D, A, 9, 21, 64);
 
     md5_sta += A;
     md5_stb += B;

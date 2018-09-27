@@ -12,13 +12,8 @@
 #include <cstdio>
 #include <cstdint>
 
-#ifndef RAWBUFSIZE
-#define RAWBUFSIZE 65536
-#endif
-
-#ifndef BUFFERSIZE
-#define BUFFERSIZE 4096
-#endif
+const size_t TD_RAWBUFSIZE = 65536;
+const size_t TD_BUFFERSIZE = 4096;
 
 class HappyFile
 {
@@ -31,8 +26,8 @@ class HappyFile
         int64_t buffer_start;
         int64_t buffer_fill;
 
-        char rawbuf[RAWBUFSIZE];
-        char buffer[BUFFERSIZE];
+        char rawbuf[TD_RAWBUFSIZE];
+        char buffer[TD_BUFFERSIZE];
 
         void init();
 

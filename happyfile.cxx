@@ -26,7 +26,7 @@ HappyFile::~HappyFile()
 
 void HappyFile::init()
 {
-    std::setvbuf(fh, rawbuf, _IOFBF, RAWBUFSIZE);
+    std::setvbuf(fh, rawbuf, _IOFBF, TD_RAWBUFSIZE);
     pos = 0;
     buffer_start = 0;
     buffer_fill = 0;
@@ -91,7 +91,7 @@ size_t HappyFile::read(void *ptr, size_t size)
     do
     {
         buffer_start += buffer_fill;
-        buffer_fill = (int64_t)std::fread(buffer, 1, BUFFERSIZE, fh);
+        buffer_fill = (int64_t)std::fread(buffer, 1, TD_BUFFERSIZE, fh);
 
         if (buffer_fill == 0)
             break;

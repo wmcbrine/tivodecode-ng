@@ -7,7 +7,7 @@
 
 #include "hexlib.hxx"
 
-#define COLS 16
+const int COLS = 16;
 
 void hexbulk(uint8_t *buf, int n)
 {

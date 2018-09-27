@@ -32,7 +32,7 @@
 
 #include <cstdint>
 
-#define MD5_BUFLEN	64
+const unsigned int MD5_BUFLEN = 64;
 
 class MD5
 {
