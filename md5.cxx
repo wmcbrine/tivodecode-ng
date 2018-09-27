@@ -107,33 +107,25 @@ inline uint32_t I(uint32_t X, uint32_t Y, uint32_t Z)
 inline void ROUND1(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a += F(b, c, d) + X[k] + T[i];
-    a = SHIFT(a, s);
-    a += b;
+    a = SHIFT(a + F(b, c, d) + X[k] + T[i], s) + b;
 }
 
 inline void ROUND2(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a += G(b, c, d) + X[k] + T[i];
-    a = SHIFT(a, s);
-    a += b;
+    a = SHIFT(a + G(b, c, d) + X[k] + T[i], s) + b;
 }
 
 inline void ROUND3(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a += H(b, c, d) + X[k] + T[i];
-    a = SHIFT(a, s);
-    a += b;
+    a = SHIFT(a + H(b, c, d) + X[k] + T[i], s) + b;
 }
 
 inline void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a += I(b, c, d) + X[k] + T[i];
-    a = SHIFT(a, s);
-    a += b;
+    a = SHIFT(a + I(b, c, d) + X[k] + T[i], s) + b;
 }
 
 void MD5::init()
@@ -350,7 +342,6 @@ void MD5::calc(uint8_t *b64)
     ROUND2(X, D, A, B, C, 2, 9, 30);
     ROUND2(X, C, D, A, B, 7, 14, 31);
     ROUND2(X, B, C, D, A, 12, 20, 32);
-
 
     ROUND3(X, A, B, C, D, 5, 4, 33);
     ROUND3(X, D, A, B, C, 8, 11, 34);
