@@ -105,8 +105,8 @@ void TuringState::setup_metadata_key(uint8_t *buffer,
 
     for (i = 0; i < 16; ++i)
     {
-        metakey[2*i + 0] = lookup[(md5result[i] >> 4) & 0xf];
-        metakey[2*i + 1] = lookup[ md5result[i]       & 0xf];
+        metakey[2 * i    ] = lookup[(md5result[i] >> 4) & 0xf];
+        metakey[2 * i + 1] = lookup[ md5result[i]       & 0xf];
     }
     metakey[32] = '\0';
 
