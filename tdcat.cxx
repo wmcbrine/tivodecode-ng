@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
+#include <string>
 
 #include "getopt_td.hxx"
 #include "cli_common.hxx"
@@ -46,13 +47,10 @@ int main(int argc, const char **argv)
     bool o_chunk_1 = true;
     bool o_chunk_2 = false;
 
-    bool makgiven = false;
-
     const char *tivofile = NULL;
     const char *outfile  = NULL;
 
-    char mak[12];
-    std::memset(mak, 0, sizeof(mak));
+    std::string mak = "";
 
     TuringState turing;
     std::memset(&turing, 0, sizeof(turing));
@@ -73,9 +71,7 @@ int main(int argc, const char **argv)
         switch (c)
         {
             case 'm':
-                std::strncpy(mak, td_optarg, 11);
-                mak[11] = '\0';
-                makgiven = true;
+                mak = td_optarg;
                 break;
             case 'o':
                 //if the output file is to be stdout then the argv
@@ -111,8 +107,8 @@ int main(int argc, const char **argv)
         }
     }
 
-    if (!makgiven)
-        makgiven = get_mak_from_conf_file(mak);
+    if ("" == mak)
+        mak = get_mak_from_conf_file();
 
     if (td_optind < argc)
     {
@@ -121,7 +117,7 @@ int main(int argc, const char **argv)
             do_help(argv[0], 4);
     }
 
-    if (!makgiven || !tivofile)
+    if (("" == mak) || !tivofile)
         do_help(argv[0], 5);
 
     HappyFile *hfh = new HappyFile;

@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <iostream>
+#include <string>
 
 #include "hexlib.hxx"
 #include "tivo_parse.hxx"
@@ -155,20 +156,14 @@ void TiVoStreamChunk::dump()
     }
 }
 
-void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, char *pMAK)
+void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, std::string &mak)
 {
-    if (NULL == pTuring || NULL == pMAK)
-    {
-        std::perror("bad param");
-        return;
-    }
-
-    pTuring->setup_key(pData, dataSize, pMAK);
+    pTuring->setup_key(pData, dataSize, mak);
 }
 
-void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, char *pMAK)
+void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, std::string &mak)
 {
-    pTuring->setup_metadata_key(pData, dataSize, pMAK);
+    pTuring->setup_metadata_key(pData, dataSize, mak);
 
 //    std::cerr << "METADATA TURING DUMP : INIT\n";
 //    pTuring->dump();

@@ -1,6 +1,8 @@
 #ifndef TIVO_PARSE_HXX_
 #define TIVO_PARSE_HXX_
 
+#include <string>
+
 #include "happyfile.hxx"
 #include "Turing.hxx"
 #include "turing_stream.hxx"
@@ -67,8 +69,8 @@ class TiVoStreamChunk
         bool     write(HappyFile *file);
         void     dump();
 
-        void     setupTuringKey(TuringState *pTuring, char *pMAK);
-        void     setupMetadataKey(TuringState *pTuring, char *pMAK);
+        void     setupTuringKey(TuringState *pTuring, std::string &mak);
+        void     setupMetadataKey(TuringState *pTuring, std::string &mak);
         void     decryptMetadata(TuringState *pTuring, uint16_t offsetVal);
 
         TiVoStreamChunk();
