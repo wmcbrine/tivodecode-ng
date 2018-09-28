@@ -155,7 +155,7 @@ void TiVoStreamChunk::dump()
     }
 }
 
-void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, uint8_t *pMAK)
+void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, char *pMAK)
 {
     if (NULL == pTuring || NULL == pMAK)
     {
@@ -163,12 +163,12 @@ void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, uint8_t *pMAK)
         return;
     }
 
-    pTuring->setup_key(pData, dataSize, (char *)pMAK);
+    pTuring->setup_key(pData, dataSize, pMAK);
 }
 
-void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, uint8_t *pMAK)
+void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, char *pMAK)
 {
-    pTuring->setup_metadata_key(pData, dataSize, (char *)pMAK);
+    pTuring->setup_metadata_key(pData, dataSize, pMAK);
 
 //    std::cerr << "METADATA TURING DUMP : INIT\n";
 //    pTuring->dump();

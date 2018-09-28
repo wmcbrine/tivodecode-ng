@@ -187,8 +187,8 @@ int main(int argc, const char **argv)
 
         if (TIVO_CHUNK_PLAINTEXT_XML == pChunks[i].type)
         {
-            pChunks[i].setupTuringKey(&turing, (uint8_t*)mak);
-            pChunks[i].setupMetadataKey(&metaturing, (uint8_t*)mak);
+            pChunks[i].setupTuringKey(&turing, mak);
+            pChunks[i].setupMetadataKey(&metaturing, mak);
         }
         else if (TIVO_CHUNK_ENCRYPTED_XML == pChunks[i].type)
         {
