@@ -100,6 +100,20 @@ bool TiVoDecoderPS::process()
     return true;
 }
 
+#define LOOK_AHEAD(fh, bytes, n) do {\
+    int retval = fh->read((bytes) + looked_ahead, (n) - looked_ahead);\
+    if ( retval == 0 )\
+    {\
+        return 0;  \
+    }\
+    else if ( retval != (n) - looked_ahead) { \
+        perror ("read"); \
+        return -1; \
+    } else { \
+        looked_ahead = (n); \
+    } \
+} while (0)
+
 int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 {
     static union {

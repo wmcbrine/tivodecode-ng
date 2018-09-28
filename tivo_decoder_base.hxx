@@ -4,20 +4,6 @@
 #include "tivo_parse.hxx"
 #include "turing_stream.hxx"
 
-#define LOOK_AHEAD(fh, bytes, n) do {\
-    int retval = fh->read((bytes) + looked_ahead, (n) - looked_ahead);\
-    if ( retval == 0 )\
-    {\
-        return 0;  \
-    }\
-    else if ( retval != (n) - looked_ahead) { \
-        perror ("read"); \
-        return -1; \
-    } else { \
-        looked_ahead = (n); \
-    } \
-} while (0)
-
 class TiVoDecoder
 {
     public:
