@@ -111,7 +111,7 @@ void SHA1::init()
 
 /* Run your data through this. */
 
-void SHA1::update(uint8_t *data, size_t len)
+void SHA1::update(const uint8_t *data, size_t len)
 {
     unsigned int i, j;
 
