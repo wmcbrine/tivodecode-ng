@@ -156,12 +156,14 @@ void TiVoStreamChunk::dump()
     }
 }
 
-void TiVoStreamChunk::setupTuringKey(TuringState *pTuring, std::string &mak)
+void TiVoStreamChunk::setupTuringKey(TuringState *pTuring,
+                                     const std::string &mak)
 {
     pTuring->setup_key(pData, dataSize, mak);
 }
 
-void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring, std::string &mak)
+void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring,
+                                       const std::string &mak)
 {
     pTuring->setup_metadata_key(pData, dataSize, mak);
 

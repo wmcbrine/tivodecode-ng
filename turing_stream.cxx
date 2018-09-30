@@ -76,7 +76,7 @@ product or in the associated documentation.
 #include "turing_stream.hxx"
 
 void TuringState::setup_key(uint8_t *buffer, size_t buffer_length,
-                            std::string &mak)
+                            const std::string &mak)
 {
     SHA1 context;
 
@@ -87,18 +87,18 @@ void TuringState::setup_key(uint8_t *buffer, size_t buffer_length,
 }
 
 void TuringState::setup_metadata_key(uint8_t *buffer,
-                                     size_t buffer_length, std::string &mak)
+                                     size_t buffer_length,
+                                     const std::string &mak)
 {
     static const char lookup[] = "0123456789abcdef";
-    static const uint8_t media_mak_prefix[] = "tivo:TiVo DVR:";
     MD5 md5;
     int i;
     uint8_t md5result[16];
     std::string metakey = "";
 
     md5.init();
-    md5.loop(media_mak_prefix, sizeof(media_mak_prefix) - 1);
-    md5.loop((const uint8_t *)mak.data(), mak.size());
+    md5.loop("tivo:TiVo DVR:");
+    md5.loop(mak);
 
     md5.pad();
     md5.result(md5result);

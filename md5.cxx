@@ -140,13 +140,15 @@ void MD5::init()
     std::memset(md5_buf, 0, sizeof(md5_buf));
 }
 
-void MD5::loop(const uint8_t *input, size_t len)
+void MD5::loop(const std::string &blk)
 {
     size_t gap, i;
+    const uint8_t *input = (const uint8_t *)blk.data();
+    size_t len = blk.size();
 
     if (md5_nl + len * 8 < md5_nl)
         md5_nh++;
-    md5_nl += len * 8;		/* byte to bit */
+    md5_nl += len * 8;         /* byte to bit */
     gap = MD5_BUFLEN - md5_i;
 
     if (len >= gap)

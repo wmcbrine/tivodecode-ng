@@ -31,6 +31,7 @@
 #define _NETINET6_MD5_H_
 
 #include <cstdint>
+#include <string>
 
 const size_t MD5_BUFLEN = 64;
 
@@ -59,7 +60,7 @@ class MD5
 
     public:
         void init();
-        void loop(const uint8_t *, size_t);
+        void loop(const std::string &);
         void pad();
         void result(uint8_t *);
 };

@@ -154,10 +154,10 @@ void SHA1::final(uint8_t digest[20])
                         >> ((3 - (i & 3)) * 8)) & 255);  /* Either-endian */
     }
 
-    update((uint8_t *)"\200", 1);
+    update((const uint8_t *)"\200", 1);
 
     while ((count[0] & 504) != 448)
-        update((uint8_t *)"\0", 1);
+        update((const uint8_t *)"\0", 1);
 
     update(finalcount, 8);  /* Should cause a transform() */
 
