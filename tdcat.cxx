@@ -14,8 +14,6 @@
 #include "getopt_td.hxx"
 #include "cli_common.hxx"
 #include "tivo_parse.hxx"
-#include "tivo_decoder_ts.hxx"
-#include "tivo_decoder_ps.hxx"
 
 static struct td_option long_options[] = {
     {"mak", true, 'm'},
