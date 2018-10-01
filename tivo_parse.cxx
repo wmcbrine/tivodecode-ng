@@ -156,38 +156,21 @@ void TiVoStreamChunk::dump()
     }
 }
 
-void TiVoStreamChunk::setupTuringKey(TuringState *pTuring,
+void TiVoStreamChunk::setupTuringKey(TuringState &turing,
                                      const std::string &mak)
 {
-    pTuring->setup_key(pData, dataSize, mak);
+    turing.setup_key(pData, dataSize, mak);
 }
 
-void TiVoStreamChunk::setupMetadataKey(TuringState *pTuring,
+void TiVoStreamChunk::setupMetadataKey(TuringState &turing,
                                        const std::string &mak)
 {
-    pTuring->setup_metadata_key(pData, dataSize, mak);
-
-//    std::cerr << "METADATA TURING DUMP : INIT\n";
-//    pTuring->dump();
+    turing.setup_metadata_key(pData, dataSize, mak);
 }
 
-void TiVoStreamChunk::decryptMetadata(TuringState *pTuring, uint16_t offsetVal)
+void TiVoStreamChunk::decryptMetadata(TuringState &turing, uint16_t offsetVal)
 {
-//    std::cerr << "METADATA TURING DECRYPT : INIT : offsetVal " << offsetVal << "\n";
-//    pTuring->dump();
-
-    pTuring->prepare_frame(0, 0);
-
-//    std::cerr << "METADATA TURING DECRYPT : AFTER PREPARE\n";
-//    pTuring->dump();
-
-    pTuring->skip_data(offsetVal);
-
-//    std::cerr << "METADATA TURING DECRYPT : AFTER SKIP\n";
-//    pTuring->dump(pTuring);
-
-    pTuring->decrypt_buffer(pData, dataSize);
-
-//    std::cerr << "METADATA TURING DECRYPT : AFTER DECRYPT\n";
-//    pTuring->dump();
+    turing.prepare_frame(0, 0);
+    turing.skip_data(offsetVal);
+    turing.decrypt_buffer(pData, dataSize);
 }

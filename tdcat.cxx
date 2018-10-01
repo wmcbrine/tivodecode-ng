@@ -166,13 +166,13 @@ int main(int argc, const char **argv)
 
         if (TIVO_CHUNK_PLAINTEXT_XML == pChunks[i].type)
         {
-            pChunks[i].setupTuringKey(&turing, mak);
-            pChunks[i].setupMetadataKey(&metaturing, mak);
+            pChunks[i].setupTuringKey(turing, mak);
+            pChunks[i].setupMetadataKey(metaturing, mak);
         }
         else if (TIVO_CHUNK_ENCRYPTED_XML == pChunks[i].type)
         {
             uint16_t offsetVal = chunk_start - current_meta_stream_pos;
-            pChunks[i].decryptMetadata(&metaturing, offsetVal);
+            pChunks[i].decryptMetadata(metaturing, offsetVal);
             current_meta_stream_pos = chunk_start + pChunks[i].dataSize;
         }
         else

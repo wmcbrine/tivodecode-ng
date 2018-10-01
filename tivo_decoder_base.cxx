@@ -6,18 +6,11 @@
 
 #include "tivo_decoder_base.hxx"
 
-TiVoDecoder::TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
-                         HappyFile *pOutfile)
+TiVoDecoder::TiVoDecoder(TuringState &pTuringState, HappyFile *pInfile,
+                         HappyFile *pOutfile) : pTuring(pTuringState),
+                         pFileIn(pInfile), pFileOut(pOutfile)
 {
-    isValid = false;
-
-    if (!pTuringState || !pInfile || !pOutfile)
-        return;
-
     running  = true;
-    pFileIn  = pInfile;
-    pFileOut = pOutfile;
-    pTuring  = pTuringState;
     isValid  = true;
 }
 

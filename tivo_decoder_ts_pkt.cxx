@@ -357,7 +357,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
     {
         std::cerr << "AAA : dump turing : INIT\n";
 
-        pParent->pTuring->dump();
+        pParent->pTuring.dump();
     }
 
     if (pParent->do_header(&turing_stuff.key[0],
@@ -377,7 +377,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
                   << stream_id << ", block_no: "
                   << turing_stuff.block_no << "\n";
 
-    pParent->pTuring->prepare_frame(stream_id, turing_stuff.block_no);
+    pParent->pTuring.prepare_frame(stream_id, turing_stuff.block_no);
 
     if (IS_VVVERBOSE)
     {
@@ -387,10 +387,10 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
 
         std::cerr << "ZZZ : dump turing : BEFORE DECRYPT\n";
 
-        pParent->pTuring->dump();
+        pParent->pTuring.dump();
     }
 
-    pParent->pTuring->decrypt_buffer(pBuffer, bufferLen);
+    pParent->pTuring.decrypt_buffer(pBuffer, bufferLen);
 
     if (IS_VVVERBOSE)
     {

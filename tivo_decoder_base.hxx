@@ -10,7 +10,7 @@ class TiVoDecoder
 
         bool         running;
         bool         isValid;
-        TuringState *pTuring;
+        TuringState &pTuring;
         HappyFile   *pFileIn;
         HappyFile   *pFileOut;
 
@@ -19,7 +19,7 @@ class TiVoDecoder
 
         virtual bool process() = 0;
 
-        TiVoDecoder(TuringState *pTuringState, HappyFile *pInfile,
+        TiVoDecoder(TuringState &pTuringState, HappyFile *pInfile,
                     HappyFile *pOutfile);
         virtual ~TiVoDecoder();
 };

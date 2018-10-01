@@ -69,9 +69,9 @@ class TiVoStreamChunk
         bool     write(HappyFile *file);
         void     dump();
 
-        void     setupTuringKey(TuringState *pTuring, const std::string &mak);
-        void     setupMetadataKey(TuringState *pTuring, const std::string &mak);
-        void     decryptMetadata(TuringState *pTuring, uint16_t offsetVal);
+        void     setupTuringKey(TuringState &turing, const std::string &mak);
+        void     setupMetadataKey(TuringState &turing, const std::string &mak);
+        void     decryptMetadata(TuringState &turing, uint16_t offsetVal);
 
         TiVoStreamChunk();
         ~TiVoStreamChunk();

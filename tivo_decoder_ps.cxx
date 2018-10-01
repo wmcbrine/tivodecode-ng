@@ -38,7 +38,7 @@ static packet_tag_info packet_tags[] = {
 };
 
 TiVoDecoderPS::TiVoDecoderPS(
-        TuringState *pTuringState,
+        TuringState &pTuringState,
         HappyFile *pInfile,
         HappyFile *pOutfile) :
     TiVoDecoder(pTuringState,
@@ -221,7 +221,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                                                   << code << " block_no "
                                                   << block_no << "\n";
 
-                                    pTuring->prepare_frame(code, block_no);
+                                    pTuring.prepare_frame(code, block_no);
 
                                     if (IS_VVERBOSE)
                                     {
@@ -233,7 +233,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                                                   << crypted << " len 4\n";
                                     }
 
-                                    pTuring->decrypt_buffer((uint8_t *)&crypted, 4);
+                                    pTuring.decrypt_buffer((uint8_t *)&crypted, 4);
 
                                     if (IS_VVERBOSE)
                                     {
@@ -294,7 +294,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                             std::cerr << "---Turing : decrypt : size "
                                       << packet_size << "\n";
 
-                        pTuring->decrypt_buffer(packet_ptr, packet_size);
+                        pTuring.decrypt_buffer(packet_ptr, packet_size);
 
                         // turn off scramble bits
                         aligned_buf.packet_buffer[sizeof(uint64_t) + 2] &= ~0x30;

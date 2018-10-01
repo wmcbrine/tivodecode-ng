@@ -174,7 +174,7 @@ class TiVoDecoderTS : public TiVoDecoder
         int handlePkt_TiVo(TiVoDecoderTsPacket *pPkt);
 
         virtual bool process();
-        TiVoDecoderTS(TuringState *pTuringState, HappyFile *pInfile,
+        TiVoDecoderTS(TuringState &pTuringState, HappyFile *pInfile,
                       HappyFile *pOutfile);
         ~TiVoDecoderTS();
 };
