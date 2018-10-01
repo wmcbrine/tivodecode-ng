@@ -116,11 +116,7 @@ bool TiVoDecoderPS::process()
 
 int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 {
-    static union {
-        uint64_t align;
-        uint8_t packet_buffer[65536 + sizeof(uint64_t) + 2];
-    } aligned_buf;
-
+    static uint8_t packet_buffer[65536 + sizeof(uint64_t) + 2];
     uint8_t bytes[32];
     int looked_ahead = 0;
     int i;
@@ -265,17 +261,17 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 
                 length = bytes[1] | (bytes[0] << 8);
 
-                std::memcpy(aligned_buf.packet_buffer + sizeof(uint64_t),
+                std::memcpy(packet_buffer + sizeof(uint64_t),
                             bytes, looked_ahead);
 
-                LOOK_AHEAD (pFileIn, aligned_buf.packet_buffer +
+                LOOK_AHEAD (pFileIn, packet_buffer +
                             sizeof(uint64_t), length + 2);
                 {
-                    uint8_t *packet_ptr = aligned_buf.packet_buffer +
+                    uint8_t *packet_ptr = packet_buffer +
                         sizeof(uint64_t);
                     size_t packet_size;
 
-                    aligned_buf.packet_buffer[sizeof(uint64_t) - 1] = code;
+                    packet_buffer[sizeof(uint64_t) - 1] = code;
 
                     if (header_len)
                     {
@@ -297,7 +293,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                         pTuring.active->decrypt_buffer(packet_ptr, packet_size);
 
                         // turn off scramble bits
-                        aligned_buf.packet_buffer[sizeof(uint64_t) + 2] &= ~0x30;
+                        packet_buffer[sizeof(uint64_t) + 2] &= ~0x30;
 
                         // scan video buffer for Slices.  If no slices are
                         // found, the MAK is wrong.
@@ -307,11 +303,11 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 
                             for (offset = sizeof(uint64_t); offset + 4 < packet_size; offset++)
                             {
-                                if (aligned_buf.packet_buffer[offset] == 0x00 &&
-                                    aligned_buf.packet_buffer[offset + 1] == 0x00 &&
-                                    aligned_buf.packet_buffer[offset + 2] == 0x01 &&
-                                    aligned_buf.packet_buffer[offset + 3] >= 0x01 &&
-                                    aligned_buf.packet_buffer[offset + 3] <= 0xAF)
+                                if (packet_buffer[offset] == 0x00 &&
+                                    packet_buffer[offset + 1] == 0x00 &&
+                                    packet_buffer[offset + 2] == 0x01 &&
+                                    packet_buffer[offset + 3] >= 0x01 &&
+                                    packet_buffer[offset + 3] <= 0xAF)
                                 {
                                     slice_count++;
                                 }
@@ -335,10 +331,10 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                         // don't know why, but tivo dll does this.
                         // I can find no good docs on the format of the program_stream_map
                         // but I think this clears a reserved bit.  No idea why
-                        aligned_buf.packet_buffer[sizeof(uint64_t) + 2] &= ~0x20;
+                        packet_buffer[sizeof(uint64_t) + 2] &= ~0x20;
                     }
 
-                    if (pFileOut->write(aligned_buf.packet_buffer +
+                    if (pFileOut->write(packet_buffer +
                                     sizeof(uint64_t) - 1, length + 3) !=
                         (size_t)(length + 3))
                     {
