@@ -72,15 +72,7 @@ int main(int argc, const char **argv)
                 mak = td_optarg;
                 break;
             case 'o':
-                //if the output file is to be stdout then the argv
-                //will be null and the next argc will be "-"
-                if (td_optarg == NULL && !std::strcmp(argv[td_optind + 1], "-"))
-                {
-                    outfile = "-";
-                    td_optind++;
-                }
-                else
-                    outfile = td_optarg;
+                outfile = td_optarg;
                 break;
             case 'h':
                 do_help(argv[0], 1);
