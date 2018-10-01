@@ -239,8 +239,7 @@ int main(int argc, const char **argv)
         pDecoder = new TiVoDecoderPS(turing, hfh, ofh);
     else if (TIVO_FORMAT_TS == header.getFormatType())
         pDecoder = new TiVoDecoderTS(turing, hfh, ofh);
-
-    if (NULL == pDecoder)
+    else
     {
         std::perror("Unable to create TiVo Decoder");
         return 9;
