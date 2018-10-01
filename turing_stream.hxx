@@ -27,6 +27,7 @@ class TuringStateStream
 
         void decrypt_buffer(uint8_t *buffer, size_t buffer_length);
         void skip_data(size_t bytes_to_skip);
+        void dump();
 };
 
 class TuringState

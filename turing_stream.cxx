@@ -77,9 +77,7 @@ product or in the associated documentation.
 
 void TuringStateStream::decrypt_buffer(uint8_t *buffer, size_t buffer_length)
 {
-    unsigned int i;
-
-    for (i = 0; i < buffer_length; ++i)
+    for (size_t i = 0; i < buffer_length; ++i)
     {
         if (cipher_pos >= cipher_len)
         {
@@ -107,6 +105,18 @@ void TuringStateStream::skip_data(size_t bytes_to_skip)
 
         cipher_pos = (int)bytes_to_skip;
     }
+}
+
+void TuringStateStream::dump()
+{
+    std::cerr << "cipher_pos  : " << cipher_pos << "\n"
+                 "cipher_len  : " << cipher_len << "\n"
+                 "block_id    : " << block_id << "\n"
+                 "stream_id   : " << stream_id << "\n"
+                 "next        : " << next << "\n"
+                 "internal    : " << internal << "\n"
+                 "cipher_data :\n";
+    hexbulk(cipher_data, MAXSTREAM + sizeof(uint64_t));
 }
 
 void TuringState::setup_key(uint8_t *buffer, size_t buffer_length,
@@ -250,16 +260,7 @@ void TuringState::dump()
     std::cerr << "active      : " << &active << "\n";
 
     if (active)
-    {
-        std::cerr << "cipher_pos  : " << active->cipher_pos << "\n"
-            "cipher_len  : " << active->cipher_len << "\n"
-            "block_id    : " << active->block_id << "\n"
-            "stream_id   : " << active->stream_id << "\n"
-            "next        : " << active->next << "\n"
-            "internal    : " << active->internal << "\n"
-            "cipher_data :\n";
-        hexbulk(active->cipher_data, MAXSTREAM + sizeof(uint64_t));
-    }
+        active->dump();
 
     std::cerr << "\n\n";
 }
