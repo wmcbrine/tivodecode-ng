@@ -233,7 +233,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                                                   << crypted << " len 4\n";
                                     }
 
-                                    pTuring.decrypt_buffer((uint8_t *)&crypted, 4);
+                                    pTuring.active->decrypt_buffer((uint8_t *)&crypted, 4);
 
                                     if (IS_VVERBOSE)
                                     {
@@ -294,7 +294,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                             std::cerr << "---Turing : decrypt : size "
                                       << packet_size << "\n";
 
-                        pTuring.decrypt_buffer(packet_ptr, packet_size);
+                        pTuring.active->decrypt_buffer(packet_ptr, packet_size);
 
                         // turn off scramble bits
                         aligned_buf.packet_buffer[sizeof(uint64_t) + 2] &= ~0x30;

@@ -390,7 +390,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
         pParent->pTuring.dump();
     }
 
-    pParent->pTuring.decrypt_buffer(pBuffer, bufferLen);
+    pParent->pTuring.active->decrypt_buffer(pBuffer, bufferLen);
 
     if (IS_VVVERBOSE)
     {

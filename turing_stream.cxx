@@ -75,6 +75,40 @@ product or in the associated documentation.
 #include "Turing.hxx"		/* interface definitions */
 #include "turing_stream.hxx"
 
+void TuringStateStream::decrypt_buffer(uint8_t *buffer, size_t buffer_length)
+{
+    unsigned int i;
+
+    for (i = 0; i < buffer_length; ++i)
+    {
+        if (cipher_pos >= cipher_len)
+        {
+            cipher_len = internal->gen(cipher_data);
+            cipher_pos = 0;
+            //hexbulk(cipher_data, cipher_len);
+        }
+
+        buffer[i] ^= cipher_data[cipher_pos++];
+    }
+}
+
+void TuringStateStream::skip_data(size_t bytes_to_skip)
+{
+    if (cipher_pos + bytes_to_skip < (size_t)cipher_len)
+        cipher_pos += (int)bytes_to_skip;
+    else
+    {
+        do
+        {
+            bytes_to_skip -= cipher_len - cipher_pos;
+            cipher_len = internal->gen(cipher_data);
+            cipher_pos = 0;
+        } while (bytes_to_skip >= (size_t)cipher_len);
+
+        cipher_pos = (int)bytes_to_skip;
+    }
+}
+
 void TuringState::setup_key(uint8_t *buffer, size_t buffer_length,
                             const std::string &mak)
 {
@@ -151,7 +185,7 @@ void TuringState::prepare_frame_helper(uint8_t stream_id, int block_id)
 
 #define CREATE_TURING_LISTITM(nxt, stream_id, block_id) \
     do { \
-        active = new turing_state_stream; \
+        active = new TuringStateStream; \
         active->next = (nxt); \
         (nxt) = active; \
         active->internal = new Turing; \
@@ -164,7 +198,7 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
     {
         if (active->stream_id != stream_id)
         {
-            turing_state_stream *start = active;
+            TuringStateStream *start = active;
             do
             {
                 active = active->next;
@@ -188,48 +222,14 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
     }
 }
 
-void TuringState::decrypt_buffer(uint8_t *buffer, size_t buffer_length)
-{
-    unsigned int i;
-
-    for (i = 0; i < buffer_length; ++i)
-    {
-        if (active->cipher_pos >= active->cipher_len)
-        {
-            active->cipher_len = active->internal->gen(active->cipher_data);
-            active->cipher_pos = 0;
-            //hexbulk(active->cipher_data, active->cipher_len);
-        }
-
-        buffer[i] ^= active->cipher_data[active->cipher_pos++];
-    }
-}
-
-void TuringState::skip_data(size_t bytes_to_skip)
-{
-    if (active->cipher_pos + bytes_to_skip < (size_t)active->cipher_len)
-        active->cipher_pos += (int)bytes_to_skip;
-    else
-    {
-        do
-        {
-            bytes_to_skip -= active->cipher_len - active->cipher_pos;
-            active->cipher_len = active->internal->gen(active->cipher_data);
-            active->cipher_pos = 0;
-        } while (bytes_to_skip >= (size_t)active->cipher_len);
-
-        active->cipher_pos = (int)bytes_to_skip;
-    }
-}
-
 void TuringState::destruct()
 {
     if (active)
     {
-        turing_state_stream *start = active;
+        TuringStateStream *start = active;
         do
         {
-            turing_state_stream *prev = active;
+            TuringStateStream *prev = active;
             delete active->internal;
             active = active->next;
             if (prev)

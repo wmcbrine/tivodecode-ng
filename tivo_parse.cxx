@@ -171,6 +171,6 @@ void TiVoStreamChunk::setupMetadataKey(TuringState &turing,
 void TiVoStreamChunk::decryptMetadata(TuringState &turing, uint16_t offsetVal)
 {
     turing.prepare_frame(0, 0);
-    turing.skip_data(offsetVal);
-    turing.decrypt_buffer(pData, dataSize);
+    turing.active->skip_data(offsetVal);
+    turing.active->decrypt_buffer(pData, dataSize);
 }
