@@ -107,6 +107,11 @@ void TuringStateStream::skip_data(size_t bytes_to_skip)
     }
 }
 
+TuringState::TuringState()
+{
+    active = NULL;
+}
+
 void TuringStateStream::dump()
 {
     std::cerr << "cipher_pos  : " << cipher_pos << "\n"

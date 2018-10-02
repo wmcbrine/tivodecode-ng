@@ -42,6 +42,10 @@ static void do_help(const char *arg0, int exitval)
 
 int main(int argc, const char **argv)
 {
+    TuringState turing;
+    TuringState metaturing;
+    TiVoStreamHeader header;
+
     bool o_chunk_1 = true;
     bool o_chunk_2 = false;
 
@@ -50,14 +54,7 @@ int main(int argc, const char **argv)
 
     std::string mak = "";
 
-    TuringState turing;
-    std::memset(&turing, 0, sizeof(turing));
-
-    TuringState metaturing;
-    std::memset(&metaturing, 0, sizeof(metaturing));
     int64_t current_meta_stream_pos = 0;
-
-    TiVoStreamHeader header;
 
     while (true)
     {

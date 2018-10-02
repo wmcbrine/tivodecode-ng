@@ -38,6 +38,7 @@ class TuringState
     public:
         TuringStateStream *active;
 
+        TuringState();
         void setup_key(uint8_t *buffer, size_t buffer_length,
                        const std::string &mak);
         void setup_metadata_key(uint8_t *buffer, size_t buffer_length,
