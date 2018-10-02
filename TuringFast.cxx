@@ -86,20 +86,6 @@ inline uint32_t ROTL(uint32_t w, int x)
     return (w << x) | (w >> (32 - x));
 }
 
-/* give correct offset for the current position of the register,
- * where logically R[0] is at position "zero".
- */
-inline int OFF(int zero, int i)
-{
-    return (zero + i) % LFSRLEN;
-}
-
-/* step the LFSR */
-/* After stepping, "zero" moves right one place */
-#define STEP(z) \
-    R[OFF(z, 0)] = R[OFF(z, 15)] ^ R[OFF(z, 4)] ^ \
-	(R[OFF(z, 0)] << 8) ^ Multab[(R[OFF(z, 0)] >> 24) & 0xFF]
-
 /*
  * This does a reversible transformation of a word, based on the S-boxes.
  * The reversibility isn't used, but it guarantees no loss of information,
@@ -120,14 +106,6 @@ static uint32_t fixedS(uint32_t w)
 
     return w;
 }
-
-/*
- * Push a word through the keyed S-boxes.
- */
-#define S(w, b) (S0[BYTE((w), ((0 + b) & 0x3))] \
-               ^ S1[BYTE((w), ((1 + b) & 0x3))] \
-               ^ S2[BYTE((w), ((2 + b) & 0x3))] \
-               ^ S3[BYTE((w), ((3 + b) & 0x3))])
 
 /* two variants of the Pseudo-Hadamard Transform */
 
@@ -243,32 +221,62 @@ void Turing::IV(const uint8_t iv[], const int ivlength)
     mixwords(R, LFSRLEN);
 }
 
+/* give correct offset for the current position of the register,
+ * where logically R[0] is at position "zero".
+ */
+inline int OFF(int zero, int i)
+{
+    return (zero + i) % LFSRLEN;
+}
+
+/* step the LFSR */
+/* After stepping, "zero" moves right one place
+ */
+inline void Turing::STEP(int z)
+{
+    R[OFF(z, 0)] = R[OFF(z, 15)] ^ R[OFF(z, 4)] ^
+	(R[OFF(z, 0)] << 8) ^ Multab[(R[OFF(z, 0)] >> 24) & 0xFF];
+}
+
+/*
+ * Push a word through the keyed S-boxes.
+ */
+inline uint32_t Turing::S(uint32_t w, int b)
+{
+    return S0[BYTE(w, (0 + b) & 0x3)]
+         ^ S1[BYTE(w, (1 + b) & 0x3)]
+         ^ S2[BYTE(w, (2 + b) & 0x3)]
+         ^ S3[BYTE(w, (3 + b) & 0x3)];
+}
+
 /* a single round */
-#define ROUND(z, b) \
-{ \
-    STEP(z); \
-    A = R[OFF(z + 1, 16)]; \
-        B = R[OFF(z + 1, 13)]; \
-            C = R[OFF(z + 1, 6)]; \
-                D = R[OFF(z + 1, 1)]; \
-                    E = R[OFF(z + 1, 0)]; \
-    PHT(A, B, C, D, E); \
-    A = S(A, 0); B = S(B, 1); C = S(C, 2); D = S(D, 3); E = S(E, 0); \
-    PHT(A, B, C, D, E); \
-    STEP(z + 1); \
-    STEP(z + 2); \
-    STEP(z + 3); \
-    A += R[OFF(z + 4, 14)]; \
-        B += R[OFF(z + 4, 12)]; \
-            C += R[OFF(z + 4, 8)]; \
-                D += R[OFF(z + 4, 1)]; \
-                    E += R[OFF(z + 4, 0)]; \
-    WORD2BYTE(A, b); \
-        WORD2BYTE(B, b + 4); \
-            WORD2BYTE(C, b + 8); \
-                WORD2BYTE(D, b + 12); \
-                    WORD2BYTE(E, b + 16); \
-    STEP(z + 4); \
+inline void Turing::ROUND(int z, uint8_t *b)
+{
+    uint32_t A, B, C, D, E;
+
+    STEP(z);
+    A = R[OFF(z + 1, 16)];
+        B = R[OFF(z + 1, 13)];
+            C = R[OFF(z + 1, 6)];
+                D = R[OFF(z + 1, 1)];
+                    E = R[OFF(z + 1, 0)];
+    PHT(A, B, C, D, E);
+    A = S(A, 0); B = S(B, 1); C = S(C, 2); D = S(D, 3); E = S(E, 0);
+    PHT(A, B, C, D, E);
+    STEP(z + 1);
+    STEP(z + 2);
+    STEP(z + 3);
+    A += R[OFF(z + 4, 14)];
+        B += R[OFF(z + 4, 12)];
+            C += R[OFF(z + 4, 8)];
+                D += R[OFF(z + 4, 1)];
+                    E += R[OFF(z + 4, 0)];
+    WORD2BYTE(A, b);
+        WORD2BYTE(B, b + 4);
+            WORD2BYTE(C, b + 8);
+                WORD2BYTE(D, b + 12);
+                    WORD2BYTE(E, b + 16);
+    STEP(z + 4);
 }
 
 /*
@@ -279,8 +287,6 @@ void Turing::IV(const uint8_t iv[], const int ivlength)
  */
 int Turing::gen(uint8_t *buf)
 {
-    uint32_t A, B, C, D, E;
-
     ROUND(0, buf);
     ROUND(5, buf + 20);
     ROUND(10, buf + 40);
@@ -298,5 +304,6 @@ int Turing::gen(uint8_t *buf)
     ROUND(2, buf + 280);
     ROUND(7, buf + 300);
     ROUND(12, buf + 320);
+
     return 17 * 20;
 }
