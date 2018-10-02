@@ -14,8 +14,7 @@ class TiVoDecoder
         HappyFile   *pFileIn;
         HappyFile   *pFileOut;
 
-        int do_header(uint8_t *arg_0, int *block_no, int *arg_8,
-                      int *crypted, int *arg_10, int *arg_14);
+        int do_header(uint8_t *arg_0, int &block_no, int &crypted);
 
         virtual bool process() = 0;
 

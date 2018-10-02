@@ -197,7 +197,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                                                   << crypted << "\n";
                                     }
 
-                                    if (do_header (&bytes[off], &block_no, NULL, &crypted, NULL, NULL))
+                                    if (do_header(&bytes[off], block_no, crypted))
                                     {
                                         VERBOSE( "do_header did not return 0!\n");
                                     }
