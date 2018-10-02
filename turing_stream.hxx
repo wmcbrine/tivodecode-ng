@@ -39,13 +39,13 @@ class TuringState
         TuringStateStream *active;
 
         TuringState();
+        ~TuringState();
         void setup_key(uint8_t *buffer, size_t buffer_length,
                        const std::string &mak);
         void setup_metadata_key(uint8_t *buffer, size_t buffer_length,
                                 const std::string &mak);
         void prepare_frame_helper(uint8_t stream_id, int block_id);
         void prepare_frame(uint8_t stream_id, int block_id);
-        void destruct();
         void dump();
 };
 

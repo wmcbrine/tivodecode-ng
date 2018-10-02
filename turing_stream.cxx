@@ -112,6 +112,25 @@ TuringState::TuringState()
     active = NULL;
 }
 
+TuringState::~TuringState()
+{
+    if (active)
+    {
+        TuringStateStream *start = active;
+        do
+        {
+            TuringStateStream *prev = active;
+            delete active->internal;
+            active = active->next;
+            if (prev)
+                delete prev;
+        }
+        while (active != start);
+    }
+
+    active = NULL;
+}
+
 void TuringStateStream::dump()
 {
     std::cerr << "cipher_pos  : " << cipher_pos << "\n"
@@ -235,25 +254,6 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
         /* first stream type seen */
         CREATE_TURING_LISTITM (active, stream_id, block_id);
     }
-}
-
-void TuringState::destruct()
-{
-    if (active)
-    {
-        TuringStateStream *start = active;
-        do
-        {
-            TuringStateStream *prev = active;
-            delete active->internal;
-            active = active->next;
-            if (prev)
-                delete prev;
-        }
-        while (active != start);
-    }
-
-    active = NULL;
 }
 
 void TuringState::dump()

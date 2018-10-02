@@ -188,8 +188,6 @@ int main(int argc, const char **argv)
         }
     }
 
-    metaturing.destruct();
-
     delete hfh;
     delete ofh;
 

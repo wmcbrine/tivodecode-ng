@@ -220,8 +220,6 @@ int main(int argc, const char **argv)
         }
     }
 
-//    metaturing.destruct();
-
     if (o_no_video)
         std::exit(0);
 
@@ -248,8 +246,6 @@ int main(int argc, const char **argv)
         std::perror("Failed to process file");
         return 9;
     }
-
-    turing.destruct();
 
     delete hfh;
     delete ofh;
