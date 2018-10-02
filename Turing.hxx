@@ -76,9 +76,9 @@ class Turing
         /* precalculated S-boxes */
         uint32_t S0[256], S1[256], S2[256], S3[256];
 
-        inline void STEP(int z);
-        inline uint32_t S(uint32_t w, int b);
-        inline void ROUND(int z, uint8_t *b);
+        void STEP(int z);
+        uint32_t S(uint32_t w, int b);
+        void ROUND(int z, uint8_t *b);
 
     public:
         void key(const uint8_t key[], const int keylength);
