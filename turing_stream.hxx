@@ -21,7 +21,7 @@ class TuringStateStream
 
         TuringStateStream *next;
 
-        Turing *internal;
+        Turing internal;
         uint8_t cipher_data[MAXSTREAM + sizeof(uint64_t)];
 
         void decrypt_buffer(uint8_t *buffer, size_t buffer_length);

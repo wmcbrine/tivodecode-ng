@@ -81,7 +81,7 @@ void TuringStateStream::decrypt_buffer(uint8_t *buffer, size_t buffer_length)
     {
         if (cipher_pos >= cipher_len)
         {
-            cipher_len = internal->gen(cipher_data);
+            cipher_len = internal.gen(cipher_data);
             cipher_pos = 0;
             //hexbulk(cipher_data, cipher_len);
         }
@@ -99,7 +99,7 @@ void TuringStateStream::skip_data(size_t bytes_to_skip)
         do
         {
             bytes_to_skip -= cipher_len - cipher_pos;
-            cipher_len = internal->gen(cipher_data);
+            cipher_len = internal.gen(cipher_data);
             cipher_pos = 0;
         } while (bytes_to_skip >= (size_t)cipher_len);
 
@@ -120,7 +120,6 @@ TuringState::~TuringState()
         do
         {
             TuringStateStream *prev = active;
-            delete active->internal;
             active = active->next;
             if (prev)
                 delete prev;
@@ -138,7 +137,6 @@ void TuringStateStream::dump()
                  "block_id    : " << block_id << "\n"
                  "stream_id   : " << stream_id << "\n"
                  "next        : " << next << "\n"
-                 "internal    : " << internal << "\n"
                  "cipher_data :\n";
     hexbulk(cipher_data, MAXSTREAM + sizeof(uint64_t));
 }
@@ -209,8 +207,8 @@ void TuringState::prepare_frame_helper(uint8_t stream_id, int block_id)
 
     active->cipher_pos = 0;
 
-    active->internal->key(turkey, 20);
-    active->internal->IV(turiv, 20);
+    active->internal.key(turkey, 20);
+    active->internal.IV(turiv, 20);
 
     std::memset(active->cipher_data, 0, MAXSTREAM);
 
@@ -237,7 +235,6 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
                 active = new TuringStateStream;
                 active->next = start->next;
                 start->next = active;
-                active->internal = new Turing;
                 prepare_frame_helper(stream_id, block_id);
             }
         }
@@ -251,7 +248,6 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
 
         active = new TuringStateStream;
         active->next = active;            // hmm
-        active->internal = new Turing;
         prepare_frame_helper(stream_id, block_id);
     }
 }
