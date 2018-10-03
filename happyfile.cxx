@@ -4,9 +4,9 @@
  * See COPYING file for license terms
  */
 
+#include <algorithm>
 #include <cerrno>
 #include <cstdio>
-#include <cstring>
 
 #ifdef WIN32
 # include <fcntl.h>
@@ -75,17 +75,18 @@ size_t HappyFile::read(void *ptr, size_t size)
     if (size == 0)
         return 0;
 
+    char *bstart = buffer + (pos - buffer_start);
     if ((pos + (int64_t)size) - buffer_start <= buffer_fill)
     {
-        std::memcpy(ptr, buffer + (pos - buffer_start), size);
+        std::copy(bstart, bstart + size, (char *)ptr);
         pos += (int64_t)size;
         return size;
     }
     else if (pos < buffer_start + buffer_fill)
     {
-        std::memcpy(ptr, buffer + (pos - buffer_start),
-                    (size_t)(buffer_fill - (pos - buffer_start)));
-        nbytes += (size_t)(buffer_fill - (pos - buffer_start));
+        size_t offset = buffer_fill - (pos - buffer_start);
+        std::copy(bstart, bstart + offset, (char *)ptr);
+        nbytes += offset;
     }
 
     do
@@ -96,11 +97,10 @@ size_t HappyFile::read(void *ptr, size_t size)
         if (buffer_fill == 0)
             break;
 
-        std::memcpy((char *)ptr + nbytes, buffer,
-                    (int64_t)(size - nbytes) < buffer_fill ?
-                    (size - nbytes) : (size_t)buffer_fill);
-        nbytes += (int64_t)(size - nbytes) < buffer_fill ?
-                  (size - nbytes) : (size_t)buffer_fill;
+        size_t offset = std::min(size - nbytes, (size_t)buffer_fill);
+        std::copy(buffer, buffer + offset, (char *)ptr + nbytes);
+        nbytes += offset;
+
     } while (nbytes < size);
 
     pos += (int64_t)nbytes;

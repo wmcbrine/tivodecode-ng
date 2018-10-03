@@ -4,7 +4,7 @@
  * See COPYING file for license terms
  */
 
-#include <cstring>
+#include <algorithm>
 #include <iostream>
 
 #include "hexlib.hxx"
@@ -124,7 +124,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
     int header_len = 0;
     int length;
 
-    std::memset(bytes, 0, 32);
+    std::fill(bytes, bytes + 32, 0);
 
     for (i = 0; packet_tags[i].packet != PACK_NONE; i++)
     {
@@ -261,8 +261,8 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 
                 length = bytes[1] | (bytes[0] << 8);
 
-                std::memcpy(packet_buffer + sizeof(uint64_t),
-                            bytes, looked_ahead);
+                std::copy(bytes, bytes + looked_ahead,
+                          packet_buffer + sizeof(uint64_t));
 
                 LOOK_AHEAD (pFileIn, packet_buffer +
                             sizeof(uint64_t), length + 2);

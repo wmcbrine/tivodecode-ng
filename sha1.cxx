@@ -12,7 +12,7 @@
    34AA973C D4C4DAA4 F61EEB2B DBAD2731 6534016F
 */
 
-#include <cstring>
+#include <algorithm>
 #include <cstdint>
 
 #include "sha1.hxx"
@@ -124,12 +124,13 @@ void SHA1::update(const uint8_t *data, size_t len)
 
     if ((j + len) > 63)
     {
-        std::memcpy(&buffer[j], data, (i = 64 - j));
+        i = 64 - j;
+        std::copy(data, data + i, buffer + j);
         transform(state, buffer);
 
         for ( ; i + 63 < len; i += 64)
         {
-            std::memcpy(buffer, &data[i], 64);
+            std::copy(data + i, data + i + 64, buffer);
             transform(state, buffer);
         }
 
@@ -138,7 +139,7 @@ void SHA1::update(const uint8_t *data, size_t len)
     else
         i = 0;
 
-    std::memcpy(&buffer[j], &data[i], len - i);
+    std::copy(data + i, data + len, buffer + j);
 }
 
 /* Add padding and return the message digest. */
@@ -168,5 +169,5 @@ void SHA1::final(uint8_t digest[20])
     }
 
     /* Wipe variables */
-    std::memset(buffer, 0, 64);
+    std::fill(buffer, buffer + 64, 0);
 }
