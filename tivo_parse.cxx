@@ -58,7 +58,7 @@ bool TiVoStreamHeader::read(HappyFile *file)
 
 void TiVoStreamHeader::dump()
 {
-    if (IS_VERBOSE)
+    if (IS_VERBOSE())
     {
         const char *unit;
 
@@ -143,7 +143,7 @@ bool TiVoStreamChunk::write(HappyFile *file)
 
 void TiVoStreamChunk::dump()
 {
-    if (IS_VERBOSE)
+    if (IS_VERBOSE())
     {
         std::cerr << "TiVo Chunk  : " << id
                   << "\nchunkSize   : " << chunkSize

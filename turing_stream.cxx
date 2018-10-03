@@ -217,15 +217,6 @@ void TuringState::prepare_frame_helper(uint8_t stream_id, int block_id)
     active->cipher_len = 0;
 }
 
-#define CREATE_TURING_LISTITM(nxt, stream_id, block_id) \
-    do { \
-        active = new TuringStateStream; \
-        active->next = (nxt); \
-        (nxt) = active; \
-        active->internal = new Turing; \
-        prepare_frame_helper((stream_id), (block_id)); \
-    } while(0)
-
 void TuringState::prepare_frame(uint8_t stream_id, int block_id)
 {
     if (active)
@@ -242,7 +233,12 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
             if (active->stream_id != stream_id)
             {
                 /* did not find a state for this stream type */
-                CREATE_TURING_LISTITM ((start->next), stream_id, block_id);
+
+                active = new TuringStateStream;
+                active->next = start->next;
+                start->next = active;
+                active->internal = new Turing;
+                prepare_frame_helper(stream_id, block_id);
             }
         }
 
@@ -252,7 +248,11 @@ void TuringState::prepare_frame(uint8_t stream_id, int block_id)
     else
     {
         /* first stream type seen */
-        CREATE_TURING_LISTITM (active, stream_id, block_id);
+
+        active = new TuringStateStream;
+        active->next = active;            // hmm
+        active->internal = new Turing;
+        prepare_frame_helper(stream_id, block_id);
     }
 }
 

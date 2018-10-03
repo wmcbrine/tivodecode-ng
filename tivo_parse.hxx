@@ -1,6 +1,7 @@
 #ifndef TIVO_PARSE_HXX_
 #define TIVO_PARSE_HXX_
 
+#include <iostream>
 #include <string>
 
 #include "happyfile.hxx"
@@ -13,13 +14,13 @@ extern uint32_t get32(uint8_t *pVal);
 extern int  o_verbose;
 extern bool o_pkt_dump;
 
-#define IS_VERBOSE     ( (o_pkt_dump) || (o_verbose >= 1) )
-#define IS_VVERBOSE    ( (o_pkt_dump) || (o_verbose >= 2) )
-#define IS_VVVERBOSE   ( (o_pkt_dump) || (o_verbose >= 3) )
+inline bool IS_VERBOSE()   { return o_pkt_dump || (o_verbose >= 1); }
+inline bool IS_VVERBOSE()  { return o_pkt_dump || (o_verbose >= 2); }
+inline bool IS_VVVERBOSE() { return o_pkt_dump || (o_verbose >= 3); }
 
-#define VERBOSE(s)   if (IS_VERBOSE)   { std::cerr << (s); }
-#define VVERBOSE(s)  if (IS_VVERBOSE)  { std::cerr << (s); }
-#define VVVERBOSE(s) if (IS_VVVERBOSE) { std::cerr << (s); }
+inline void VERBOSE(const char *s)   { if (IS_VERBOSE())   std::cerr << s; }
+inline void VVERBOSE(const char *s)  { if (IS_VVERBOSE())  std::cerr << s; }
+inline void VVVERBOSE(const char *s) { if (IS_VVVERBOSE()) std::cerr << s; }
 
 /*
  * Initial header formats lifted from ezrec's posting:

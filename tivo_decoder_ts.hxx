@@ -10,7 +10,7 @@ using namespace std;
 extern std::map<uint32_t, bool> pktDumpMap;
 extern std::map<uint32_t, bool>::iterator pktDumpMap_iter;
 
-#define TS_FRAME_SIZE  188
+const int TS_FRAME_SIZE = 188;
 
 enum
 {

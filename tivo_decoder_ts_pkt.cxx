@@ -66,7 +66,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
         size = pInfile->read(buffer, TS_FRAME_SIZE);
         globalBufferLen = 0;
 
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
             std::cerr << "Read handler : size " << size << "\n";
     }
 
@@ -122,7 +122,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             {
                 size = pInfile->read(globalBuffer, TS_FRAME_SIZE * 3);
 
-                if (IS_VVERBOSE)
+                if (IS_VVERBOSE())
                     std::cerr << "Read handler : size " << size << "\n";
 
                 if (0 == size)
@@ -254,7 +254,7 @@ void TiVoDecoderTsPacket::dump()
 {
     const char *pidType;
 
-    if (!(IS_VVERBOSE))
+    if (!IS_VVERBOSE())
         return;
 
     switch (ts_packet_type)
@@ -353,7 +353,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
         return false;
     }
 
-    if (IS_VVVERBOSE)
+    if (IS_VVVERBOSE())
     {
         std::cerr << "AAA : dump turing : INIT\n";
 
@@ -368,18 +368,18 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
         return false;
     }
 
-    if (IS_VVVERBOSE)
+    if (IS_VVVERBOSE())
         std::cerr << "BBB : stream_id " << stream_id << ", blockno "
                   << turing_stuff.block_no << ", crypted "
                   << turing_stuff.crypted << "\n";
-    if (IS_VERBOSE)
+    if (IS_VERBOSE())
         std::cerr << pParent->pFileIn->tell() << " : stream_id: "
                   << stream_id << ", block_no: "
                   << turing_stuff.block_no << "\n";
 
     pParent->pTuring.prepare_frame(stream_id, turing_stuff.block_no);
 
-    if (IS_VVVERBOSE)
+    if (IS_VVVERBOSE())
     {
         std::cerr << "CCC : stream_id " << stream_id << ", blockno "
                      << turing_stuff.block_no << ", crypted "
@@ -392,7 +392,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
 
     pParent->pTuring.active->decrypt_buffer(pBuffer, bufferLen);
 
-    if (IS_VVVERBOSE)
+    if (IS_VVVERBOSE())
     {
         std::cerr << "---Decrypted transport packet\n";
 

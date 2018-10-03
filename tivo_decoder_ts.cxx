@@ -145,7 +145,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
     if ((*pPtr & 0x3E) != patData.version_number)
     {
         patData.version_number = *pPtr & 0x3E;
-        if (IS_VERBOSE)
+        if (IS_VERBOSE())
             std::cerr << "TS ProgAssocTbl : version changed : "
                       << patData.version_number << "\n";
     }
@@ -164,7 +164,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
     while (section_length > 0)
     {
         pat_field = get16(pPtr);
-        if (IS_VERBOSE)
+        if (IS_VERBOSE())
             std::cerr << "TS ProgAssocTbl : Program Num : "
                       << pat_field << "\n";
         pPtr += 2;
@@ -173,7 +173,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         pat_field = get16(pPtr);
 
         patData.program_map_pid = pat_field & 0x1FFF;
-        if (IS_VERBOSE)
+        if (IS_VERBOSE())
             std::cerr << "TS ProgAssocTbl : Program PID : "
                       << patData.program_map_pid << "\n";
 
@@ -182,7 +182,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         TsStreams_it stream_iter = streams.find(patData.program_map_pid);
         if (stream_iter == streams.end())
         {
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
                 std::cerr << "Creating new stream for PMT PID "
                           << patData.program_map_pid << "\n";
 
@@ -194,7 +194,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
         }
         else
         {
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
                 std::cerr << "Re-use existing stream for PMT PID "
                           << patData.program_map_pid << "\n";
         }
@@ -300,7 +300,7 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
         pPtr += es_info_length;
         section_length -= es_info_length;
 
-        if (IS_VERBOSE)
+        if (IS_VERBOSE())
             std::cerr << "  TS ProgMapTbl : StreamId " << streamTypeId
                       << ", PID " << streamPid << ", Type " << streamType
                       << " : " << strTypeStr << "\n";
@@ -310,7 +310,7 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
         TsStreams_it stream_iter = streams.find(streamPid);
         if (stream_iter == streams.end())
         {
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
                 std::cerr << "Creating new stream for PID "
                           << streamPid << "\n";
             TiVoDecoderTsStream *pStream = new TiVoDecoderTsStream(streamPid);
@@ -323,7 +323,7 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
         }
         else
         {
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
                 std::cerr << "Re-use existing stream for PID "
                           << streamPid << "\n";
         }
@@ -368,7 +368,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
         return -1;
     }
 
-    if (IS_VERBOSE)
+    if (IS_VERBOSE())
     {
         std::cerr << "   TiVo Private : Validator : " << validator
                   << "(" << *pPtr << *(pPtr + 1)
@@ -387,7 +387,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
     stream_bytes = *pPtr;
     pPtr += 1;  // advance past unknown3 field
 
-    if (IS_VERBOSE)
+    if (IS_VERBOSE())
         std::cerr << "   TiVo Private : Stream Bytes : "
                   << stream_bytes << "\n";
 
@@ -409,14 +409,14 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
         TsStreams_it stream_iter = streams.find(pid);
         if (stream_iter == streams.end())
         {
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
                 std::cerr << "TiVo private data : No such PID "
                           << pid << "\n";
             return -1;
         }
         else
         {
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
                 std::cerr << "TiVo private data : matched PID "
                           << pid << "\n";
             TiVoDecoderTsStream *pStream = stream_iter->second;
@@ -425,7 +425,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 
             if (std::memcmp(&pStream->turing_stuff.key[0], pPtr, 16))
             {
-                if (IS_VERBOSE)
+                if (IS_VERBOSE())
                 {
                     std::cerr << "\nUpdating PID " << pid
                               << " Type " << stream_id << " Turing Key\n";
@@ -435,7 +435,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
                 std::memcpy(&pStream->turing_stuff.key[0], pPtr, 16);
             }
 
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
             {
                 std::cerr << "   TiVo Private :   Block No : "
                           << pStream->turing_stuff.block_no
@@ -475,7 +475,7 @@ bool TiVoDecoderTS::process()
         err = 0;
 
         pktCounter++;
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
             std::cerr << "Packet : " << pktCounter << "\n";
 
         TiVoDecoderTsPacket *pPkt = new TiVoDecoderTsPacket;
@@ -483,7 +483,7 @@ bool TiVoDecoderTS::process()
 
         int readSize = pPkt->read(pFileIn);
 
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
             std::cerr << "Read Size : " << readSize << "\n";
 
         if (readSize < 0)
@@ -515,7 +515,7 @@ bool TiVoDecoderTS::process()
             return false;
         }
 
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
         {
             std::cerr << "=============== Packet : "
                       << pPkt->packetId
@@ -577,7 +577,7 @@ bool TiVoDecoderTS::process()
             std::perror("Can not locate packet stream by PID");
         else
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "Adding packet " << pktCounter
                           << " to PID " << pPkt->getPID() << "\n";
 
@@ -589,7 +589,7 @@ bool TiVoDecoderTS::process()
             }
             else
             {
-                if (IS_VVERBOSE)
+                if (IS_VVERBOSE())
                     std::cerr << "Added packet " << pktCounter
                               << " to PID " << pPkt->getPID() << "\n";
             }

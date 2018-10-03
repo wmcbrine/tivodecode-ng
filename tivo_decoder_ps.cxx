@@ -150,7 +150,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 
                     if ((bytes[2] >> 6) != 0x2)
                     {
-                        if (IS_VERBOSE)
+                        if (IS_VERBOSE())
                             std::cerr << "PES (" << code
                                       << ") header mark != 2: "
                                       << (bytes[2] >> 6)
@@ -189,7 +189,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                                     int crypted  = 0;
 
                                     VVERBOSE("\n\n---Turing : Key\n");
-                                    if ( IS_VVERBOSE )
+                                    if (IS_VVERBOSE())
                                     {
                                         hexbulk( (uint8_t *)&bytes[off], 16 );
                                         std::cerr << "---Turing : header : block "
@@ -199,27 +199,27 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 
                                     if (do_header(&bytes[off], block_no, crypted))
                                     {
-                                        VERBOSE( "do_header did not return 0!\n");
+                                        VERBOSE("do_header did not return 0!\n");
                                     }
 
-                                    if (IS_VVERBOSE)
+                                    if (IS_VVERBOSE())
                                         std::cerr << "BBB : code " << code
                                                   << ", blockno " << block_no
                                                   << ", crypted " << crypted
                                                   << "\n";
-                                    if (IS_VERBOSE)
+                                    if (IS_VERBOSE())
                                         std::cerr << packet_start
                                                   << " : stream_no: " << code
                                                   << ", block_no: " << block_no
                                                   << "\n";
-                                    if (IS_VVERBOSE)
+                                    if (IS_VVERBOSE())
                                         std::cerr << "---Turing : prepare : code "
                                                   << code << " block_no "
                                                   << block_no << "\n";
 
                                     pTuring.prepare_frame(code, block_no);
 
-                                    if (IS_VVERBOSE)
+                                    if (IS_VVERBOSE())
                                     {
                                         std::cerr << "CCC : code " << code
                                                   << ", blockno " << block_no
@@ -231,7 +231,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 
                                     pTuring.active->decrypt_buffer((uint8_t *)&crypted, 4);
 
-                                    if (IS_VVERBOSE)
+                                    if (IS_VVERBOSE())
                                     {
                                         std::cerr << "DDD : code " << code
                                                   << ", blockno " << block_no
@@ -286,7 +286,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 
                     if (scramble == 3)
                     {
-                        if (IS_VVERBOSE)
+                        if (IS_VVERBOSE())
                             std::cerr << "---Turing : decrypt : size "
                                       << packet_size << "\n";
 

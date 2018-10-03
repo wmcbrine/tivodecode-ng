@@ -56,7 +56,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
 
     if ((true == pPkt->getPayloadStartIndicator()) || (0 != packets.size()))
     {
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
             std::cerr << "Add PktID " << pPkt->packetId << " from PID "
                       << stream_pid << " to packet list : payloadStart "
                       << pPkt->getPayloadStartIndicator()
@@ -70,7 +70,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         for (pkt_iter = packets.begin(); pkt_iter != packets.end(); pkt_iter++)
         {
             pPkt2 = *pkt_iter;
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "DEQUE : PktID " << pPkt2->packetId
                           << " from PID " << stream_pid << "\n";
 
@@ -80,7 +80,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
             pesDecodeBufferLen += (TS_FRAME_SIZE - pPkt2->payloadOffset);
         }
 
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
         {
             std::cerr << "pesDecodeBufferLen " << pesDecodeBufferLen << "\n";
             hexbulk(pesDecodeBuffer, pesDecodeBufferLen);
@@ -103,13 +103,13 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         for (len_iter = pesHdrLengths.begin();
              len_iter != pesHdrLengths.end(); len_iter++)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  pes hdr len : parsed : " << *len_iter << "\n";
             pesHeaderLength += *len_iter;
         }
         pesHeaderLength /= 8;
 
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
             std::cerr << "pesDecodeBufferLen " << pesDecodeBufferLen
                       << ", pesHeaderLength " << pesHeaderLength << "\n";
 
@@ -126,7 +126,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
             {
                 pPkt2 = *pkt_iter;
 
-                if (IS_VVERBOSE)
+                if (IS_VVERBOSE())
                     std::cerr << "  scanning PES header lengths : pktId "
                               << pPkt2->packetId << "\n";
 
@@ -136,7 +136,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                     pesHdrLen /= 8;
                     pesHdrLengths.pop_front();
 
-                    if (IS_VVERBOSE)
+                    if (IS_VVERBOSE())
                         std::cerr << "  pes hdr len : checked : "
                                   << pesHdrLen << "\n";
 
@@ -146,7 +146,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                     if (pesHdrLen + pPkt2->payloadOffset +
                         pPkt2->pesHdrOffset < TS_FRAME_SIZE)
                     {
-                        if (IS_VVERBOSE)
+                        if (IS_VVERBOSE())
                             std::cerr << "  PES header fits : "
                                       << pesHdrLen << "\n";
 
@@ -168,7 +168,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                         uint16_t pktBoundaryOffset = TS_FRAME_SIZE -
                             pPkt2->payloadOffset - pPkt2->pesHdrOffset;
 
-                        if (IS_VVERBOSE)
+                        if (IS_VVERBOSE())
                             std::cerr << "  pktBoundaryOffset : "
                                       << pktBoundaryOffset << " ("
                                       << TS_FRAME_SIZE << " - "
@@ -179,13 +179,13 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                         {
                             pesHdrLen -= pktBoundaryOffset;
                             pesHdrLen *= 8;
-                            if (IS_VVERBOSE)
+                            if (IS_VVERBOSE())
                                 std::cerr << "  pes hdr len : re-push : "
                                           << pesHdrLen << "\n";
                             pesHdrLengths.push_front(pesHdrLen);
 
                             pesHdrLen = pesHdrLengths.front();
-                            if (IS_VVERBOSE)
+                            if (IS_VVERBOSE())
                                 std::cerr << "  pes hdr len : front now : "
                                           << pesHdrLen << "\n";
                         }
@@ -208,7 +208,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
     }
     else
     {
-        if (IS_VVERBOSE)
+        if (IS_VVERBOSE())
             std::cerr << "Push Back : PayloadStartIndicator "
                       << pPkt->getPayloadStartIndicator()
                       << ", packets.size() " << packets.size() << "\n";
@@ -227,7 +227,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
         {
             pPkt2 = *pkt_iter;
 
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "Flushing packet " << pPkt2->packetId << "\n";
 
             if (true == pPkt2->getScramblingControl())
@@ -237,7 +237,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                     pPkt2->pesHdrOffset;
                 uint8_t decryptLen = TS_FRAME_SIZE - decryptOffset;
 
-                if (IS_VVERBOSE)
+                if (IS_VVERBOSE())
                     std::cerr << "Decrypting PktID " << pPkt2->packetId
                               << " from stream " << stream_pid
                               << " : decrypt offset " << decryptOffset
@@ -253,7 +253,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                 }
             }
 
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
             {
                 std::cerr << "Writing PktID " << pPkt2->packetId
                           << " from stream " << stream_pid << "\n";
@@ -267,7 +267,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
             }
             else
             {
-                if (IS_VVERBOSE)
+                if (IS_VVERBOSE())
                     std::cerr << "Wrote PktID " << pPkt2->packetId
                               << " from stream " << stream_pid << "\n";
             }
@@ -309,49 +309,49 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
 
         if (EXTENSION_START_CODE == startCode)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Extension header\n";
             parser.extension_header(len);
         }
         else if (GROUP_START_CODE == startCode)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : GOP header\n";
             parser.group_of_pictures_header(len);
         }
         else if (USER_DATA_START_CODE == startCode)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : User Data header\n";
             parser.user_data(len);
         }
         else if (PICTURE_START_CODE == startCode)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Picture header\n";
             parser.picture_header(len);
         }
         else if (SEQUENCE_HEADER_CODE == startCode)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Sequence header\n";
             parser.sequence_header(len);
         }
         else if (SEQUENCE_END_CODE == startCode)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Sequence End header\n";
             parser.sequence_end(len);
         }
         else if (ANCILLARY_DATA_CODE == startCode)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Ancillary Data header\n";
             parser.ancillary_data(len);
@@ -359,7 +359,7 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
         else if (startCode >= SLICE_START_CODE_MIN &&
                  startCode <= SLICE_START_CODE_MAX)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Slice\n";
 //            parser.slice(len);
@@ -368,21 +368,21 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
         else if ((startCode == 0x1BD) ||
                  (startCode >= 0x1C0 && startCode <= 0x1EF))
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Audio/Video Stream\n";
             parser.pes_header(len);
         }
         else
         {
-            if (IS_VERBOSE)
+            if (IS_VERBOSE())
                 std::cerr << "Unhandled PES header : " << startCode << "\n";
             return false;
         }
 
         if (len)
         {
-            if (IS_VVERBOSE)
+            if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << len
                           << " : PES Hdr Len\n";
             pesHdrLengths.push_back(len);
