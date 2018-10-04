@@ -124,8 +124,6 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
     int header_len = 0;
     int length;
 
-    std::fill(bytes, bytes + 32, 0);
-
     for (i = 0; packet_tags[i].packet != PACK_NONE; i++)
     {
         if (code >= packet_tags[i].code_match_lo &&

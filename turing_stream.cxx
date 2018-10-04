@@ -66,7 +66,6 @@ algorithms should show the words "Encryption by QUALCOMM" either on the
 product or in the associated documentation.
 */
 
-#include <algorithm>
 #include <iostream>
 
 #include "hexlib.hxx"
@@ -209,8 +208,6 @@ void TuringState::prepare_frame_helper(uint8_t stream_id, int block_id)
 
     active->internal.key(turkey, 20);
     active->internal.IV(turiv, 20);
-
-    std::fill(active->cipher_data, active->cipher_data + MAXSTREAM, 0);
 
     active->cipher_len = 0;
 }

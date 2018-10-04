@@ -127,7 +127,6 @@ void MD5::init()
     md5_s.t32[1] = 0xefcdab89;
     md5_s.t32[2] = 0x98badcfe;
     md5_s.t32[3] = 0x10325476;
-    std::fill(md5_buf, md5_buf + MD5_BUFLEN, 0);
 }
 
 void MD5::loop(const std::string &blk)

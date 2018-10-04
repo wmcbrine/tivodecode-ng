@@ -25,8 +25,6 @@ TiVoDecoderTsPacket::TiVoDecoderTsPacket()
     pesHdrOffset    = 0;
     ts_packet_type  = TS_PID_TYPE_NONE;
     packetId        = 0;
-
-    std::fill(buffer, buffer + TS_FRAME_SIZE, 0);
 }
 
 void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream *pStream)

@@ -167,7 +167,4 @@ void SHA1::final(uint8_t digest[20])
         digest[i] = (uint8_t)
             ((state[i >> 2] >> ((3 - (i & 3)) * 8)) & 255);
     }
-
-    /* Wipe variables */
-    std::fill(buffer, buffer + 64, 0);
 }
