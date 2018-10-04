@@ -21,8 +21,6 @@ TiVoDecoderTsStream::TiVoDecoderTsStream(uint16_t pid)
     stream_type_id = 0;
     stream_id      = 0;
     stream_type    = TS_STREAM_TYPE_NONE;
-
-    std::memset(&turing_stuff, 0, sizeof(TS_Turing_Stuff));
 }
 
 void TiVoDecoderTsStream::setDecoder(TiVoDecoderTS *pDecoder)
@@ -66,7 +64,6 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
 
         // Form one contiguous buffer containing all buffered packet payloads
         uint16_t pesDecodeBufferLen = 0;
-        std::memset(pesDecodeBuffer, 0, 10 * TS_FRAME_SIZE);
         for (pkt_iter = packets.begin(); pkt_iter != packets.end(); pkt_iter++)
         {
             pPkt2 = *pkt_iter;

@@ -83,7 +83,6 @@ TiVoDecoderTS::TiVoDecoderTS(
 {
     pktCounter = 0;
     streams.clear();
-    std::memset(&patData, 0, sizeof(TS_PAT_data));
 
     // Create stream for PAT
     VERBOSE("Creating new stream for PID 0\n");

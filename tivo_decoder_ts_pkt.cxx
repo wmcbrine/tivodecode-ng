@@ -27,9 +27,7 @@ TiVoDecoderTsPacket::TiVoDecoderTsPacket()
     ts_packet_type  = TS_PID_TYPE_NONE;
     packetId        = 0;
 
-    std::memset(buffer, 0, TS_FRAME_SIZE);
-    std::memset(&tsHeader, 0, sizeof(TS_Header));
-    std::memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field));
+    std::fill(buffer, buffer + TS_FRAME_SIZE, 0);
 }
 
 void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream *pStream)
@@ -191,7 +189,6 @@ bool TiVoDecoderTsPacket::decode()
     // endian platform.
 
     payloadOffset = 0;
-    std::memset(&tsHeader, 0, sizeof(TS_Header));
 
     uint32_t ts_hdr_val = get32(&buffer[payloadOffset]);
     payloadOffset += 4;
@@ -225,8 +222,6 @@ bool TiVoDecoderTsPacket::decode()
 
     if (tsHeader.adaptation_field_exists)
     {
-        std::memset(&tsAdaptation, 0, sizeof(TS_Adaptation_Field));
-
         tsAdaptation.adaptation_field_length = buffer[payloadOffset];
         payloadOffset++;
 
