@@ -4,7 +4,7 @@
  * See COPYING file for license terms
  */
 
-#include <cstring>
+#include <algorithm>
 #include <iostream>
 
 #include "hexlib.hxx"
@@ -71,9 +71,9 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                 std::cerr << "DEQUE : PktID " << pPkt2->packetId
                           << " from PID " << stream_pid << "\n";
 
-            std::memcpy(&pesDecodeBuffer[pesDecodeBufferLen],
-                        &pPkt2->buffer[pPkt2->payloadOffset],
-                        TS_FRAME_SIZE - pPkt2->payloadOffset);
+            std::copy(pPkt2->buffer + pPkt2->payloadOffset,
+                      pPkt2->buffer + TS_FRAME_SIZE,
+                      pesDecodeBuffer + pesDecodeBufferLen);
             pesDecodeBufferLen += (TS_FRAME_SIZE - pPkt2->payloadOffset);
         }
 

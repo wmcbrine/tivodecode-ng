@@ -4,7 +4,6 @@
  * See COPYING file for license terms
  */
 
-#include <cstring>
 #include <cinttypes>
 #include <algorithm>
 #include <iostream>
@@ -53,11 +52,12 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
         globalBufferLen -= TS_FRAME_SIZE;
 
-        std::memmove(globalBuffer, globalBuffer + TS_FRAME_SIZE,
-                     globalBufferLen);
+        std::copy(globalBuffer + TS_FRAME_SIZE,
+                  globalBuffer + TS_FRAME_SIZE + globalBufferLen,
+                  globalBuffer);
 
         size = std::min(globalBufferLen, TS_FRAME_SIZE);
-        std::memcpy(buffer, globalBuffer, size);
+        std::copy(globalBuffer, globalBuffer + size, buffer);
     }
     else
     {
@@ -91,7 +91,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
 
         if (globalBufferLen == 0)
         {
-            std::memcpy(globalBuffer, buffer, size);
+            std::copy(buffer, buffer + size, globalBuffer);
             globalBufferLen = size;
         }
     }
@@ -111,8 +111,9 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
                     std::cerr << "skipped " << skip << " bytes, found a SYNC\n";
 
                     globalBufferLen -= i;
-                    std::memmove(globalBuffer, globalBuffer + i,
-                                 globalBufferLen);
+                    std::copy(globalBuffer + i,
+                              globalBuffer + i + globalBufferLen,
+                              globalBuffer);
                     break;
                 }
             }
@@ -169,7 +170,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             std::cerr << "found 3 syncs in a row, loss_of_sync = false\n";
 
             size = TS_FRAME_SIZE;
-            std::memcpy(buffer, globalBuffer, size);
+            std::copy(globalBuffer, globalBuffer + size, buffer);
         }
     }
 

@@ -4,7 +4,7 @@
  * See COPYING file for license terms
  */
 
-#include <cstring>
+#include <algorithm>
 #include <iostream>
 
 #include "hexlib.hxx"
@@ -422,16 +422,16 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 
             pStream->stream_id = stream_id;
 
-            if (std::memcmp(&pStream->turing_stuff.key[0], pPtr, 16))
+            if (!std::equal(pPtr, pPtr + 16, pStream->turing_stuff.key))
             {
                 if (IS_VERBOSE())
                 {
                     std::cerr << "\nUpdating PID " << pid
                               << " Type " << stream_id << " Turing Key\n";
-                    hexbulk(&pStream->turing_stuff.key[0], 16);
+                    hexbulk(pStream->turing_stuff.key, 16);
                     hexbulk(pPtr, 16);
                 }
-                std::memcpy(&pStream->turing_stuff.key[0], pPtr, 16);
+                std::copy(pPtr, pPtr + 16, pStream->turing_stuff.key);
             }
 
             if (IS_VERBOSE())
