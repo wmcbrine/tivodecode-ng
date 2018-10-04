@@ -30,7 +30,7 @@
 
 #include "tdconfig.h"
 
-#include <cstring>
+#include <algorithm>
 
 #include "md5.hxx"
 
@@ -127,7 +127,7 @@ void MD5::init()
     md5_s.t32[1] = 0xefcdab89;
     md5_s.t32[2] = 0x98badcfe;
     md5_s.t32[3] = 0x10325476;
-    std::memset(md5_buf, 0, sizeof(md5_buf));
+    std::fill(md5_buf, md5_buf + MD5_BUFLEN, 0);
 }
 
 void MD5::loop(const std::string &blk)
@@ -143,18 +143,18 @@ void MD5::loop(const std::string &blk)
 
     if (len >= gap)
     {
-        std::memmove(md5_buf + md5_i, input, gap);
+        std::copy(input, input + gap, md5_buf + md5_i);
         calc(md5_buf);
 
         for (i = gap; i + MD5_BUFLEN <= len; i += MD5_BUFLEN)
             calc((uint8_t *) (input + i));
 
         md5_i = len - i;
-        std::memmove(md5_buf, input + i, md5_i);
+        std::copy(input + i, input + i + md5_i, md5_buf);
     }
     else
     {
-        std::memmove(md5_buf + md5_i, input, len);
+        std::copy(input, input + len, md5_buf + md5_i);
         md5_i += len;
     }
 }
@@ -166,18 +166,19 @@ void MD5::pad()
     /* Don't count up padding. Keep md5_n. */
     gap = MD5_BUFLEN - md5_i;
     if (gap > 8)
-        std::memmove(md5_buf + md5_i, md5_paddat, gap - sizeof(md5_c.t8));
+        std::copy(md5_paddat, md5_paddat + gap - 8, md5_buf + md5_i);
     else
     {
         /* including gap == 8 */
-        std::memmove(md5_buf + md5_i, md5_paddat, gap);
+        std::copy(md5_paddat, md5_paddat + gap, md5_buf + md5_i);
         calc(md5_buf);
-        std::memmove(md5_buf, md5_paddat + gap, MD5_BUFLEN - sizeof(md5_c.t8));
+        std::copy(md5_paddat + gap,
+                  md5_paddat + gap + MD5_BUFLEN - 8, md5_buf);
     }
 
     /* 8 byte word */
 #ifndef WORDS_BIGENDIAN
-    std::memmove(&md5_buf[56], &md5_c.t8[0], 8);
+    std::copy(md5_c.t8, md5_c.t8 + 8, md5_buf + 56);
 #else
     md5_buf[56] = md5_c.t8[3];
     md5_buf[57] = md5_c.t8[2];
@@ -196,7 +197,7 @@ void MD5::result(uint8_t *digest)
 {
     /* 4 byte words */
 #ifndef WORDS_BIGENDIAN
-    std::memmove(digest, &md5_s.t8[0], 16);
+    std::copy(md5_s.t8, md5_s.t8 + 16, digest);
 #else
     digest[0] = md5_s.t8[3];
     digest[1] = md5_s.t8[2];
