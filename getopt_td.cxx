@@ -40,9 +40,9 @@
 int td_optind = 1;
 const char *td_optarg = NULL;
 
-#define BADCH  '?'
-#define BADARG ':'
-#define EMSG   ""
+static const int BADCH = '?';
+static const int BADARG = ':';
+static const char EMSG[] = "";
 
 int getopt_td(int argc, const char **argv, const char *optstring,
               const struct td_option *longopts, int *longindex)
