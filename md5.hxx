@@ -40,18 +40,18 @@ class MD5
     private:
         union
         {
-            uint32_t md5_state32[4];
-            uint8_t md5_state8[16];
-        } md5_st;
+            uint32_t t32[4];
+            uint8_t  t8[16];
+        } md5_s;
 
         union
         {
             struct {
-                uint32_t md5_count32_lsw;
-                uint32_t md5_count32_msw;
-            } md5_count64;
-            uint8_t md5_count8[8];
-        } md5_count;
+                uint32_t lsw;
+                uint32_t msw;
+            } t64;
+            uint8_t t8[8];
+        } md5_c;
 
         size_t md5_i;
         uint8_t md5_buf[MD5_BUFLEN];

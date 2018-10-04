@@ -34,16 +34,6 @@
 
 #include "md5.hxx"
 
-#define md5_sta md5_st.md5_state32[0]
-#define md5_stb md5_st.md5_state32[1]
-#define md5_stc md5_st.md5_state32[2]
-#define md5_std md5_st.md5_state32[3]
-#define md5_st8 md5_st.md5_state8
-
-#define md5_nl  md5_count.md5_count64.md5_count32_lsw
-#define md5_nh  md5_count.md5_count64.md5_count32_msw
-#define md5_n8  md5_count.md5_count8
-
 /* Integer part of 4294967296 times abs(sin(i)), where i is in radians. */
 static const uint32_t T[65] = {
     0,
@@ -130,13 +120,13 @@ inline void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
 
 void MD5::init()
 {
-    md5_nl = 0;
-    md5_nh = 0;
+    md5_c.t64.lsw = 0;
+    md5_c.t64.msw = 0;
     md5_i = 0;
-    md5_sta = 0x67452301;
-    md5_stb = 0xefcdab89;
-    md5_stc = 0x98badcfe;
-    md5_std = 0x10325476;
+    md5_s.t32[0] = 0x67452301;
+    md5_s.t32[1] = 0xefcdab89;
+    md5_s.t32[2] = 0x98badcfe;
+    md5_s.t32[3] = 0x10325476;
     std::memset(md5_buf, 0, sizeof(md5_buf));
 }
 
@@ -146,9 +136,9 @@ void MD5::loop(const std::string &blk)
     const uint8_t *input = (const uint8_t *)blk.data();
     size_t len = blk.size();
 
-    if (md5_nl + len * 8 < md5_nl)
-        md5_nh++;
-    md5_nl += len * 8;         /* byte to bit */
+    if (md5_c.t64.lsw + len * 8 < md5_c.t64.lsw)
+        md5_c.t64.msw++;
+    md5_c.t64.lsw += len * 8;         /* byte to bit */
     gap = MD5_BUFLEN - md5_i;
 
     if (len >= gap)
@@ -176,27 +166,27 @@ void MD5::pad()
     /* Don't count up padding. Keep md5_n. */
     gap = MD5_BUFLEN - md5_i;
     if (gap > 8)
-        std::memmove(md5_buf + md5_i, md5_paddat, gap - sizeof(md5_n8));
+        std::memmove(md5_buf + md5_i, md5_paddat, gap - sizeof(md5_c.t8));
     else
     {
         /* including gap == 8 */
         std::memmove(md5_buf + md5_i, md5_paddat, gap);
         calc(md5_buf);
-        std::memmove(md5_buf, md5_paddat + gap, MD5_BUFLEN - sizeof(md5_n8));
+        std::memmove(md5_buf, md5_paddat + gap, MD5_BUFLEN - sizeof(md5_c.t8));
     }
 
     /* 8 byte word */
 #ifndef WORDS_BIGENDIAN
-    std::memmove(&md5_buf[56], &md5_n8[0], 8);
+    std::memmove(&md5_buf[56], &md5_c.t8[0], 8);
 #else
-    md5_buf[56] = md5_n8[3];
-    md5_buf[57] = md5_n8[2];
-    md5_buf[58] = md5_n8[1];
-    md5_buf[59] = md5_n8[0];
-    md5_buf[60] = md5_n8[7];
-    md5_buf[61] = md5_n8[6];
-    md5_buf[62] = md5_n8[5];
-    md5_buf[63] = md5_n8[4];
+    md5_buf[56] = md5_c.t8[3];
+    md5_buf[57] = md5_c.t8[2];
+    md5_buf[58] = md5_c.t8[1];
+    md5_buf[59] = md5_c.t8[0];
+    md5_buf[60] = md5_c.t8[7];
+    md5_buf[61] = md5_c.t8[6];
+    md5_buf[62] = md5_c.t8[5];
+    md5_buf[63] = md5_c.t8[4];
 #endif
 
     calc(md5_buf);
@@ -206,24 +196,24 @@ void MD5::result(uint8_t *digest)
 {
     /* 4 byte words */
 #ifndef WORDS_BIGENDIAN
-    std::memmove(digest, &md5_st8[0], 16);
+    std::memmove(digest, &md5_s.t8[0], 16);
 #else
-    digest[0] = md5_st8[3];
-    digest[1] = md5_st8[2];
-    digest[2] = md5_st8[1];
-    digest[3] = md5_st8[0];
-    digest[4] = md5_st8[7];
-    digest[5] = md5_st8[6];
-    digest[6] = md5_st8[5];
-    digest[7] = md5_st8[4];
-    digest[8] = md5_st8[11];
-    digest[9] = md5_st8[10];
-    digest[10] = md5_st8[9];
-    digest[11] = md5_st8[8];
-    digest[12] = md5_st8[15];
-    digest[13] = md5_st8[14];
-    digest[14] = md5_st8[13];
-    digest[15] = md5_st8[12];
+    digest[0] = md5_s.t8[3];
+    digest[1] = md5_s.t8[2];
+    digest[2] = md5_s.t8[1];
+    digest[3] = md5_s.t8[0];
+    digest[4] = md5_s.t8[7];
+    digest[5] = md5_s.t8[6];
+    digest[6] = md5_s.t8[5];
+    digest[7] = md5_s.t8[4];
+    digest[8] = md5_s.t8[11];
+    digest[9] = md5_s.t8[10];
+    digest[10] = md5_s.t8[9];
+    digest[11] = md5_s.t8[8];
+    digest[12] = md5_s.t8[15];
+    digest[13] = md5_s.t8[14];
+    digest[14] = md5_s.t8[13];
+    digest[15] = md5_s.t8[12];
 #endif
 }
 
@@ -233,10 +223,10 @@ static uint32_t X[16];
 
 void MD5::calc(uint8_t *b64)
 {
-    uint32_t A = md5_sta;
-    uint32_t B = md5_stb;
-    uint32_t C = md5_stc;
-    uint32_t D = md5_std;
+    uint32_t A = md5_s.t32[0];
+    uint32_t B = md5_s.t32[1];
+    uint32_t C = md5_s.t32[2];
+    uint32_t D = md5_s.t32[3];
 
 #ifndef WORDS_BIGENDIAN
     uint32_t *X = (uint32_t *)b64;
@@ -379,8 +369,8 @@ void MD5::calc(uint8_t *b64)
     ROUND4(X, C, D, A, B, 2, 15, 63);
     ROUND4(X, B, C, D, A, 9, 21, 64);
 
-    md5_sta += A;
-    md5_stb += B;
-    md5_stc += C;
-    md5_std += D;
+    md5_s.t32[0] += A;
+    md5_s.t32[1] += B;
+    md5_s.t32[2] += C;
+    md5_s.t32[3] += D;
 }
