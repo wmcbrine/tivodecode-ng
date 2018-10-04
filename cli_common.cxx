@@ -8,11 +8,11 @@
 #include "cli_common.hxx"
 
 #ifdef WIN32
-#   define HOME_ENV_NAME "USERPROFILE"
-#   define DEFAULT_EMPTY_HOME "C:"
+static const char HOME_ENV_NAME[] = "USERPROFILE";
+static const char DEFAULT_EMPTY_HOME[] = "C:";
 #else
-#   define HOME_ENV_NAME "HOME"
-#   define DEFAULT_EMPTY_HOME ""
+static const char HOME_ENV_NAME[] = "HOME";
+static const char DEFAULT_EMPTY_HOME[] = "";
 #endif
 
 static const char MAK_DOTFILE_NAME[] = "/.tivodecode_mak";
