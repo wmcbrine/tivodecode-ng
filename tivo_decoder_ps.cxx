@@ -5,6 +5,7 @@
  */
 
 #include <algorithm>
+#include <cstdio>
 #include <iostream>
 
 #include "hexlib.hxx"
@@ -100,20 +101,6 @@ bool TiVoDecoderPS::process()
     return true;
 }
 
-#define LOOK_AHEAD(fh, bytes, n) do {\
-    int retval = fh->read((bytes) + looked_ahead, (n) - looked_ahead);\
-    if ( retval == 0 )\
-    {\
-        return 0;  \
-    }\
-    else if ( retval != (n) - looked_ahead) { \
-        perror ("read"); \
-        return -1; \
-    } else { \
-        looked_ahead = (n); \
-    } \
-} while (0)
-
 int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
 {
     static uint8_t packet_buffer[65536 + sizeof(uint64_t) + 2];
@@ -134,7 +121,17 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
             {
                 if (packet_tags[i].packet == PACK_PES_COMPLEX)
                 {
-                    LOOK_AHEAD(pFileIn, bytes, 5);
+                    int retval = pFileIn->read(bytes + looked_ahead,
+                                                   5 - looked_ahead);
+                    if (retval == 0)
+                        return 0;
+                    else if (retval != 5 - looked_ahead)
+                    {
+                        std::perror("read");
+                        return -1;
+                    }
+                    else
+                        looked_ahead = 5;
 
                     // packet_length is 0 and 1
                     // PES header variables
@@ -170,7 +167,17 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                             if (header_len > 32)
                                 return -1;
 
-                            LOOK_AHEAD (pFileIn, bytes, header_len);
+                            int retval = pFileIn->read(bytes + looked_ahead,
+                                                  header_len - looked_ahead);
+                            if (retval == 0)
+                                return 0;
+                            else if (retval != header_len - looked_ahead)
+                            {
+                                std::perror("read");
+                                return -1;
+                            }
+                            else
+                                looked_ahead = header_len;
 
                             do
                             {
@@ -255,15 +262,37 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                     }
                 }
                 else
-                    LOOK_AHEAD (pFileIn, bytes, 2);
+                {
+                    int retval = pFileIn->read(bytes + looked_ahead,
+                                                   2 - looked_ahead);
+                    if (retval == 0)
+                        return 0;
+                    else if (retval != 2 - looked_ahead)
+                    {
+                        std::perror("read");
+                        return -1;
+                    }
+                    else
+                        looked_ahead = 2;
+                }
 
                 length = bytes[1] | (bytes[0] << 8);
 
                 std::copy(bytes, bytes + looked_ahead,
                           packet_buffer + sizeof(uint64_t));
 
-                LOOK_AHEAD (pFileIn, packet_buffer +
-                            sizeof(uint64_t), length + 2);
+                int retval = pFileIn->read(packet_buffer + sizeof(uint64_t) +
+                                   looked_ahead, length + 2 - looked_ahead);
+                if (retval == 0)
+                    return 0;
+                else if (retval != length + 2 - looked_ahead)
+                {
+                    std::perror("read");
+                    return -1;
+                }
+                else
+                    looked_ahead = length + 2;
+
                 {
                     uint8_t *packet_ptr = packet_buffer +
                         sizeof(uint64_t);
