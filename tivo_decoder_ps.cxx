@@ -293,83 +293,82 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                 else
                     looked_ahead = length + 2;
 
+                uint8_t *packet_ptr = packet_buffer + sizeof(uint64_t);
+                size_t packet_size;
+
+                packet_buffer[sizeof(uint64_t) - 1] = code;
+
+                if (header_len)
                 {
-                    uint8_t *packet_ptr = packet_buffer +
-                        sizeof(uint64_t);
-                    size_t packet_size;
+                    packet_ptr += header_len;
+                    packet_size = length - header_len + 2;
+                }
+                else
+                {
+                    packet_ptr += 2;
+                    packet_size = length;
+                }
 
-                    packet_buffer[sizeof(uint64_t) - 1] = code;
+                if (scramble == 3)
+                {
+                    if (IS_VVERBOSE())
+                        std::cerr << "---Turing : decrypt : size "
+                                  << packet_size << "\n";
 
-                    if (header_len)
-                    {
-                        packet_ptr += header_len;
-                        packet_size = length - header_len + 2;
-                    }
-                    else
-                    {
-                        packet_ptr += 2;
-                        packet_size = length;
-                    }
+                    pTuring.active->decrypt_buffer(packet_ptr, packet_size);
 
-                    if (scramble == 3)
-                    {
-                        if (IS_VVERBOSE())
-                            std::cerr << "---Turing : decrypt : size "
-                                      << packet_size << "\n";
+                    // turn off scramble bits
+                    packet_buffer[sizeof(uint64_t) + 2] &= ~0x30;
 
-                        pTuring.active->decrypt_buffer(packet_ptr, packet_size);
+                    // scan video buffer for Slices.  If no slices are
+                    // found, the MAK is wrong.
+                    if (!o_no_verify && code == 0xe0) {
+                        int slice_count = 0;
+                        size_t offset;
 
-                        // turn off scramble bits
-                        packet_buffer[sizeof(uint64_t) + 2] &= ~0x30;
-
-                        // scan video buffer for Slices.  If no slices are
-                        // found, the MAK is wrong.
-                        if (!o_no_verify && code == 0xe0) {
-                            int slice_count = 0;
-                            size_t offset;
-
-                            for (offset = sizeof(uint64_t); offset + 4 < packet_size; offset++)
+                        for (offset = sizeof(uint64_t);
+                             offset + 4 < packet_size; offset++)
+                        {
+                            if (packet_buffer[offset] == 0x00 &&
+                                packet_buffer[offset + 1] == 0x00 &&
+                                packet_buffer[offset + 2] == 0x01 &&
+                                packet_buffer[offset + 3] >= 0x01 &&
+                                packet_buffer[offset + 3] <= 0xAF)
                             {
-                                if (packet_buffer[offset] == 0x00 &&
-                                    packet_buffer[offset + 1] == 0x00 &&
-                                    packet_buffer[offset + 2] == 0x01 &&
-                                    packet_buffer[offset + 3] >= 0x01 &&
-                                    packet_buffer[offset + 3] <= 0xAF)
-                                {
-                                    slice_count++;
-                                }
-                                // choose 8 as a good test that if 8 slices
-                                // are seen, it's probably not random noise
-                                if (slice_count > 8)
-                                {
-                                    // disable future verification
-                                    o_no_verify = true;
-                                }
+                                slice_count++;
                             }
-                            if (!o_no_verify)
+                            // choose 8 as a good test that if 8 slices
+                            // are seen, it's probably not random noise
+                            if (slice_count > 8)
                             {
-                                VERBOSE("Invalid MAK -- aborting\n");
-                                return -2;
+                                // disable future verification
+                                o_no_verify = true;
                             }
                         }
+                        if (!o_no_verify)
+                        {
+                            VERBOSE("Invalid MAK -- aborting\n");
+                            return -2;
+                        }
                     }
-                    else if (code == 0xbc)
-                    {
-                        // don't know why, but tivo dll does this.
-                        // I can find no good docs on the format of the program_stream_map
-                        // but I think this clears a reserved bit.  No idea why
-                        packet_buffer[sizeof(uint64_t) + 2] &= ~0x20;
-                    }
-
-                    if (pFileOut->write(packet_buffer +
-                                    sizeof(uint64_t) - 1, length + 3) !=
-                        (size_t)(length + 3))
-                    {
-                        std::perror("writing buffer");
-                    }
-
-                    return 1;
                 }
+                else if (code == 0xbc)
+                {
+                    // don't know why, but tivo dll does this.
+                    // I can find no good docs on the format of the
+                    // program_stream_map but I think this clears a
+                    // reserved bit.  No idea why
+                    packet_buffer[sizeof(uint64_t) + 2] &= ~0x20;
+                }
+
+                if (pFileOut->write(packet_buffer +
+                                sizeof(uint64_t) - 1, length + 3) !=
+                    (size_t)(length + 3))
+                {
+                    std::perror("writing buffer");
+                }
+
+                return 1;
             }
 
             return 0;
