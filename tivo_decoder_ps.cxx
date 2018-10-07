@@ -145,7 +145,7 @@ void TiVoDecoderPS::frame_core(const uint8_t *bytes, uint8_t code)
 
 int TiVoDecoderPS::process_frame(uint8_t code)
 {
-    static uint8_t packet_buffer[65536 + sizeof(uint64_t) + 2];
+    static uint8_t packet_buffer[65538];
     uint8_t bytes[32];
     int looked_ahead = 0;
     int i;
@@ -238,11 +238,10 @@ int TiVoDecoderPS::process_frame(uint8_t code)
 
                 length = bytes[1] | (bytes[0] << 8);
 
-                std::copy(bytes, bytes + looked_ahead,
-                          packet_buffer + sizeof(uint64_t));
+                std::copy(bytes, bytes + looked_ahead, packet_buffer);
 
-                int retval = pFileIn->read(packet_buffer + sizeof(uint64_t) +
-                                   looked_ahead, length + 2 - looked_ahead);
+                int retval = pFileIn->read(packet_buffer + looked_ahead,
+                                              length + 2 - looked_ahead);
                 if (retval == 0)
                     return 0;
                 else if (retval != length + 2 - looked_ahead)
@@ -253,10 +252,8 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                 else
                     looked_ahead = length + 2;
 
-                uint8_t *packet_ptr = packet_buffer + sizeof(uint64_t);
+                uint8_t *packet_ptr = packet_buffer;
                 size_t packet_size;
-
-                packet_buffer[sizeof(uint64_t) - 1] = code;
 
                 if (header_len)
                 {
@@ -278,7 +275,7 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                     pTuring.active->decrypt_buffer(packet_ptr, packet_size);
 
                     // turn off scramble bits
-                    packet_buffer[sizeof(uint64_t) + 2] &= ~0x30;
+                    packet_buffer[2] &= ~0x30;
 
                     // scan video buffer for Slices.  If no slices are
                     // found, the MAK is wrong.
@@ -286,8 +283,7 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                         int slice_count = 0;
                         size_t offset;
 
-                        for (offset = sizeof(uint64_t);
-                             offset + 4 < packet_size; offset++)
+                        for (offset = 0; offset + 4 < packet_size; offset++)
                         {
                             if (packet_buffer[offset] == 0x00 &&
                                 packet_buffer[offset + 1] == 0x00 &&
@@ -318,12 +314,12 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                     // I can find no good docs on the format of the
                     // program_stream_map but I think this clears a
                     // reserved bit.  No idea why
-                    packet_buffer[sizeof(uint64_t) + 2] &= ~0x20;
+                    packet_buffer[2] &= ~0x20;
                 }
 
-                if (pFileOut->write(packet_buffer +
-                                sizeof(uint64_t) - 1, length + 3) !=
-                    (size_t)(length + 3))
+                if ((pFileOut->write(&code, 1) != 1) ||
+                    (pFileOut->write(packet_buffer, length + 2) !=
+                    (size_t)(length + 2)))
                 {
                     std::perror("writing buffer");
                 }
