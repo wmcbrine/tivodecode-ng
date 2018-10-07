@@ -32,7 +32,7 @@ class TiVoDecoderPS : public TiVoDecoder
     private:
         uint32_t marker;
 
-        void frame_core(const uint8_t *bytes, uint8_t code);
+        void frame_start(const uint8_t *bytes, uint8_t code);
         int process_frame(uint8_t code);
     public:
         virtual bool process();

@@ -100,7 +100,7 @@ bool TiVoDecoderPS::process()
     return true;
 }
 
-void TiVoDecoderPS::frame_core(const uint8_t *bytes, uint8_t code)
+void TiVoDecoderPS::frame_start(const uint8_t *bytes, uint8_t code)
 {
     bool goagain;
     int off = 6;
@@ -217,7 +217,7 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                             else
                                 looked_ahead = header_len;
 
-                            frame_core(bytes, code);
+                            frame_start(bytes, code);
                         }
                     }
                 }
