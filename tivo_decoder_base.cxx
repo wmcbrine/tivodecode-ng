@@ -38,7 +38,7 @@ TiVoDecoder::~TiVoDecoder()
  * return an error.
  */
 
-int TiVoDecoder::do_header(uint8_t *arg_0, int &block_no, int &crypted)
+int TiVoDecoder::do_header(const uint8_t *arg_0, int &block_no, int &crypted)
 {
     int var_4 = 0;
 

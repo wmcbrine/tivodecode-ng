@@ -68,8 +68,7 @@ bool TiVoDecoderPS::process()
     {
         if ((marker & 0xFFFFFF00) == 0x100)
         {
-            int64_t position = pFileIn->tell();
-            int ret = process_frame(byte, position);
+            int ret = process_frame(byte);
 
             if (ret == 1)
                 marker = 0xFFFFFFFF;
@@ -101,7 +100,50 @@ bool TiVoDecoderPS::process()
     return true;
 }
 
-int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
+void TiVoDecoderPS::frame_core(const uint8_t *bytes, uint8_t code)
+{
+    bool goagain;
+    int off = 6;
+    int ext_byte = 5;
+
+    do
+    {
+        goagain = false;
+
+        //packet seq counter flag
+        if (bytes[ext_byte] & 0x20)
+            off += 4;
+
+        //private data flag
+        if (bytes[ext_byte] & 0x80)
+        {
+            int block_no = 0;
+            int crypted  = 0;
+
+            if (do_header(&bytes[off], block_no, crypted))
+                VERBOSE("do_header did not return 0!\n");
+
+            pTuring.prepare_frame(code, block_no);
+            pTuring.active->decrypt_buffer((uint8_t *)&crypted, 4);
+        }
+
+        // STD buffer flag
+        if (bytes[ext_byte] & 0x10)
+            off += 2;
+
+        // extension flag 2
+        if (bytes[ext_byte] & 0x1)
+        {
+            ext_byte = off;
+            off++;
+            goagain = true;
+            continue;
+        }
+
+    } while (goagain);
+}
+
+int TiVoDecoderPS::process_frame(uint8_t code)
 {
     static uint8_t packet_buffer[65536 + sizeof(uint64_t) + 2];
     uint8_t bytes[32];
@@ -159,9 +201,6 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                     {
                         if (bytes[3] & 0x1)
                         {
-                            int off = 6;
-                            int ext_byte = 5;
-                            int goagain = 0;
                             // extension
                             if (header_len > 32)
                                 return -1;
@@ -178,85 +217,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                             else
                                 looked_ahead = header_len;
 
-                            do
-                            {
-                                goagain = 0;
-
-                                //packet seq counter flag
-                                if (bytes[ext_byte] & 0x20)
-                                    off += 4;
-
-                                //private data flag
-                                if (bytes[ext_byte] & 0x80)
-                                {
-                                    int block_no = 0;
-                                    int crypted  = 0;
-
-                                    VVERBOSE("\n\n---Turing : Key\n");
-                                    if (IS_VVERBOSE())
-                                    {
-                                        hexbulk( (uint8_t *)&bytes[off], 16 );
-                                        std::cerr << "---Turing : header : block "
-                                                  << block_no << " crypted "
-                                                  << crypted << "\n";
-                                    }
-
-                                    if (do_header(&bytes[off], block_no, crypted))
-                                    {
-                                        VERBOSE("do_header did not return 0!\n");
-                                    }
-
-                                    if (IS_VVERBOSE())
-                                        std::cerr << "BBB : code " << code
-                                                  << ", blockno " << block_no
-                                                  << ", crypted " << crypted
-                                                  << "\n";
-                                    if (IS_VERBOSE())
-                                        std::cerr << packet_start
-                                                  << " : stream_no: " << code
-                                                  << ", block_no: " << block_no
-                                                  << "\n";
-                                    if (IS_VVERBOSE())
-                                        std::cerr << "---Turing : prepare : code "
-                                                  << code << " block_no "
-                                                  << block_no << "\n";
-
-                                    pTuring.prepare_frame(code, block_no);
-
-                                    if (IS_VVERBOSE())
-                                    {
-                                        std::cerr << "CCC : code " << code
-                                                  << ", blockno " << block_no
-                                                  << ", crypted " << crypted
-                                                  << "\n"
-                                                  << "---Turing : decrypt : crypted "
-                                                  << crypted << " len 4\n";
-                                    }
-
-                                    pTuring.active->decrypt_buffer((uint8_t *)&crypted, 4);
-
-                                    if (IS_VVERBOSE())
-                                    {
-                                        std::cerr << "DDD : code " << code
-                                                  << ", blockno " << block_no
-                                                  << ", crypted " << crypted
-                                                  << "\n";
-                                    }
-                                }
-
-                                // STD buffer flag
-                                if (bytes[ext_byte] & 0x10)
-                                    off += 2;
-
-                                // extension flag 2
-                                if (bytes[ext_byte] & 0x1)
-                                {
-                                    ext_byte = off;
-                                    off++;
-                                    goagain = 1;
-                                    continue;
-                                }
-                            } while (goagain);
+                            frame_core(bytes, code);
                         }
                     }
                 }
