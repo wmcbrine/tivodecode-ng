@@ -143,20 +143,19 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                     //            copyright  dsm_trick
                     //              copy       addtl copy
 
-                    if ((bytes[2] >> 6) != 0x2)
+                    if (!(bytes[2] & 0x80))
                     {
                         if (IS_VERBOSE())
                             std::cerr << "PES (" << code
-                                      << ") header mark != 2: "
-                                      << (bytes[2] >> 6)
+                                      << ") no header mark ! "
                                       << "(is this an MPEG2-PS file?)\n";
                     }
 
-                    scramble = ((bytes[2] >> 4) & 0x3);
+                    scramble = bytes[2] & 0x30;
 
                     header_len = 5 + bytes[4];
 
-                    if (scramble == 3)
+                    if (scramble == 0x30)
                     {
                         if (bytes[3] & 0x1)
                         {
@@ -309,7 +308,7 @@ int TiVoDecoderPS::process_frame(uint8_t code, int64_t packet_start)
                     packet_size = length;
                 }
 
-                if (scramble == 3)
+                if (scramble == 0x30)
                 {
                     if (IS_VVERBOSE())
                         std::cerr << "---Turing : decrypt : size "
