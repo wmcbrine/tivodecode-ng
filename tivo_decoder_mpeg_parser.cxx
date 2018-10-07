@@ -257,9 +257,6 @@ void TiVoDecoder_MPEG2_Parser::extension_header(uint16_t &len)
 
 void TiVoDecoder_MPEG2_Parser::sequence_extension(uint16_t &len)
 {
-//  extension_start_code:32;
-//  advanceBits(32);
-
 //  sequence_extension_id:4;
 //  profile_and_level_indication:8;
     advanceBits(12);
@@ -285,9 +282,6 @@ void TiVoDecoder_MPEG2_Parser::sequence_extension(uint16_t &len)
 
 void TiVoDecoder_MPEG2_Parser::sequence_display_extension(uint16_t &len)
 {
-//  extension_start_code:32;
-//  advanceBits(32);
-
 //  sequence_display_extension_id:4;
 //  video_format:3;
     advanceBits(7);
@@ -316,9 +310,6 @@ void TiVoDecoder_MPEG2_Parser::sequence_display_extension(uint16_t &len)
 
 void TiVoDecoder_MPEG2_Parser::picture_coding_extension(uint16_t &len)
 {
-//  extension_start_code:32;
-//  advanceBits(32);
-
 //  picture_coding_extension_id:4;
 //  f_code:4[2][2];
 //  intra_dc_precision:2;
@@ -411,12 +402,7 @@ void TiVoDecoder_MPEG2_Parser::picture_header(uint16_t &len)
         advanceBits(9);
     }
 
-//  extra_bit_picture:1 = 0;
-//    advanceBits(1); // ????
-
     len = hdr_len;
-
-//    next_start_code(); // ???
 }
 
 void TiVoDecoder_MPEG2_Parser::pes_header(uint16_t &len)

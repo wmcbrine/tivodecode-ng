@@ -82,7 +82,6 @@ void TuringStateStream::decrypt_buffer(uint8_t *buffer, size_t buffer_length)
         {
             cipher_len = internal.gen(cipher_data);
             cipher_pos = 0;
-            //hexbulk(cipher_data, cipher_len);
         }
 
         buffer[i] ^= cipher_data[cipher_pos++];
@@ -197,12 +196,10 @@ void TuringState::prepare_frame_helper(uint8_t stream_id, int block_id)
     context.init();
     context.update(turingkey, 17);
     context.final(turkey);
-    //hexbulk(turkey, 20);
 
     context.init();
     context.update(turingkey, 20);
     context.final(turiv);
-    //hexbulk(turiv, 20);
 
     active->cipher_pos = 0;
 

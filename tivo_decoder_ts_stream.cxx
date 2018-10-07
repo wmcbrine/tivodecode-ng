@@ -291,9 +291,6 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
     while ((false == done) && (false == parser.isEndOfFile()) &&
            (bufLen > parser.getReadPos()))
     {
-        //VVERBOSE("PES Header Offset : %d (0x%x)\n",
-        //         parser.getReadPos(), parser.nextbits(8)); //!%#$!%
-
         if (0x000001 != parser.nextbits(24))
         {
             done = true;
@@ -359,7 +356,6 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Slice\n";
-//            parser.slice(len);
             done = true;
         }
         else if ((startCode == 0x1BD) ||
