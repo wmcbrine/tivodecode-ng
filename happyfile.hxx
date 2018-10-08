@@ -4,8 +4,8 @@
  * See COPYING file for license terms
  */
 
-#ifndef HAPPY_FILE_H_
-#define HAPPY_FILE_H_
+#ifndef HAPPYFILE_HXX_
+#define HAPPYFILE_HXX_
 
 #include "tdconfig.h"
 
@@ -47,4 +47,4 @@ class HappyFile
         ~HappyFile();
 };
 
-#endif
+#endif /* HAPPYFILE_HXX_ */

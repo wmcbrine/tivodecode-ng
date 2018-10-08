@@ -1,5 +1,5 @@
-#ifndef TD_CLI_COMMON_H__
-#define TD_CLI_COMMON_H__
+#ifndef CLI_COMMON_HXX_
+#define CLI_COMMON_HXX_
 
 #include <string>
 
@@ -9,4 +9,4 @@ std::string get_mak_from_conf_file();
 void do_version(int exitval);
 void print_qualcomm_msg();
 
-#endif // TD_CLI_COMMON_H__
+#endif /* CLI_COMMON_HXX_ */

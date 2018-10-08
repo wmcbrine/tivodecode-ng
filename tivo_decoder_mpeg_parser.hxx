@@ -1,5 +1,5 @@
-#ifndef __TIVO_DECODER_MPEG_PARSER_HXX__
-#define __TIVO_DECODER_MPEG_PARSER_HXX__
+#ifndef TIVO_DECODER_MPEG_PARSER_HXX_
+#define TIVO_DECODER_MPEG_PARSER_HXX_
 
 #include <cstdint>
 
@@ -59,4 +59,4 @@ class TiVoDecoder_MPEG2_Parser
         void  macroblock(uint16_t &len);
 };
 
-#endif /* __TIVO_DECODER_MPEG_PARSER_HXX__ */
+#endif /* TIVO_DECODER_MPEG_PARSER_HXX_ */

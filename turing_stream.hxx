@@ -3,8 +3,8 @@
  * See COPYING file for license terms
  */
 
-#ifndef TURING_STREAM_H_
-#define TURING_STREAM_H_
+#ifndef TURING_STREAM_HXX_
+#define TURING_STREAM_HXX_
 
 #include <string>
 
@@ -48,4 +48,4 @@ class TuringState
         void dump();
 };
 
-#endif // TURING_STREAM_H_
+#endif /* TURING_STREAM_HXX_ */

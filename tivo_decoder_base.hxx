@@ -1,5 +1,5 @@
-#ifndef TIVO_DECODER_HXX_
-#define TIVO_DECODER_HXX_
+#ifndef TIVO_DECODER_BASE_HXX_
+#define TIVO_DECODER_BASE_HXX_
 
 #include "tivo_parse.hxx"
 #include "turing_stream.hxx"
@@ -23,4 +23,4 @@ class TiVoDecoder
         virtual ~TiVoDecoder();
 };
 
-#endif /* TIVO_DECODER_HXX_ */
+#endif /* TIVO_DECODER_BASE_HXX_ */

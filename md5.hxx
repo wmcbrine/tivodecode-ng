@@ -27,8 +27,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef _NETINET6_MD5_H_
-#define _NETINET6_MD5_H_
+#ifndef MD5_HXX_
+#define MD5_HXX_
 
 #include <cstdint>
 #include <string>
@@ -65,4 +65,4 @@ class MD5
         void result(uint8_t *);
 };
 
-#endif   /* ! _NETINET6_MD5_H_ */
+#endif /* MD5_HXX_ */

@@ -3,8 +3,8 @@
  * Copyright 2006-2018, Jeremy Drake et al.
  * See COPYING file for license terms
  */
-#ifndef SHA1_H_
-#define SHA1_H_
+#ifndef SHA1_HXX_
+#define SHA1_HXX_
 
 class SHA1
 {
@@ -19,4 +19,4 @@ class SHA1
         void final(uint8_t digest[20]);
 };
 
-#endif
+#endif /* SHA1_HXX_ */

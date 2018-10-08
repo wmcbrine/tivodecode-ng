@@ -1,11 +1,11 @@
 /* useful hex manipulation routine header */
 /* Copyright C Qualcomm Inc 1997 */
 
-#ifndef HEXLIB_H_
-#define HEXLIB_H_
+#ifndef HEXLIB_HXX_
+#define HEXLIB_HXX_
 
 #include <cstdint>
 
 void hexbulk(uint8_t *, int n);
 
-#endif
+#endif /* HEXLIB_HXX_ */

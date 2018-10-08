@@ -58,8 +58,8 @@ algorithms should show the words "Encryption by QUALCOMM" either on the
 product or in the associated documentation.
 */
 
-#ifndef TURING_H
-#define TURING_H 1
+#ifndef TURING_HXX_
+#define TURING_HXX_
 
 const int MAXKEY = 32;  /* bytes*/
 const int MAXKIV = 48;  /* bytes*/
@@ -86,4 +86,4 @@ class Turing
         int  gen(uint8_t *buf);  /* returns number of bytes of mask generated */
 };
 
-#endif
+#endif /* TURING_HXX_ */

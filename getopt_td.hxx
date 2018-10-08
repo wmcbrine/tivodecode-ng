@@ -6,6 +6,9 @@
  *
  */
 
+#ifndef GETOPT_TD_HXX_
+#define GETOPT_TD_HXX_
+
 extern int td_optind;
 extern const char *td_optarg;
 
@@ -18,3 +21,5 @@ struct td_option
 
 extern int getopt_td(int argc, const char **argv, const char *optstring,
                      const struct td_option *longopts, int *longindex);
+
+#endif /* GETOPT_TD_HXX_ */
