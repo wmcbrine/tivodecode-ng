@@ -8,7 +8,7 @@
 ifeq ($(DEBUG),Y)
 	OPTS = -g -Wall -Wextra -pedantic
 else
-	OPTS = -O2 -Wall -pedantic
+	OPTS = -O2 -Wall -pedantic -flto
 	POST = strip $@
 endif
 
