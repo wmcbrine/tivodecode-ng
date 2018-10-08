@@ -8,23 +8,12 @@
 #include <iostream>
 #include <string>
 
+#include "bits.hxx"
 #include "hexlib.hxx"
 #include "tivo_parse.hxx"
 
 int o_verbose;
 bool o_pkt_dump;
-
-uint32_t get32(uint8_t *pVal)
-{
-    return (pVal[0] << 24) | (pVal[1] << 16) | (pVal[2] << 8) | pVal[3];
-}
-
-uint16_t get16(uint8_t *pVal)
-{
-    return (pVal[0] << 8) | pVal[1];
-}
-
-// ===================================================================
 
 TiVoStreamHeader::TiVoStreamHeader()
 {
@@ -49,9 +38,9 @@ bool TiVoStreamHeader::read(HappyFile *file)
         return false;
     }
 
-    flags       = get16(buffer + 6);
-    mpeg_offset = get32(buffer + 10);
-    chunks      = get16(buffer + 14);
+    flags       = GET16(buffer + 6);
+    mpeg_offset = GET32(buffer + 10);
+    chunks      = GET16(buffer + 14);
 
     return true;
 }
@@ -116,10 +105,10 @@ bool TiVoStreamChunk::read(HappyFile *file)
         return false;
     }
 
-    chunkSize   = get32(buffer);
-    dataSize    = get32(buffer + 4);
-    id          = get16(buffer + 8);
-    type        = get16(buffer + 10);
+    chunkSize   = GET32(buffer);
+    dataSize    = GET32(buffer + 4);
+    id          = GET16(buffer + 8);
+    type        = GET16(buffer + 10);
 
     uint16_t readSize = chunkSize - 12;
     pData = new uint8_t[readSize];

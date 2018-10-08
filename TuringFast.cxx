@@ -77,11 +77,6 @@ inline void WORD2BYTE(uint32_t w, uint8_t *b)
     b[0] = BYTE(w, 0);
 }
 
-inline uint32_t BYTE2WORD(const uint8_t *b)
-{
-    return b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3];
-}
-
 /*
  * This does a reversible transformation of a word, based on the S-boxes.
  * The reversibility isn't used, but it guarantees no loss of information,
@@ -144,7 +139,7 @@ void Turing::key(const uint8_t key[], const int keylength)
 	std::abort();
     keylen = 0;
     for (i = 0; i < keylength; i += 4)
-	K[keylen++] = fixedS(BYTE2WORD(&key[i]));
+	K[keylen++] = fixedS(GET32(&key[i]));
     mixwords(K, keylen);
 
     /* build S-box lookup tables */
@@ -182,7 +177,7 @@ void Turing::IV(const uint8_t iv[], const int ivlength)
 	std::abort();
     /* first copy in the IV, mixing as we go */
     for (i = j = 0; j < ivlength; j += 4)
-	R[i++] = fixedS(BYTE2WORD(&iv[j]));
+	R[i++] = fixedS(GET32(&iv[j]));
     /* now continue with the premixed key */
     for (j = 0 /* i continues */; j < keylen; ++j)
 	R[i++] = K[j];

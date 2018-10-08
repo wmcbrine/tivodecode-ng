@@ -8,9 +8,6 @@
 #include "Turing.hxx"
 #include "turing_stream.hxx"
 
-extern uint16_t get16(uint8_t *pVal);
-extern uint32_t get32(uint8_t *pVal);
-
 extern int  o_verbose;
 extern bool o_pkt_dump;
 

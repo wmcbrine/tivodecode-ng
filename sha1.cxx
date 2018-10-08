@@ -28,8 +28,7 @@ typedef union {
 
 inline uint32_t blk0(c64l16 *block, int i)
 {
-    block->l[i] = block->c[i << 2] << 24 | block->c[(i << 2) + 1] << 16 |
-                  block->c[(i << 2) + 2] << 8 | block->c[(i << 2) + 3];
+    block->l[i] = GET32(block->c + (i << 2));
 
     return block->l[i];
 }

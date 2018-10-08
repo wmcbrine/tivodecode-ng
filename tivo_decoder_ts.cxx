@@ -122,7 +122,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
     else
         pPtr++;
 
-    pat_field = get16(pPtr);
+    pat_field = GET16(pPtr);
     section_length = pat_field & 0x03ff;
     pPtr += 2;
 
@@ -162,14 +162,14 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
 
     while (section_length > 0)
     {
-        pat_field = get16(pPtr);
+        pat_field = GET16(pPtr);
         if (IS_VERBOSE())
             std::cerr << "TS ProgAssocTbl : Program Num : "
                       << pat_field << "\n";
         pPtr += 2;
         section_length -= 2;
 
-        pat_field = get16(pPtr);
+        pat_field = GET16(pPtr);
 
         patData.program_map_pid = pat_field & 0x1FFF;
         if (IS_VERBOSE())
@@ -226,7 +226,7 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
     // advance past table_id field
     pPtr++;
 
-    pmt_field = get16(pPtr);
+    pmt_field = GET16(pPtr);
     section_length = pmt_field & 0x0fff;
 
     // advance past section_length
@@ -281,14 +281,14 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
         pPtr++;
         section_length--;
 
-        pmt_field = get16(pPtr);
+        pmt_field = GET16(pPtr);
         streamPid = pmt_field & 0x1fff;
 
         // advance past elementary field
         pPtr += 2;
         section_length -= 2;
 
-        pmt_field      = get16(pPtr);
+        pmt_field      = GET16(pPtr);
         es_info_length = pmt_field & 0x0fff;
 
         // advance past ES info length field
@@ -360,7 +360,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 
     VERBOSE("\n");
 
-    validator = get32(pPtr);
+    validator = GET32(pPtr);
     if (validator != 0x5469566f)
     {
         std::perror("Invalid TiVo private data validator");
@@ -392,7 +392,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
 
     while (stream_bytes > 0)
     {
-        pid = get16(pPtr);
+        pid = GET16(pPtr);
         stream_bytes -= 2;
         pPtr += 2;  // advance past pid
 
