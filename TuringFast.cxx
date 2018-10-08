@@ -60,6 +60,7 @@ product or in the associated documentation.
 
 #include <cstdlib>
 
+#include "bits.hxx"
 #include "Turing.hxx"		/* interface definitions */
 #include "TuringBoxes.hxx"
 
@@ -79,11 +80,6 @@ inline void WORD2BYTE(uint32_t w, uint8_t *b)
 inline uint32_t BYTE2WORD(const uint8_t *b)
 {
     return b[0] << 24 | b[1] << 16 | b[2] << 8 | b[3];
-}
-
-inline uint32_t ROTL(uint32_t w, int x)
-{
-    return (w << x) | (w >> (32 - x));
 }
 
 /*

@@ -32,6 +32,7 @@
 
 #include <algorithm>
 
+#include "bits.hxx"
 #include "md5.hxx"
 
 /* Integer part of 4294967296 times abs(sin(i)), where i is in radians. */
@@ -69,53 +70,28 @@ static const uint8_t md5_paddat[MD5_BUFLEN] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-inline uint32_t SHIFT(uint32_t X, int s)
-{
-    return (X << s) | (X >> (32 - s));
-}
-
-inline uint32_t F(uint32_t X, uint32_t Y, uint32_t Z)
-{
-    return (X & Y) | (~X & Z);
-}
-
-inline uint32_t G(uint32_t X, uint32_t Y, uint32_t Z)
-{
-    return (X & Z) | (Y & ~Z);
-}
-
-inline uint32_t H(uint32_t X, uint32_t Y, uint32_t Z)
-{
-    return X ^ Y ^ Z;
-}
-
-inline uint32_t I(uint32_t X, uint32_t Y, uint32_t Z)
-{
-    return Y ^ (X | ~Z);
-}
-
 inline void ROUND1(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a = SHIFT(a + F(b, c, d) + X[k] + T[i], s) + b;
+    a = ROTL(a + ((b & c) | (~b & d)) + X[k] + T[i], s) + b;
 }
 
 inline void ROUND2(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a = SHIFT(a + G(b, c, d) + X[k] + T[i], s) + b;
+    a = ROTL(a + ((b & d) | (c & ~d)) + X[k] + T[i], s) + b;
 }
 
 inline void ROUND3(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a = SHIFT(a + H(b, c, d) + X[k] + T[i], s) + b;
+    a = ROTL(a + (b ^ c ^ d) + X[k] + T[i], s) + b;
 }
 
 inline void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
                    uint32_t d, int k, int s, int i)
 {
-    a = SHIFT(a + I(b, c, d) + X[k] + T[i], s) + b;
+    a = ROTL(a + (c ^ (b | ~d)) + X[k] + T[i], s) + b;
 }
 
 void MD5::init()

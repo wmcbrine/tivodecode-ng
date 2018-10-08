@@ -1,13 +1,12 @@
-TuringFast.$(O): TuringFast.cxx Turing.hxx TuringBoxes.hxx
+TuringFast.$(O): TuringFast.cxx bits.hxx Turing.hxx TuringBoxes.hxx
 cli_common.$(O): cli_common.cxx tdconfig.h cli_common.hxx
 getopt_td.$(O): getopt_td.cxx getopt_td.hxx
 happyfile.$(O): happyfile.cxx happyfile.hxx tdconfig.h
 hexlib.$(O): hexlib.cxx hexlib.hxx
-md5.$(O): md5.cxx tdconfig.h md5.hxx
-sha1.$(O): sha1.cxx sha1.hxx
+md5.$(O): md5.cxx tdconfig.h bits.hxx md5.hxx
+sha1.$(O): sha1.cxx bits.hxx sha1.hxx
 tdcat.$(O): tdcat.cxx getopt_td.hxx cli_common.hxx tivo_parse.hxx \
-  happyfile.hxx tdconfig.h Turing.hxx turing_stream.hxx \
-  tivo_decoder_ts.hxx tivo_decoder_base.hxx tivo_decoder_ps.hxx
+  happyfile.hxx tdconfig.h Turing.hxx turing_stream.hxx
 tivo_decoder_base.$(O): tivo_decoder_base.cxx tivo_decoder_base.hxx \
   tivo_parse.hxx happyfile.hxx tdconfig.h Turing.hxx turing_stream.hxx
 tivo_decoder_mpeg_parser.$(O): tivo_decoder_mpeg_parser.cxx \

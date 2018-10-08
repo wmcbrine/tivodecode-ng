@@ -15,17 +15,13 @@
 #include <algorithm>
 #include <cstdint>
 
+#include "bits.hxx"
 #include "sha1.hxx"
 
 typedef union {
     uint8_t c[64];
     uint32_t l[16];
 } c64l16;
-
-inline uint32_t rol(uint32_t value, int bits)
-{
-    return (value << bits) | (value >> (32 - bits));
-}
 
 /* blk0() and blk() perform the initial expand. */
 /* I got the idea of expanding during the round function from SSLeay */
@@ -40,8 +36,8 @@ inline uint32_t blk0(c64l16 *block, int i)
 
 inline uint32_t blk(c64l16 *block, int i)
 {
-    block->l[i & 15] = rol(block->l[(i + 13) & 15] ^ block->l[(i + 8) & 15] ^
-                           block->l[(i + 2) & 15] ^ block->l[i & 15], 1);
+    block->l[i & 15] = ROTL(block->l[(i + 13) & 15] ^ block->l[(i + 8) & 15] ^
+                            block->l[(i + 2) & 15] ^ block->l[i & 15], 1);
 
     return block->l[i & 15];
 }
@@ -51,36 +47,36 @@ inline uint32_t blk(c64l16 *block, int i)
 inline void R0(c64l16 *block, uint32_t v, uint32_t &w, uint32_t x,
                uint32_t y, uint32_t &z, int i)
 {
-    z += ((w & (x ^ y)) ^ y) + blk0(block, i) + 0x5A827999 + rol(v, 5);
-    w = rol(w, 30);
+    z += ((w & (x ^ y)) ^ y) + blk0(block, i) + 0x5A827999 + ROTL(v, 5);
+    w = ROTL(w, 30);
 }
 
 inline void R1(c64l16 *block, uint32_t v, uint32_t &w, uint32_t x,
                uint32_t y, uint32_t &z, int i)
 {
-    z += ((w & (x ^ y)) ^ y) + blk(block, i) + 0x5A827999 + rol(v, 5);
-    w = rol(w, 30);
+    z += ((w & (x ^ y)) ^ y) + blk(block, i) + 0x5A827999 + ROTL(v, 5);
+    w = ROTL(w, 30);
 }
 
 inline void R2(c64l16 *block, uint32_t v, uint32_t &w, uint32_t x,
                uint32_t y, uint32_t &z, int i)
 {
-    z += (w ^ x ^ y) + blk(block, i) + 0x6ED9EBA1 + rol(v, 5);
-    w = rol(w, 30);
+    z += (w ^ x ^ y) + blk(block, i) + 0x6ED9EBA1 + ROTL(v, 5);
+    w = ROTL(w, 30);
 }
 
 inline void R3(c64l16 *block, uint32_t v, uint32_t &w, uint32_t x,
                uint32_t y, uint32_t &z, int i)
 {
-    z += (((w | x) & y) | (w & x)) + blk(block, i) + 0x8F1BBCDC + rol(v, 5);
-    w = rol(w, 30);
+    z += (((w | x) & y) | (w & x)) + blk(block, i) + 0x8F1BBCDC + ROTL(v, 5);
+    w = ROTL(w, 30);
 }
 
 inline void R4(c64l16 *block, uint32_t v, uint32_t &w, uint32_t x,
                uint32_t y, uint32_t &z, int i)
 {
-    z += (w ^ x ^ y) + blk(block, i) + 0xCA62C1D6 + rol(v, 5);
-    w = rol(w, 30);
+    z += (w ^ x ^ y) + blk(block, i) + 0xCA62C1D6 + ROTL(v, 5);
+    w = ROTL(w, 30);
 }
 
 /* Hash a single 512-bit block. This is the core of the algorithm. */
