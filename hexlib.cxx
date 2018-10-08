@@ -1,5 +1,5 @@
 /* useful hex manipulation routines */
-/* Copyright C Qualcomm Inc 1997 */
+/* Copyright Qualcomm Inc 1997 */
 
 #include <cctype>
 #include <iostream>

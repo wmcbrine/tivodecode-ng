@@ -1,8 +1,10 @@
 /*
- * Portions Copyright (c) 1987, 1993, 1994
+ * Portions Copyright 1987, 1993, 1994
  * The Regents of the University of California.  All rights reserved.
  *
- * Portions Copyright (c) 2003-2006, PostgreSQL Global Development Group
+ * Portions Copyright 2003-2006, PostgreSQL Global Development Group
+ *
+ * See COPYING file for license terms
  *
  */
 

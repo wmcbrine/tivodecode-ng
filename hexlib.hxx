@@ -1,5 +1,5 @@
 /* useful hex manipulation routine header */
-/* Copyright C Qualcomm Inc 1997 */
+/* Copyright Qualcomm Inc 1997 */
 
 #ifndef HEXLIB_HXX_
 #define HEXLIB_HXX_

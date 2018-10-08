@@ -1,3 +1,9 @@
+/*
+ * tivodecode-ng
+ * Copyright 2006-2018, Jeremy Drake et al.
+ * See COPYING file for license terms
+ */
+
 #include "tdconfig.h"
 
 #include <cstdlib>

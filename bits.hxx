@@ -1,3 +1,9 @@
+/*
+ * tivodecode-ng
+ * Copyright 2006-2018, Jeremy Drake et al.
+ * See COPYING file for license terms
+ */
+
 // Some common bitwise operations
 
 #ifndef BITS_HXX_

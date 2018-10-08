@@ -3,6 +3,7 @@
  * Copyright 2006-2018, Jeremy Drake et al.
  * See COPYING file for license terms
  */
+
 #ifndef SHA1_HXX_
 #define SHA1_HXX_
 

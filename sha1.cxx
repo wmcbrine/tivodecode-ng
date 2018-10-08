@@ -1,6 +1,6 @@
 /*
-   SHA-1 in C
-   By Steve Reid <steve@edmweb.com>
+   SHA-1 in C[++]
+   Originally By Steve Reid <steve@edmweb.com>
    100% Public Domain
 
    Test Vectors (from FIPS PUB 180-1)

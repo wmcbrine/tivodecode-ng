@@ -1,3 +1,9 @@
+/*
+ * tivodecode-ng
+ * Copyright 2006-2018, Jeremy Drake et al.
+ * See COPYING file for license terms
+ */
+
 #ifndef TIVO_PARSE_HXX_
 #define TIVO_PARSE_HXX_
 

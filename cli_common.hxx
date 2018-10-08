@@ -1,3 +1,9 @@
+/*
+ * tivodecode-ng
+ * Copyright 2006-2018, Jeremy Drake et al.
+ * See COPYING file for license terms
+ */
+
 #ifndef CLI_COMMON_HXX_
 #define CLI_COMMON_HXX_
 
