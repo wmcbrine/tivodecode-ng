@@ -3,7 +3,6 @@
 # Usage: nmake -f Makefile.msv
 #------------------------------------------------
 
-LIBS = user32.lib advapi32.lib
 COMPILER = $(CC) -nologo -c -O2 -DWIN32 -EHsc
 
 all:	tivodecode tdcat
@@ -23,10 +22,10 @@ tivo_decoder_ps.$(O) tivo_decoder_ts.$(O) tivo_decoder_ts_pkt.$(O) \
 tivo_decoder_ts_stream.$(O)
 
 tivodecode:	tivodecode.$(O) $(OBJS1) $(OBJS2)
-	link -out:tivodecode.exe tivodecode.$(O) $(OBJS1) $(OBJS2) $(LIBS)
+	link -out:tivodecode.exe tivodecode.$(O) $(OBJS1) $(OBJS2)
 
 tdcat:	tdcat.$(O) $(OBJS1)
-	link -out:tdcat.exe tdcat.$(O) $(OBJS1) $(LIBS)
+	link -out:tdcat.exe tdcat.$(O) $(OBJS1)
 
 clean:
 	del *.obj
