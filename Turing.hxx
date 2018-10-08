@@ -74,7 +74,7 @@ class Turing
         uint32_t K[MAXKEY / 4];  /* storage for mixed key */
         uint32_t R[LFSRLEN];     /* the shift register */
         /* precalculated S-boxes */
-        uint32_t S0[256], S1[256], S2[256], S3[256];
+        uint32_t Sb[4][256];
 
         void STEP(int z);
         uint32_t S(uint32_t w, int b);

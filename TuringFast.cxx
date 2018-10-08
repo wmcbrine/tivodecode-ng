@@ -141,7 +141,7 @@ void mixwords(uint32_t w[], int n)
  */
 void Turing::key(const uint8_t key[], const int keylength)
 {
-    int i, j, k;
+    int i, j, k, l;
     uint32_t w;
 
     if ((keylength & 0x03) != 0 || keylength > MAXKEY)
@@ -152,41 +152,19 @@ void Turing::key(const uint8_t key[], const int keylength)
     mixwords(K, keylen);
 
     /* build S-box lookup tables */
-    for (j = 0; j < 256; ++j) {
-	w = 0;
-	k = j;
-	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[BYTE(K[i], 0) ^ k];
-	    w ^= ROTL(Qbox[k], i + 0);
-	}
-	S0[j] = (w & 0x00FFFFFFUL) | (k << 24);
-    }
-    for (j = 0; j < 256; ++j) {
-	w = 0;
-	k = j;
-	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[BYTE(K[i], 1) ^ k];
-	    w ^= ROTL(Qbox[k], i + 8);
-	}
-	S1[j] = (w & 0xFF00FFFFUL) | (k << 16);
-    }
-    for (j = 0; j < 256; ++j) {
-	w = 0;
-	k = j;
-	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[BYTE(K[i], 2) ^ k];
-	    w ^= ROTL(Qbox[k], i + 16);
-	}
-	S2[j] = (w & 0xFFFF00FFUL) | (k << 8);
-    }
-    for (j = 0; j < 256; ++j) {
-	w = 0;
-	k = j;
-	for (i = 0; i < keylen; ++i) {
-	    k = Sbox[BYTE(K[i], 3) ^ k];
-	    w ^= ROTL(Qbox[k], i + 24);
-	}
-	S3[j] = (w & 0xFFFFFF00UL) | k;
+    for (l = 0; l < 4; ++l) {
+        int sh1 = l << 3;
+        int sh2 = 24 - sh1;
+        uint32_t mask = (0xff << sh2) ^ 0xffffffffUL;
+        for (j = 0; j < 256; ++j) {
+            w = 0;
+            k = j;
+            for (i = 0; i < keylen; ++i) {
+                k = Sbox[BYTE(K[i], l) ^ k];
+                w ^= ROTL(Qbox[k], i + sh1);
+            }
+            Sb[l][j] = (w & mask) | (k << sh2);
+        }
     }
 }
 
@@ -243,10 +221,10 @@ inline void Turing::STEP(int z)
  */
 inline uint32_t Turing::S(uint32_t w, int b)
 {
-    return S0[BYTE(w, (0 + b) & 0x3)]
-         ^ S1[BYTE(w, (1 + b) & 0x3)]
-         ^ S2[BYTE(w, (2 + b) & 0x3)]
-         ^ S3[BYTE(w, (3 + b) & 0x3)];
+    return Sb[0][BYTE(w, (0 + b) & 0x3)]
+         ^ Sb[1][BYTE(w, (1 + b) & 0x3)]
+         ^ Sb[2][BYTE(w, (2 + b) & 0x3)]
+         ^ Sb[3][BYTE(w, (3 + b) & 0x3)];
 }
 
 /* a single round */
