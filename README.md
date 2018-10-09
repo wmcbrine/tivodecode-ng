@@ -13,6 +13,10 @@ for transport streams, although that's a work in progress. (Note that
 support for program streams is as complete as ever, and this version is
 faster than classic tivodecode.)
 
+
+Building
+--------
+
 You can build tivodecode-ng with autoconf:
 
     ./configure
@@ -27,17 +31,17 @@ or with Microsoft Visual C++:
 
     nmake -f Makefile.msv
 
-You can specify the MAK either on the command line (which takes
-precedence), or in a config file called "~/.tivodecode_mak". On Windows,
-the file should be in your %USERPROFILE% directory, or in c:\ if there
-is no %USERPROFILE% set.
-
 
 Usage
 -----
 
 tivodecode is the main executable, while tdcat is also provided, for an
 easier way to handle the metadata.
+
+You'll need your Media Access Key to decrypt. You can specify the MAK
+either on the command line (which takes precedence), or in a config file
+called "~/.tivodecode_mak". On Windows, the file should be in your
+%USERPROFILE% directory, or in c:\ if there is no %USERPROFILE% set.
 
 
     tivodecode [--help] [--verbose|-v] [--no-verify|-n] {--mak|-m} mak
