@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cerrno>
 #include <cstdio>
+#include <cstdlib>
 
 #ifdef WIN32
 # include <fcntl.h>
@@ -15,8 +16,23 @@
 
 #include "happyfile.hxx"
 
-HappyFile::HappyFile()
+HappyFile::HappyFile(const char *filename, const char *mode)
 {
+    bool writemode = !std::strcmp(mode, "wb");
+
+    if (!filename || !std::strcmp(filename, "-"))
+    {
+        if (!attach(writemode ? stdout : stdin))
+            std::exit(10);
+    }
+    else
+    {
+        if (!open(filename, mode))
+        {
+            std::perror(writemode ? "opening output file" : filename);
+            std::exit(6 + writemode);
+        }
+    }
 }
 
 HappyFile::~HappyFile()

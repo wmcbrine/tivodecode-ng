@@ -129,37 +129,8 @@ int main(int argc, const char **argv)
     if (("" == mak) || !tivofile)
         do_help(argv[0], 5);
 
-    HappyFile *hfh = new HappyFile;
-
-    if (!std::strcmp(tivofile, "-"))
-    {
-        if (!hfh->attach(stdin))
-            return 10;
-    }
-    else
-    {
-        if (!hfh->open(tivofile, "rb"))
-        {
-            std::perror(tivofile);
-            return 6;
-        }
-    }
-
-    HappyFile *ofh = new HappyFile;
-
-    if (!outfile || !std::strcmp(outfile, "-"))
-    {
-        if (!ofh->attach(stdout))
-            return 10;
-    }
-    else
-    {
-        if (!ofh->open(outfile, "wb"))
-        {
-            std::perror("opening output file");
-            return 7;
-        }
-    }
+    HappyFile *hfh = new HappyFile(tivofile, "rb");
+    HappyFile *ofh = new HappyFile(outfile, "wb");
 
     print_qualcomm_msg();
 
@@ -202,12 +173,7 @@ int main(int argc, const char **argv)
             char buf[27];
             std::sprintf(buf, "chunk-%02u-%04x.xml", i, pChunks[i].id);
 
-            HappyFile *chunkfh = new HappyFile;
-            if (!chunkfh->open(buf, "wb"))
-            {
-                std::perror("create metadata file");
-                return 8;
-            }
+            HappyFile *chunkfh = new HappyFile(buf, "wb");
 
             pChunks[i].dump();
             if (false == pChunks[i].write(chunkfh))

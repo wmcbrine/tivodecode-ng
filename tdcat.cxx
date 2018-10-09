@@ -106,37 +106,8 @@ int main(int argc, const char **argv)
     if (("" == mak) || !tivofile)
         do_help(argv[0], 5);
 
-    HappyFile *hfh = new HappyFile;
-
-    if (!std::strcmp(tivofile, "-"))
-    {
-        if (!hfh->attach(stdin))
-            return 10;
-    }
-    else
-    {
-        if (!hfh->open(tivofile, "rb"))
-        {
-            std::perror(tivofile);
-            return 6;
-        }
-    }
-
-    HappyFile *ofh = new HappyFile;
-
-    if (!outfile || !std::strcmp(outfile, "-"))
-    {
-        if (!ofh->attach(stdout))
-            return 10;
-    }
-    else
-    {
-        if (!ofh->open(outfile, "wb"))
-        {
-            std::perror("opening output file");
-            return 7;
-        }
-    }
+    HappyFile *hfh = new HappyFile(tivofile, "rb");
+    HappyFile *ofh = new HappyFile(outfile, "wb");
 
     if (!o_chunk_1 && !o_chunk_2)
         o_chunk_1 = true;
