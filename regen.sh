@@ -1,7 +1,6 @@
 #!/bin/sh
 rm -f config.cache
-aclocal -Im4
+aclocal
 autoconf
 autoheader
 automake --foreign
-exit
