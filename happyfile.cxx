@@ -16,11 +16,11 @@
 
 #include "happyfile.hxx"
 
-HappyFile::HappyFile(const char *filename, const char *mode)
+HappyFile::HappyFile(std::string filename, std::string mode)
 {
-    bool writemode = !std::strcmp(mode, "wb");
+    bool writemode = ("wb" == mode);
 
-    if (!filename || !std::strcmp(filename, "-"))
+    if ("" == filename || "-" == filename)
     {
         if (!attach(writemode ? stdout : stdin))
             std::exit(10);
@@ -29,7 +29,7 @@ HappyFile::HappyFile(const char *filename, const char *mode)
     {
         if (!open(filename, mode))
         {
-            std::perror(writemode ? "opening output file" : filename);
+            std::perror(writemode ? "opening output file" : filename.c_str());
             std::exit(6 + writemode);
         }
     }
@@ -48,9 +48,9 @@ void HappyFile::init()
     buffer_fill = 0;
 }
 
-bool HappyFile::open(const char *filename, const char *mode)
+bool HappyFile::open(std::string &filename, std::string &mode)
 {
-    fh = std::fopen(filename, mode);
+    fh = std::fopen(filename.c_str(), mode.c_str());
     if (!fh)
         return false;
     attached = false;

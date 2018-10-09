@@ -48,9 +48,8 @@ int main(int argc, const char **argv)
     bool o_chunk_1 = true;
     bool o_chunk_2 = false;
 
-    const char *tivofile = NULL;
-    const char *outfile  = NULL;
-
+    std::string tivofile = "";
+    std::string outfile = "";
     std::string mak = "";
 
     int64_t current_meta_stream_pos = 0;
@@ -103,7 +102,7 @@ int main(int argc, const char **argv)
             do_help(argv[0], 4);
     }
 
-    if (("" == mak) || !tivofile)
+    if ("" == mak || "" == tivofile)
         do_help(argv[0], 5);
 
     HappyFile *hfh = new HappyFile(tivofile, "rb");

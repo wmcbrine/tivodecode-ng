@@ -11,6 +11,7 @@
 
 #include <cstdio>
 #include <cstdint>
+#include <string>
 
 const size_t TD_RAWBUFSIZE = 65536;
 const size_t TD_BUFFERSIZE = 4096;
@@ -31,7 +32,7 @@ class HappyFile
 
         void init();
 
-        bool open(const char *filename, const char *mode);
+        bool open(std::string &filename, std::string &mode);
         bool attach(FILE *fh);
 
     public:
@@ -43,7 +44,7 @@ class HappyFile
         int64_t tell();
         bool seek(int64_t offset);
 
-        HappyFile(const char *filename, const char *mode);
+        HappyFile(std::string filename, std::string mode);
         ~HappyFile();
 };
 
