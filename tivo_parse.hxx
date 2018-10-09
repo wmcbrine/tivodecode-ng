@@ -48,8 +48,10 @@ TiVoChunkType;
 
 class TiVoStreamHeader
 {
-    public:
+    private:
         uint16_t flags;
+
+    public:
         uint32_t mpeg_offset;    /* 0-based offset of MPEG stream */
         uint16_t chunks;         /* Number of metadata chunks */
 
@@ -62,12 +64,14 @@ class TiVoStreamHeader
 
 class TiVoStreamChunk
 {
-    public:
+    private:
         uint32_t chunkSize;  /* Size of chunk */
+        uint8_t  *pData;     /* Variable length data */
+
+    public:
         uint32_t dataSize;   /* Length of the payload */
         uint16_t id;         /* Chunk ID */
         uint16_t type;       /* Subtype */
-        uint8_t  *pData;     /* Variable length data */
 
         bool     read(HappyFile *file);
         bool     write(HappyFile *file);

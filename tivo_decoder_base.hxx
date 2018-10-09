@@ -12,10 +12,11 @@
 
 class TiVoDecoder
 {
-    public:
-
+    protected:
         bool         running;
         bool         isValid;
+
+    public:
         TuringState &pTuring;
         HappyFile   *pFileIn;
         HappyFile   *pFileOut;
