@@ -18,15 +18,15 @@ class TiVoDecoder
 
     public:
         TuringState &pTuring;
-        HappyFile   *pFileIn;
-        HappyFile   *pFileOut;
+        HappyFile   &pFileIn;
+        HappyFile   &pFileOut;
 
         int do_header(const uint8_t *arg_0, int &block_no, int &crypted);
 
         virtual bool process() = 0;
 
-        TiVoDecoder(TuringState &pTuringState, HappyFile *pInfile,
-                    HappyFile *pOutfile);
+        TiVoDecoder(TuringState &pTuringState, HappyFile &pInfile,
+                    HappyFile &pOutfile);
         virtual ~TiVoDecoder();
 };
 

@@ -27,8 +27,8 @@ class HappyFile
         int64_t buffer_start;
         int64_t buffer_fill;
 
-        char rawbuf[TD_RAWBUFSIZE];
-        char buffer[TD_BUFFERSIZE];
+        char *rawbuf;
+        char *buffer;
 
         void init();
 

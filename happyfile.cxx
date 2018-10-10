@@ -20,6 +20,9 @@ HappyFile::HappyFile(std::string filename, std::string mode)
 {
     bool writemode = ("wb" == mode);
 
+    rawbuf = new char[TD_RAWBUFSIZE];
+    buffer = new char[TD_BUFFERSIZE];
+
     if ("" == filename || "-" == filename)
     {
         if (!attach(writemode ? stdout : stdin))
@@ -33,11 +36,16 @@ HappyFile::HappyFile(std::string filename, std::string mode)
             std::exit(6 + writemode);
         }
     }
+
+    init();
 }
 
 HappyFile::~HappyFile()
 {
     close();
+
+    delete buffer;
+    delete rawbuf;
 }
 
 void HappyFile::init()
@@ -54,7 +62,6 @@ bool HappyFile::open(std::string &filename, std::string &mode)
     if (!fh)
         return false;
     attached = false;
-    init();
     return true;
 }
 
@@ -72,7 +79,6 @@ bool HappyFile::attach(FILE *handle)
     }
 #endif
 
-    init();
     return true;
 }
 

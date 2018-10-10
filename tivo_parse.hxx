@@ -56,7 +56,7 @@ class TiVoStreamHeader
         uint16_t chunks;         /* Number of metadata chunks */
 
         TiVoFormatType getFormatType();
-        bool           read(HappyFile *file);
+        bool           read(HappyFile &file);
         void           dump();
 
         TiVoStreamHeader();
@@ -73,8 +73,8 @@ class TiVoStreamChunk
         uint16_t id;         /* Chunk ID */
         uint16_t type;       /* Subtype */
 
-        bool     read(HappyFile *file);
-        bool     write(HappyFile *file);
+        bool     read(HappyFile &file);
+        bool     write(HappyFile &file);
         void     dump();
 
         void     setupTuringKey(TuringState &turing, const std::string &mak);

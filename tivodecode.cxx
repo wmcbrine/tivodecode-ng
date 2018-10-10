@@ -128,8 +128,8 @@ int main(int argc, const char **argv)
     if ("" == mak || "" == tivofile)
         do_help(argv[0], 5);
 
-    HappyFile *hfh = new HappyFile(tivofile, "rb");
-    HappyFile *ofh = new HappyFile(outfile, "wb");
+    HappyFile hfh(tivofile, "rb");
+    HappyFile ofh(outfile, "wb");
 
     print_qualcomm_msg();
 
@@ -142,7 +142,7 @@ int main(int argc, const char **argv)
 
     for (uint16_t i = 0; i < header.chunks; i++)
     {
-        int64_t chunk_start = hfh->tell() + 12;
+        int64_t chunk_start = hfh.tell() + 12;
 
         if (false == pChunks[i].read(hfh))
         {
@@ -172,7 +172,7 @@ int main(int argc, const char **argv)
             char buf[27];
             std::sprintf(buf, "chunk-%02u-%04x.xml", i, pChunks[i].id);
 
-            HappyFile *chunkfh = new HappyFile(buf, "wb");
+            HappyFile chunkfh(buf, "wb");
 
             pChunks[i].dump();
             if (false == pChunks[i].write(chunkfh))
@@ -180,16 +180,14 @@ int main(int argc, const char **argv)
                 std::perror("write chunk");
                 return 8;
             }
-
-            delete chunkfh;
         }
     }
 
     if (o_no_video)
         std::exit(0);
 
-    if ((hfh->tell() > header.mpeg_offset) ||
-        !hfh->seek(header.mpeg_offset))
+    if ((hfh.tell() > header.mpeg_offset) ||
+        !hfh.seek(header.mpeg_offset))
     {
         std::perror("Error reading header");
         return 8; // I dunno
@@ -211,9 +209,6 @@ int main(int argc, const char **argv)
         std::perror("Failed to process file");
         return 9;
     }
-
-    delete hfh;
-    delete ofh;
 
     return 0;
 }

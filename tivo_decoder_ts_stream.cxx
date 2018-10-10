@@ -12,12 +12,12 @@
 #include "tivo_decoder_ts.hxx"
 #include "tivo_decoder_mpeg_parser.hxx"
 
-TiVoDecoderTsStream::TiVoDecoderTsStream(uint16_t pid)
+TiVoDecoderTsStream::TiVoDecoderTsStream(HappyFile &pFileOut, uint16_t pid) :
+    stream_pid(pid), pOutfile(pFileOut)
 {
     packets.clear();
 
     pParent        = NULL;
-    stream_pid     = pid;
     stream_type_id = 0;
     stream_id      = 0;
     stream_type    = TS_STREAM_TYPE_NONE;
@@ -257,7 +257,7 @@ bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)
                 pPkt2->dump();
             }
 
-            if (pOutfile->write(&pPkt2->buffer[0], TS_FRAME_SIZE) !=
+            if (pOutfile.write(pPkt2->buffer, TS_FRAME_SIZE) !=
                 TS_FRAME_SIZE)
             {
                 std::perror("Writing packet to output file");

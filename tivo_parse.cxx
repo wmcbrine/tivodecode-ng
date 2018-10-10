@@ -22,11 +22,11 @@ TiVoStreamHeader::TiVoStreamHeader()
     chunks      = 0;
 }
 
-bool TiVoStreamHeader::read(HappyFile *file)
+bool TiVoStreamHeader::read(HappyFile &file)
 {
     uint8_t buffer[16];
 
-    if (file->read(buffer, 16) != 16)
+    if (file.read(buffer, 16) != 16)
     {
         std::perror("read header");
         return false;
@@ -95,11 +95,11 @@ TiVoStreamChunk::~TiVoStreamChunk()
         delete[] pData;
 }
 
-bool TiVoStreamChunk::read(HappyFile *file)
+bool TiVoStreamChunk::read(HappyFile &file)
 {
     uint8_t buffer[12];
 
-    if (file->read(buffer, 12) != 12)
+    if (file.read(buffer, 12) != 12)
     {
         std::perror("read chunk");
         return false;
@@ -113,7 +113,7 @@ bool TiVoStreamChunk::read(HappyFile *file)
     uint16_t readSize = chunkSize - 12;
     pData = new uint8_t[readSize];
 
-    if (file->read(pData, readSize) != readSize)
+    if (file.read(pData, readSize) != readSize)
     {
         std::perror("read chunk data");
         return false;
@@ -122,9 +122,9 @@ bool TiVoStreamChunk::read(HappyFile *file)
     return true;
 }
 
-bool TiVoStreamChunk::write(HappyFile *file)
+bool TiVoStreamChunk::write(HappyFile &file)
 {
-    if (file->write(pData, dataSize) != dataSize)
+    if (file.write(pData, dataSize) != dataSize)
         return false;
 
     return true;

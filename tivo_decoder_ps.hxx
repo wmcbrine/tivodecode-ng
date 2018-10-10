@@ -43,8 +43,8 @@ class TiVoDecoderPS : public TiVoDecoder
     public:
         virtual bool process();
 
-        TiVoDecoderPS(TuringState &pTuringState, HappyFile *pInfile,
-                      HappyFile *pOutfile);
+        TiVoDecoderPS(TuringState &pTuringState, HappyFile &pInfile,
+                      HappyFile &pOutfile);
         ~TiVoDecoderPS();
 };
 

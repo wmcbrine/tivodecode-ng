@@ -180,8 +180,8 @@ class TiVoDecoderTS : public TiVoDecoder
         int handlePkt_TiVo(TiVoDecoderTsPacket *pPkt);
 
         virtual bool process();
-        TiVoDecoderTS(TuringState &pTuringState, HappyFile *pInfile,
-                      HappyFile *pOutfile);
+        TiVoDecoderTS(TuringState &pTuringState, HappyFile &pInfile,
+                      HappyFile &pOutfile);
         ~TiVoDecoderTS();
 };
 
@@ -197,7 +197,7 @@ class TiVoDecoderTsStream
         uint8_t         stream_id;
         ts_stream_types stream_type;
 
-        HappyFile       *pOutfile;
+        HappyFile       &pOutfile;
 
         TS_Turing_Stuff turing_stuff;
 
@@ -208,7 +208,7 @@ class TiVoDecoderTsStream
         bool            getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen);
         bool            decrypt(uint8_t *pBuffer, uint16_t bufLen);
 
-        TiVoDecoderTsStream(uint16_t pid);
+        TiVoDecoderTsStream(HappyFile &pFileOut, uint16_t pid);
         ~TiVoDecoderTsStream();
 };
 
@@ -232,7 +232,7 @@ class TiVoDecoderTsPacket
         TS_Adaptation_Field tsAdaptation;
         ts_packet_pid_types ts_packet_type;
 
-        int  read(HappyFile *pInfile);
+        int  read(HappyFile &pInfile);
         bool decode();
         void dump();
         void setStream(TiVoDecoderTsStream *pStream);

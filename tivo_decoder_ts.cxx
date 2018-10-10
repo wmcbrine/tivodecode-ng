@@ -75,8 +75,8 @@ ts_pmt_stream_type_info ts_pmt_stream_tags[] = {
 
 TiVoDecoderTS::TiVoDecoderTS(
         TuringState &pTuringState,
-        HappyFile *pInfile,
-        HappyFile *pOutfile) :
+        HappyFile &pInfile,
+        HappyFile &pOutfile) :
     TiVoDecoder(pTuringState,
         pInfile,
         pOutfile)
@@ -86,8 +86,7 @@ TiVoDecoderTS::TiVoDecoderTS(
 
     // Create stream for PAT
     VERBOSE("Creating new stream for PID 0\n");
-    TiVoDecoderTsStream * pStream = new TiVoDecoderTsStream(0);
-    pStream->pOutfile   = pFileOut;
+    TiVoDecoderTsStream *pStream = new TiVoDecoderTsStream(pFileOut, 0);
     pStream->setDecoder(this);
     streams[0]          = pStream;
 }
@@ -186,8 +185,7 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
                           << patData.program_map_pid << "\n";
 
             TiVoDecoderTsStream *pStream =
-                new TiVoDecoderTsStream(patData.program_map_pid);
-            pStream->pOutfile = pFileOut;
+                new TiVoDecoderTsStream(pFileOut, patData.program_map_pid);
             pStream->setDecoder(this);
             streams[patData.program_map_pid] = pStream;
         }
@@ -312,10 +310,10 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
             if (IS_VERBOSE())
                 std::cerr << "Creating new stream for PID "
                           << streamPid << "\n";
-            TiVoDecoderTsStream *pStream = new TiVoDecoderTsStream(streamPid);
+            TiVoDecoderTsStream *pStream = new TiVoDecoderTsStream(pFileOut,
+                streamPid);
             pStream->stream_type_id = streamTypeId;
             pStream->stream_type    = streamType;
-            pStream->pOutfile       = pFileOut;
             pStream->setDecoder(this);
 
             streams[streamPid]      = pStream;

@@ -32,16 +32,10 @@ void TiVoDecoderTsPacket::setStream(TiVoDecoderTsStream *pStream)
     pParent = pStream;
 }
 
-int TiVoDecoderTsPacket::read(HappyFile *pInfile)
+int TiVoDecoderTsPacket::read(HappyFile &pInfile)
 {
     int size = 0;
     bool loss_of_sync = false;
-
-    if (!pInfile)
-    {
-        std::perror("bad parameter");
-        return -1;
-    }
 
     if (globalBufferLen > TS_FRAME_SIZE)
     {
@@ -59,7 +53,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
     }
     else
     {
-        size = pInfile->read(buffer, TS_FRAME_SIZE);
+        size = pInfile.read(buffer, TS_FRAME_SIZE);
         globalBufferLen = 0;
 
         if (IS_VVERBOSE())
@@ -117,7 +111,7 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             }
             else
             {
-                size = pInfile->read(globalBuffer, TS_FRAME_SIZE * 3);
+                size = pInfile.read(globalBuffer, TS_FRAME_SIZE * 3);
 
                 if (IS_VVERBOSE())
                     std::cerr << "Read handler : size " << size << "\n";
@@ -145,8 +139,8 @@ int TiVoDecoderTsPacket::read(HappyFile *pInfile)
             }
         }
 
-        size = pInfile->read(globalBuffer + globalBufferLen,
-                             (3 * TS_FRAME_SIZE) - globalBufferLen);
+        size = pInfile.read(globalBuffer + globalBufferLen,
+                            (3 * TS_FRAME_SIZE) - globalBufferLen);
         if (size < 0)
         {
             std::cerr << "ERROR: size=" << size << "\n";
@@ -367,7 +361,7 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
                   << turing_stuff.block_no << ", crypted "
                   << turing_stuff.crypted << "\n";
     if (IS_VERBOSE())
-        std::cerr << pParent->pFileIn->tell() << " : stream_id: "
+        std::cerr << pParent->pFileIn.tell() << " : stream_id: "
                   << stream_id << ", block_no: "
                   << turing_stuff.block_no << "\n";
 

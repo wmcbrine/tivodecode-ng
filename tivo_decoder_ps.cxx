@@ -40,8 +40,8 @@ static packet_tag_info packet_tags[] = {
 
 TiVoDecoderPS::TiVoDecoderPS(
         TuringState &pTuringState,
-        HappyFile *pInfile,
-        HappyFile *pOutfile) :
+        HappyFile &pInfile,
+        HappyFile &pOutfile) :
     TiVoDecoder(pTuringState,
         pInfile,
         pOutfile)
@@ -73,7 +73,7 @@ bool TiVoDecoderPS::process()
             if (ret == 1)
                 marker = 0xFFFFFFFF;
             else if (ret == 0)
-                pFileOut->write(&byte, 1);
+                pFileOut.write(&byte, 1);
             else if (ret < 0)
             {
                 std::perror("processing frame");
@@ -81,11 +81,11 @@ bool TiVoDecoderPS::process()
             }
         }
         else if (!first)
-            pFileOut->write(&byte, 1);
+            pFileOut.write(&byte, 1);
 
         marker <<= 8;
 
-        if (pFileIn->read(&byte, 1) == 0)
+        if (pFileIn.read(&byte, 1) == 0)
         {
             VERBOSE("End of File\n");
             running = false;
@@ -163,8 +163,8 @@ int TiVoDecoderPS::process_frame(uint8_t code)
             {
                 if (packet_tags[i].packet == PACK_PES_COMPLEX)
                 {
-                    int retval = pFileIn->read(bytes + looked_ahead,
-                                                   5 - looked_ahead);
+                    int retval = pFileIn.read(bytes + looked_ahead,
+                                                  5 - looked_ahead);
                     if (retval == 0)
                         return 0;
                     else if (retval != 5 - looked_ahead)
@@ -205,8 +205,8 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                             if (header_len > 32)
                                 return -1;
 
-                            int retval = pFileIn->read(bytes + looked_ahead,
-                                                  header_len - looked_ahead);
+                            int retval = pFileIn.read(bytes + looked_ahead,
+                                                 header_len - looked_ahead);
                             if (retval == 0)
                                 return 0;
                             else if (retval != header_len - looked_ahead)
@@ -223,8 +223,8 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                 }
                 else
                 {
-                    int retval = pFileIn->read(bytes + looked_ahead,
-                                                   2 - looked_ahead);
+                    int retval = pFileIn.read(bytes + looked_ahead,
+                                                  2 - looked_ahead);
                     if (retval == 0)
                         return 0;
                     else if (retval != 2 - looked_ahead)
@@ -240,8 +240,8 @@ int TiVoDecoderPS::process_frame(uint8_t code)
 
                 std::copy(bytes, bytes + looked_ahead, packet_buffer);
 
-                int retval = pFileIn->read(packet_buffer + looked_ahead,
-                                              length + 2 - looked_ahead);
+                int retval = pFileIn.read(packet_buffer + looked_ahead,
+                                             length + 2 - looked_ahead);
                 if (retval == 0)
                     return 0;
                 else if (retval != length + 2 - looked_ahead)
@@ -317,8 +317,8 @@ int TiVoDecoderPS::process_frame(uint8_t code)
                     packet_buffer[2] &= ~0x20;
                 }
 
-                if ((pFileOut->write(&code, 1) != 1) ||
-                    (pFileOut->write(packet_buffer, length + 2) !=
+                if ((pFileOut.write(&code, 1) != 1) ||
+                    (pFileOut.write(packet_buffer, length + 2) !=
                     (size_t)(length + 2)))
                 {
                     std::perror("writing buffer");

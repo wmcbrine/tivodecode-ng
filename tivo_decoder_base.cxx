@@ -6,8 +6,8 @@
 
 #include "tivo_decoder_base.hxx"
 
-TiVoDecoder::TiVoDecoder(TuringState &pTuringState, HappyFile *pInfile,
-                         HappyFile *pOutfile) : pTuring(pTuringState),
+TiVoDecoder::TiVoDecoder(TuringState &pTuringState, HappyFile &pInfile,
+                         HappyFile &pOutfile) : pTuring(pTuringState),
                          pFileIn(pInfile), pFileOut(pOutfile)
 {
     running  = true;
