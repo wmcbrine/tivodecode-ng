@@ -384,3 +384,60 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
 
     return true;
 }
+
+bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
+{
+    if (!pParent)
+    {
+        std::perror("Stream does not have a parent decoder");
+        return false;
+    }
+
+    if (IS_VVVERBOSE())
+    {
+        std::cerr << "AAA : dump turing : INIT\n";
+
+        pParent->pTuring.dump();
+    }
+
+    if (pParent->do_header(&turing_stuff.key[0],
+                           turing_stuff.block_no,
+                           turing_stuff.crypted))
+    {
+        std::perror("do_header did not return 0!\n");
+        return false;
+    }
+
+    if (IS_VVVERBOSE())
+        std::cerr << "BBB : stream_id " << stream_id << ", blockno "
+                  << turing_stuff.block_no << ", crypted "
+                  << turing_stuff.crypted << "\n";
+    if (IS_VERBOSE())
+        std::cerr << pParent->pFileIn.tell() << " : stream_id: "
+                  << stream_id << ", block_no: "
+                  << turing_stuff.block_no << "\n";
+
+    pParent->pTuring.prepare_frame(stream_id, turing_stuff.block_no);
+
+    if (IS_VVVERBOSE())
+    {
+        std::cerr << "CCC : stream_id " << stream_id << ", blockno "
+                     << turing_stuff.block_no << ", crypted "
+                     << turing_stuff.crypted << "\n";
+
+        std::cerr << "ZZZ : dump turing : BEFORE DECRYPT\n";
+
+        pParent->pTuring.dump();
+    }
+
+    pParent->pTuring.active->decrypt_buffer(pBuffer, bufferLen);
+
+    if (IS_VVVERBOSE())
+    {
+        std::cerr << "---Decrypted transport packet\n";
+
+        hexbulk(pBuffer, bufferLen);
+    }
+
+    return true;
+}
