@@ -213,22 +213,24 @@ class TiVoDecoderTsStream
 
 class TiVoDecoderTsPacket
 {
-    public:
+    private:
         static int          globalBufferLen;
         static uint8_t      globalBuffer[TS_FRAME_SIZE * 3];
-
-        TiVoDecoderTsStream *pParent;
-        uint32_t            packetId;
 
         bool                isValid;
         bool                isPmt;
         bool                isTiVo;
 
+        TS_Header           tsHeader;
+        TS_Adaptation_Field tsAdaptation;
+
+    public:
+        TiVoDecoderTsStream *pParent;
+        uint32_t            packetId;
+
         uint8_t             buffer[TS_FRAME_SIZE];
         uint8_t             payloadOffset;
         uint8_t             pesHdrOffset;
-        TS_Header           tsHeader;
-        TS_Adaptation_Field tsAdaptation;
         ts_packet_pid_types ts_packet_type;
 
         int  read(HappyFile &pInfile);
@@ -248,18 +250,17 @@ class TiVoDecoderTsPacket
         inline bool   isTsPacket()
             { return (buffer[0] == 0x47) ? true : false; }
         inline uint16_t getPID()
-            { uint16_t val = GET16(&buffer[1]); return val & 0x1FFF; }
+            { return GET16(&buffer[1]) & 0x1FFF; }
         inline bool   getPayloadStartIndicator()
-            { uint16_t val = GET16(&buffer[1]); return (val & 0x4000) ?
-              true: false; }
+            { return (GET16(&buffer[1]) & 0x4000) ? true : false; }
         inline bool   getScramblingControl()
-            { return (buffer[3] &  0xC0) ? true : false; }
+            { return (buffer[3] & 0xC0) ? true : false; }
         inline void   clrScramblingControl()
             { buffer[3] &= ~(0xC0); }
         inline bool   getPayloadExists()
-            { return (buffer[3] &  0x10) ? true : false; }
+            { return (buffer[3] & 0x10) ? true : false; }
         inline bool   getAdaptHdrExists()
-            { return (buffer[3] &  0x20) ? true : false; }
+            { return (buffer[3] & 0x20) ? true : false; }
 
         TiVoDecoderTsPacket();
 };
