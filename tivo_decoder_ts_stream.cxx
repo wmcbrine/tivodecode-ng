@@ -12,20 +12,16 @@
 #include "tivo_decoder_ts.hxx"
 #include "tivo_decoder_mpeg_parser.hxx"
 
-TiVoDecoderTsStream::TiVoDecoderTsStream(HappyFile &pFileOut, uint16_t pid) :
-    stream_pid(pid), pOutfile(pFileOut)
+TiVoDecoderTsStream::TiVoDecoderTsStream(HappyFile &pFileOut,
+                                         TiVoDecoderTS *pDecoder,
+                                         uint16_t pid) :
+    pOutfile(pFileOut), pParent(pDecoder), stream_pid(pid)
 {
     packets.clear();
 
-    pParent        = NULL;
     stream_type_id = 0;
     stream_id      = 0;
     stream_type    = TS_STREAM_TYPE_NONE;
-}
-
-void TiVoDecoderTsStream::setDecoder(TiVoDecoderTS *pDecoder)
-{
-    pParent = pDecoder;
 }
 
 bool TiVoDecoderTsStream::addPkt(TiVoDecoderTsPacket *pPkt)

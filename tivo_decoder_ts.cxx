@@ -86,9 +86,7 @@ TiVoDecoderTS::TiVoDecoderTS(
 
     // Create stream for PAT
     VERBOSE("Creating new stream for PID 0\n");
-    TiVoDecoderTsStream *pStream = new TiVoDecoderTsStream(pFileOut, 0);
-    pStream->setDecoder(this);
-    streams[0]          = pStream;
+    streams[0] = new TiVoDecoderTsStream(pFileOut, this, 0);
 }
 
 TiVoDecoderTS::~TiVoDecoderTS()
@@ -184,10 +182,9 @@ int TiVoDecoderTS::handlePkt_PAT(TiVoDecoderTsPacket *pPkt)
                 std::cerr << "Creating new stream for PMT PID "
                           << patData.program_map_pid << "\n";
 
-            TiVoDecoderTsStream *pStream =
-                new TiVoDecoderTsStream(pFileOut, patData.program_map_pid);
-            pStream->setDecoder(this);
-            streams[patData.program_map_pid] = pStream;
+            streams[patData.program_map_pid] =
+                new TiVoDecoderTsStream(pFileOut, this,
+                                        patData.program_map_pid);
         }
         else
         {
@@ -310,13 +307,10 @@ int TiVoDecoderTS::handlePkt_PMT(TiVoDecoderTsPacket *pPkt)
             if (IS_VERBOSE())
                 std::cerr << "Creating new stream for PID "
                           << streamPid << "\n";
-            TiVoDecoderTsStream *pStream = new TiVoDecoderTsStream(pFileOut,
-                streamPid);
-            pStream->stream_type_id = streamTypeId;
-            pStream->stream_type    = streamType;
-            pStream->setDecoder(this);
-
-            streams[streamPid]      = pStream;
+            streams[streamPid] = new TiVoDecoderTsStream(pFileOut,
+                this, streamPid);
+            streams[streamPid]->stream_type_id = streamTypeId;
+            streams[streamPid]->stream_type    = streamType;
         }
         else
         {
@@ -443,7 +437,7 @@ int TiVoDecoderTS::handlePkt_TiVo(TiVoDecoderTsPacket *pPkt)
                           << "\n   TiVo Private :  Stream ID : "
                           << pStream->stream_id
                           << "\n   TiVo Private : Turing Key :\n";
-                hexbulk(&pStream->turing_stuff.key[0], 16);
+                hexbulk(pStream->turing_stuff.key, 16);
             }
         }
 

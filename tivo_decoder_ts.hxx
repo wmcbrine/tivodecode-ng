@@ -171,7 +171,7 @@ class TiVoDecoderTS : public TiVoDecoder
 {
     private:
         TsStreams   streams;
-        uint32_t      pktCounter;
+        uint32_t    pktCounter;
         TS_PAT_data patData;
 
     public:
@@ -187,28 +187,27 @@ class TiVoDecoderTS : public TiVoDecoder
 
 class TiVoDecoderTsStream
 {
-    public:
+    private:
+        HappyFile       &pOutfile;
         TiVoDecoderTS   *pParent;
         TsPackets       packets;
         TsLengths       pesHdrLengths;
 
+        uint8_t         pesDecodeBuffer[TS_FRAME_SIZE * 10];
+
+    public:
         uint8_t         stream_type_id;
         uint16_t        stream_pid;
         uint8_t         stream_id;
         ts_stream_types stream_type;
-
-        HappyFile       &pOutfile;
-
         TS_Turing_Stuff turing_stuff;
 
-        uint8_t         pesDecodeBuffer[TS_FRAME_SIZE * 10];
-
-        void            setDecoder(TiVoDecoderTS *pDecoder);
         bool            addPkt(TiVoDecoderTsPacket *pPkt);
         bool            getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen);
         bool            decrypt(uint8_t *pBuffer, uint16_t bufLen);
 
-        TiVoDecoderTsStream(HappyFile &pFileOut, uint16_t pid);
+        TiVoDecoderTsStream(HappyFile &pFileOut, TiVoDecoderTS *pDecoder,
+                            uint16_t pid);
         ~TiVoDecoderTsStream();
 };
 
