@@ -35,8 +35,8 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-getopt_td.*
------------
+getopt_td.?xx
+-------------
 
 Portions Copyright 1987, 1993, 1994
 The Regents of the University of California.  All rights reserved.
@@ -46,8 +46,8 @@ Portions Copyright 2003-2006, PostgreSQL Global Development Group
 [Same terms]
 
 
-md5.*
------
+md5.?xx
+-------
 
 Copyright 1995, 1996, 1997, and 1998 WIDE Project.
 All rights reserved.
@@ -55,14 +55,14 @@ All rights reserved.
 [Same terms]
 
 
-sha1.*
-------
+sha1.?xx
+--------
 
 "100% Public Domain"
 
 
-hexlib.*, Turing.hxx, TuringBoxes.hxx, TuringFast.cxx, turing_stream.*
-----------------------------------------------------------------------
+hexlib.?xx, Turing.hxx, TuringBoxes.hxx, TuringFast.cxx, turing_stream.?xx
+--------------------------------------------------------------------------
 
 Copyright 1997-2002, Qualcomm Inc.
 
