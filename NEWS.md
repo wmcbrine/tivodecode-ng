@@ -1,11 +1,13 @@
 tivodecode-ng 0.4
 -----------------
+
   * Have to flush stdout with MSVC.
 
   * Some tidying up; more C++-ish. See git log for details.
 
 tivodecode-ng 0.3
 -----------------
+
   * Builds on Windows with MSVC; no manual copying of tdconfig.h.
 
   * Fix for recovery from decrypt error; fix for bad MAK returning
@@ -13,12 +15,14 @@ tivodecode-ng 0.3
 
 tivodecode-ng 0.2
 -----------------
+
   * Builds on Windows with MinGW; builds without configure.
 
   * Removed much cruft; fully C++.
 
 tivodecode-ng 0.1
 -----------------
+
   * Improved transport stream support.
 
   * Renamed project to distinguish from classic tivodecode.
@@ -29,28 +33,34 @@ tivodecode-ng 0.1
 
 tivodecode 0.4.1 - 0.4.4
 ------------------------
+
   * Tweaks to improve transport stream support; other minor changes.
 
 tivodecode 0.4
 --------------
+
   * Mostly ported to C++. tdcat not working.
 
 tivodecode 0.3pre6
 ------------------
+
   * stdin and stdout parameters "-" was not functioning (tdcat.c &
     tivodecode.c)
 
 tivodecode 0.3pre5
 ------------------
+
   * add support for tivo files with unencrypted metadata chunks
     (tdcat.c & tivodecode.c)
 
 tivodecode 0.3pre4
 ------------------
+
   * same as pre3 with updated config files
 
 tivodecode 0.3pre3
 ------------------
+
   * reverted back to functioning '-D' command line argument (tivodecode.c)
 
   * applied windows stdin/stdout patches for functioning pipes in windows
@@ -58,6 +68,7 @@ tivodecode 0.3pre3
 
 tivodecode 0.3pre1
 ------------------
+
   * add support for TS files.
 
   * known bug :
@@ -69,6 +80,7 @@ tivodecode 0.3pre1
 
 tivodecode 0.2pre4
 ------------------
+
   * ?
 
 tivodecode 0.2pre3
