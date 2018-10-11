@@ -4,13 +4,14 @@ Kees Cook. Turing encryption by Greg Rose.
 tivodecode-ng maintained by William McBrine.
 
 Contributors include:
-Kees Cook
-tateu
-Kevin Moye
-reneg
-lucas_nz
-Paul S.
-Lauri Mylläri
-tivo1
-Todd Kulesza
-Hugh Mackworth
+
+- Kees Cook
+- tateu
+- Kevin Moye
+- reneg
+- lucas_nz
+- Paul S.
+- Lauri Mylläri
+- tivo1
+- Todd Kulesza
+- Hugh Mackworth
