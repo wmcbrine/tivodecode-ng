@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <string>
 
 #include "getopt_td.hxx"
 #include "cli_common.hxx"
@@ -22,7 +21,7 @@ static struct td_option long_options[] = {
     {"help", false, 'h'},
     {"chunk-1", false, '1'},
     {"chunk-2", false, '2'},
-    {0, false, 0}
+    {"", false, 0}
 };
 
 static void do_help(const char *arg0, int exitval)

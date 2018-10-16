@@ -11,12 +11,14 @@
 #ifndef GETOPT_TD_HXX_
 #define GETOPT_TD_HXX_
 
+#include <string>
+
 extern int td_optind;
-extern const char *td_optarg;
+extern std::string td_optarg;
 
 struct td_option
 {
-    const char *name;
+    std::string name;
     bool has_arg;
     int shortopt;
 };

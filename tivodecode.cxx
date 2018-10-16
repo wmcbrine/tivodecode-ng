@@ -9,7 +9,6 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-#include <string>
 
 #include "getopt_td.hxx"
 #include "cli_common.hxx"
@@ -29,7 +28,7 @@ static struct td_option long_options[] = {
     {"no-video", false, 'x'},
     {"version", false, 'V'},
     {"help", false, 'h'},
-    {0, false, 0}
+    {"", false, 0}
 };
 
 static void do_help(const char *arg0, int exitval)
@@ -82,7 +81,7 @@ int main(int argc, const char **argv)
                 mak = td_optarg;
                 break;
             case 'p':
-                std::sscanf(td_optarg, "%u", &pktDump);
+                pktDump = std::stoi(td_optarg);
                 pktDumpMap[pktDump] = true;
                 break;
             case 'o':

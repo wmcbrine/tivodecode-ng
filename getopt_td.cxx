@@ -15,7 +15,7 @@
 #include <cstring>
 
 int td_optind = 1;
-const char *td_optarg = NULL;
+std::string td_optarg;
 
 static const int BADCH = '?';
 static const int BADARG = ':';
@@ -65,10 +65,11 @@ int getopt_td(int argc, const char **argv, const char *optstring,
             place++;
 
             namelen = std::strcspn(place, "=");
-            for (i = 0; longopts[i].name != NULL; i++)
+            std::string name(place, namelen);
+
+            for (i = 0; longopts[i].name != ""; i++)
             {
-                if (std::strlen(longopts[i].name) == namelen
-                    && std::strncmp(place, longopts[i].name, namelen) == 0)
+                if (name == longopts[i].name)
                 {
                     if (longopts[i].has_arg)
                     {
@@ -90,7 +91,7 @@ int getopt_td(int argc, const char **argv, const char *optstring,
                     }
                     else
                     {
-                        td_optarg = NULL;
+                        td_optarg = "";
                         if (place[namelen] != 0)
                         {
                             /* XXX error? */
@@ -126,7 +127,7 @@ int getopt_td(int argc, const char **argv, const char *optstring,
 
     if (oli[1] != ':')
     {                            /* don't need argument */
-        td_optarg = NULL;
+        td_optarg = "";
         if (!*place)
             ++td_optind;
     }
