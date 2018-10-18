@@ -1,5 +1,9 @@
-/* useful hex manipulation routine header */
-/* Copyright Qualcomm Inc 1997 */
+/*
+ * useful hex manipulation routine header
+ * Copyright Qualcomm Inc 1997
+ * Adapted for tivodecode-ng
+ * See COPYING file for license terms
+ */
 
 #ifndef HEXLIB_HXX_
 #define HEXLIB_HXX_

@@ -2,6 +2,7 @@
  * Interface definition of Turing
  *
  * Copyright 2002, Qualcomm Inc. Originally by Greg Rose
+ * Adapted for tivodecode-ng
  * See COPYING file for license terms
  */
 

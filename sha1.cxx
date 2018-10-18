@@ -1,9 +1,10 @@
 /*
-   SHA-1 in C[++]
-   Originally By Steve Reid <steve@edmweb.com>
-   100% Public Domain
+ * SHA-1 in C[++]
+ * Originally By Steve Reid <steve@edmweb.com>
+ * 100% Public Domain
+ */
 
-   Test Vectors (from FIPS PUB 180-1)
+/* Test Vectors (from FIPS PUB 180-1)
    "abc"
    A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D
    "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"

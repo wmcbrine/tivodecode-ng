@@ -1,7 +1,7 @@
 /*
- * tivodecode-ng
- * Copyright 2006-2018, Jeremy Drake et al.
- * See COPYING file for license terms
+ * SHA-1 in C[++]
+ * Originally By Steve Reid <steve@edmweb.com>
+ * 100% Public Domain
  */
 
 #ifndef SHA1_HXX_

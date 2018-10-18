@@ -1,5 +1,9 @@
-/* useful hex manipulation routines */
-/* Copyright Qualcomm Inc 1997 */
+/*
+ * useful hex manipulation routines
+ * Copyright Qualcomm Inc 1997
+ * Adapted for tivodecode-ng
+ * See COPYING file for license terms
+ */
 
 #include <cctype>
 #include <iostream>
