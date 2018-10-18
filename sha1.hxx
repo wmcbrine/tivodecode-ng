@@ -1,11 +1,14 @@
 /*
  * SHA-1 in C[++]
  * Originally By Steve Reid <steve@edmweb.com>
+ * Adapted for tivodecode-ng
  * 100% Public Domain
  */
 
 #ifndef SHA1_HXX_
 #define SHA1_HXX_
+
+#include <cstdint>
 
 class SHA1
 {
