@@ -280,12 +280,9 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
 {
     TiVoDecoder_MPEG2_Parser parser(pBuffer, bufLen);
 
-    bool     done      = false;
-    uint32_t startCode = 0;
-    uint16_t len       = 0;
+    bool done = false;
 
-    while ((false == done) && (false == parser.isEndOfFile()) &&
-           (bufLen > parser.getReadPos()))
+    while (!done && !parser.isEndOfFile() && (bufLen > parser.getReadPos()))
     {
         if (0x000001 != parser.nextbits(24))
         {
@@ -293,8 +290,7 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
             continue;
         }
 
-        len = 0;
-        startCode = parser.nextbits(32);
+        uint32_t startCode = parser.nextbits(32);
         parser.clear();
 
         if (EXTENSION_START_CODE == startCode)
@@ -302,49 +298,49 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Extension header\n";
-            parser.extension_header(len);
+            parser.extension_header();
         }
         else if (GROUP_START_CODE == startCode)
         {
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : GOP header\n";
-            parser.group_of_pictures_header(len);
+            parser.group_of_pictures_header();
         }
         else if (USER_DATA_START_CODE == startCode)
         {
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : User Data header\n";
-            parser.user_data(len);
+            parser.user_data();
         }
         else if (PICTURE_START_CODE == startCode)
         {
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Picture header\n";
-            parser.picture_header(len);
+            parser.picture_header();
         }
         else if (SEQUENCE_HEADER_CODE == startCode)
         {
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Sequence header\n";
-            parser.sequence_header(len);
+            parser.sequence_header();
         }
         else if (SEQUENCE_END_CODE == startCode)
         {
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Sequence End header\n";
-            parser.sequence_end(len);
+            parser.sequence_end();
         }
         else if (ANCILLARY_DATA_CODE == startCode)
         {
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Ancillary Data header\n";
-            parser.ancillary_data(len);
+            parser.ancillary_data();
         }
         else if (startCode >= SLICE_START_CODE_MIN &&
                  startCode <= SLICE_START_CODE_MAX)
@@ -360,7 +356,7 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
             if (IS_VVERBOSE())
                 std::cerr << "  TS PES Packet   : " << startCode
                           << " : Audio/Video Stream\n";
-            parser.pes_header(len);
+            parser.pes_header();
         }
         else
         {
@@ -369,6 +365,7 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
             return false;
         }
 
+        uint16_t len = parser.get_hdr_len();
         if (len)
         {
             if (IS_VVERBOSE())

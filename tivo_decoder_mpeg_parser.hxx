@@ -40,29 +40,30 @@ class TiVoDecoder_MPEG2_Parser
         inline bool     isEndOfFile() { return _end_of_file; }
         inline uint16_t getReadPos()  { return _bit_ptr / 8; }
         inline void     clear()       { hdr_len = 0;         }
+        inline uint16_t get_hdr_len() { return hdr_len; }
 
-        bool  byteAligned();
-        void  advanceBits(uint32_t n);
+        bool byteAligned();
+        void advanceBits(uint32_t n);
         uint32_t nextbits(uint32_t n);
-        int32_t  readByte(uint32_t bit_pos, uint8_t &byte);
+        int32_t readByte(uint32_t bit_pos, uint8_t &byte);
 
-        void  next_start_code();
-        void  sequence_end(uint16_t &len);
-        void  sequence_header(uint16_t &len);
-        void  user_data(uint16_t &len);
-        void  sequence_extension(uint16_t &len);
-        void  sequence_display_extension(uint16_t &len);
-        void  group_of_pictures_header(uint16_t &len);
-        void  picture_header(uint16_t &len);
-        void  picture_coding_extension(uint16_t &len);
-        void  picture_data(uint16_t &len);
-        void  extension_header(uint16_t &len);
-        void  pes_header(uint16_t &len);
-        void  pes_header_extension(uint16_t &len);
-        void  ancillary_data(uint16_t &len);
+        void next_start_code();
+        void sequence_end();
+        void sequence_header();
+        void user_data();
+        void sequence_extension();
+        void sequence_display_extension();
+        void group_of_pictures_header();
+        void picture_header();
+        void picture_coding_extension();
+        void picture_data();
+        void extension_header();
+        void pes_header();
+        void pes_header_extension();
+        void ancillary_data();
 
-        void  slice(uint16_t &len);
-        void  macroblock(uint16_t &len);
+        void slice();
+        void macroblock();
 };
 
 #endif /* TIVO_DECODER_MPEG_PARSER_HXX_ */
