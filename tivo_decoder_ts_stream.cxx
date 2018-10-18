@@ -12,6 +12,19 @@
 #include "tivo_decoder_ts.hxx"
 #include "tivo_decoder_mpeg_parser.hxx"
 
+enum
+{
+    PICTURE_START_CODE   = 0x100,
+    SLICE_START_CODE_MIN = 0x101,
+    SLICE_START_CODE_MAX = 0x1AF,
+    USER_DATA_START_CODE = 0x1B2,
+    SEQUENCE_HEADER_CODE = 0x1B3,
+    EXTENSION_START_CODE = 0x1B5,
+    SEQUENCE_END_CODE    = 0x1B7,
+    GROUP_START_CODE     = 0x1B8,
+    ANCILLARY_DATA_CODE  = 0x1F9
+};
+
 TiVoDecoderTsStream::TiVoDecoderTsStream(HappyFile &pFileOut,
                                          TiVoDecoderTS *pDecoder,
                                          uint16_t pid) :
@@ -293,76 +306,74 @@ bool TiVoDecoderTsStream::getPesHdrLength(uint8_t *pBuffer, uint16_t bufLen)
         uint32_t startCode = parser.nextbits(32);
         parser.clear();
 
-        if (EXTENSION_START_CODE == startCode)
+        switch (startCode)
         {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : Extension header\n";
-            parser.extension_header();
-        }
-        else if (GROUP_START_CODE == startCode)
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : GOP header\n";
-            parser.group_of_pictures_header();
-        }
-        else if (USER_DATA_START_CODE == startCode)
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : User Data header\n";
-            parser.user_data();
-        }
-        else if (PICTURE_START_CODE == startCode)
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : Picture header\n";
-            parser.picture_header();
-        }
-        else if (SEQUENCE_HEADER_CODE == startCode)
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : Sequence header\n";
-            parser.sequence_header();
-        }
-        else if (SEQUENCE_END_CODE == startCode)
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : Sequence End header\n";
-            parser.sequence_end();
-        }
-        else if (ANCILLARY_DATA_CODE == startCode)
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : Ancillary Data header\n";
-            parser.ancillary_data();
-        }
-        else if (startCode >= SLICE_START_CODE_MIN &&
-                 startCode <= SLICE_START_CODE_MAX)
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : Slice\n";
-            done = true;
-        }
-        else if ((startCode == 0x1BD) ||
-                 (startCode >= 0x1C0 && startCode <= 0x1EF))
-        {
-            if (IS_VVERBOSE())
-                std::cerr << "  TS PES Packet   : " << startCode
-                          << " : Audio/Video Stream\n";
-            parser.pes_header();
-        }
-        else
-        {
-            if (IS_VERBOSE())
-                std::cerr << "Unhandled PES header : " << startCode << "\n";
-            return false;
+            case EXTENSION_START_CODE:
+                if (IS_VVERBOSE())
+                    std::cerr << "  TS PES Packet   : " << startCode
+                              << " : Extension header\n";
+                parser.extension_header();
+                break;
+            case GROUP_START_CODE:
+                if (IS_VVERBOSE())
+                    std::cerr << "  TS PES Packet   : " << startCode
+                              << " : GOP header\n";
+                parser.group_of_pictures_header();
+                break;
+            case USER_DATA_START_CODE:
+                if (IS_VVERBOSE())
+                    std::cerr << "  TS PES Packet   : " << startCode
+                              << " : User Data header\n";
+                parser.user_data();
+                break;
+            case PICTURE_START_CODE:
+                if (IS_VVERBOSE())
+                    std::cerr << "  TS PES Packet   : " << startCode
+                              << " : Picture header\n";
+                parser.picture_header();
+                break;
+            case SEQUENCE_HEADER_CODE:
+                if (IS_VVERBOSE())
+                    std::cerr << "  TS PES Packet   : " << startCode
+                              << " : Sequence header\n";
+                parser.sequence_header();
+                break;
+            case SEQUENCE_END_CODE:
+                if (IS_VVERBOSE())
+                    std::cerr << "  TS PES Packet   : " << startCode
+                              << " : Sequence End header\n";
+                parser.sequence_end();
+                break;
+            case ANCILLARY_DATA_CODE:
+                if (IS_VVERBOSE())
+                    std::cerr << "  TS PES Packet   : " << startCode
+                              << " : Ancillary Data header\n";
+                parser.ancillary_data();
+                break;
+            default:
+                if (startCode >= SLICE_START_CODE_MIN &&
+                    startCode <= SLICE_START_CODE_MAX)
+                {
+                    if (IS_VVERBOSE())
+                        std::cerr << "  TS PES Packet   : " << startCode
+                                  << " : Slice\n";
+                    done = true;
+                }
+                else if ((startCode == 0x1BD) ||
+                         (startCode >= 0x1C0 && startCode <= 0x1EF))
+                {
+                    if (IS_VVERBOSE())
+                        std::cerr << "  TS PES Packet   : " << startCode
+                                  << " : Audio/Video Stream\n";
+                    parser.pes_header();
+                }
+                else
+                {
+                    if (IS_VERBOSE())
+                        std::cerr << "Unhandled PES header : " << startCode
+                                  << "\n";
+                    return false;
+                }
         }
 
         uint16_t len = parser.get_hdr_len();

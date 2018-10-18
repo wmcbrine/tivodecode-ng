@@ -14,22 +14,8 @@
 #include "tivo_decoder_base.hxx"
 
 extern std::map<uint32_t, bool> pktDumpMap;
-extern std::map<uint32_t, bool>::iterator pktDumpMap_iter;
 
 const int TS_FRAME_SIZE = 188;
-
-enum
-{
-    PICTURE_START_CODE   = 0x100,
-    SLICE_START_CODE_MIN = 0x101,
-    SLICE_START_CODE_MAX = 0x1AF,
-    USER_DATA_START_CODE = 0x1B2,
-    SEQUENCE_HEADER_CODE = 0x1B3,
-    EXTENSION_START_CODE = 0x1B5,
-    SEQUENCE_END_CODE    = 0x1B7,
-    GROUP_START_CODE     = 0x1B8,
-    ANCILLARY_DATA_CODE  = 0x1F9
-};
 
 typedef enum
 {
