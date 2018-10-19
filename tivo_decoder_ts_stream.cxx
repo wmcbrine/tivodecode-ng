@@ -404,11 +404,11 @@ bool TiVoDecoderTsStream::decrypt(uint8_t *pBuffer, uint16_t bufferLen)
         pParent->pTuring.dump();
     }
 
-    if (pParent->do_header(&turing_stuff.key[0],
-                           turing_stuff.block_no,
-                           turing_stuff.crypted))
+    if (!pParent->do_header(&turing_stuff.key[0],
+                            turing_stuff.block_no,
+                            turing_stuff.crypted))
     {
-        std::perror("do_header did not return 0!\n");
+        std::perror("bad result from do_header()\n");
         return false;
     }
 

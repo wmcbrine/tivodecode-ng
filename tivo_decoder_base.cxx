@@ -33,12 +33,10 @@ TiVoDecoder::~TiVoDecoder()
  *                  video/audio data.  My guess is it is a checksum of some
  *                  sort.
  *
- * @return count of particular bits which are zero.  They should all be 1,
- * so the return value should be zero. I would consider a non-zero
- * return an error.
+ * @return          check of particular bits which should all be 1.
  */
 
-int TiVoDecoder::do_header(const uint8_t *arg_0, int &block_no, int &crypted)
+bool TiVoDecoder::do_header(const uint8_t *arg_0, int &block_no, int &crypted)
 {
     block_no = ((arg_0[0x1] & 0x3f) << 0x12)
              | ((arg_0[0x2] & 0xff) << 0xa)
@@ -53,6 +51,6 @@ int TiVoDecoder::do_header(const uint8_t *arg_0, int &block_no, int &crypted)
             | ((arg_0[0xe] & 0xff) << 0x7)
             | ((arg_0[0xf] & 0xfe) >> 0x1);
 
-    return !(arg_0[0] & 0x80) + !(arg_0[1] & 0x40) + !(arg_0[3] & 0x20) +
-           !(arg_0[4] & 0x10) + !(arg_0[0xd] & 0x2) + !(arg_0[0xf] & 0x1);
+    return (arg_0[0] & 0x80) && (arg_0[1] & 0x40) && (arg_0[3] & 0x20) &&
+           (arg_0[4] & 0x10) && (arg_0[0xd] & 0x2) && (arg_0[0xf] & 0x1);
 }

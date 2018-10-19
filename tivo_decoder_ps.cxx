@@ -120,8 +120,8 @@ void TiVoDecoderPS::frame_start(const uint8_t *bytes, uint8_t code)
             int block_no = 0;
             int crypted  = 0;
 
-            if (do_header(&bytes[off], block_no, crypted))
-                VERBOSE("do_header did not return 0!\n");
+            if (!do_header(&bytes[off], block_no, crypted))
+                VERBOSE("bad result from do_header()\n");
 
             pTuring.prepare_frame(code, block_no);
             pTuring.active->decrypt_buffer((uint8_t *)&crypted, 4);
