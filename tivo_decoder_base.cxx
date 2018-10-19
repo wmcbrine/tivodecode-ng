@@ -40,25 +40,11 @@ TiVoDecoder::~TiVoDecoder()
 
 int TiVoDecoder::do_header(const uint8_t *arg_0, int &block_no, int &crypted)
 {
-    int var_4 = 0;
-
-    if (!(arg_0[0] & 0x80))
-        var_4++;
-
-    if (!(arg_0[1] & 0x40))
-        var_4++;
-
     block_no = ((arg_0[0x1] & 0x3f) << 0x12)
              | ((arg_0[0x2] & 0xff) << 0xa)
              | ((arg_0[0x3] & 0xc0) << 0x2)
              | ((arg_0[0x3] & 0x1f) << 0x3)
              | ((arg_0[0x4] & 0xe0) >> 0x5);
-
-    if (!(arg_0[3] & 0x20))
-        var_4++;
-
-    if (!(arg_0[4] & 0x10))
-        var_4++;
 
     crypted = ((arg_0[0xb] & 0x03) << 0x1e)
             | ((arg_0[0xc] & 0xff) << 0x16)
@@ -67,11 +53,6 @@ int TiVoDecoder::do_header(const uint8_t *arg_0, int &block_no, int &crypted)
             | ((arg_0[0xe] & 0xff) << 0x7)
             | ((arg_0[0xf] & 0xfe) >> 0x1);
 
-    if (!(arg_0[0xd] & 0x2))
-        var_4++;
-
-    if (!(arg_0[0xf] & 0x1))
-        var_4++;
-
-    return var_4;
+    return !(arg_0[0] & 0x80) + !(arg_0[1] & 0x40) + !(arg_0[3] & 0x20) +
+           !(arg_0[4] & 0x10) + !(arg_0[0xd] & 0x2) + !(arg_0[0xf] & 0x1);
 }
