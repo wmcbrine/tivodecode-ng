@@ -2,7 +2,7 @@
  * useful hex manipulation routines
  * Copyright Qualcomm Inc 1997
  * Adapted for tivodecode-ng
- * See COPYING file for license terms
+ * See COPYING.md for license terms
  */
 
 #include <cctype>

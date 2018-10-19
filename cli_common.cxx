@@ -1,7 +1,7 @@
 /*
  * tivodecode-ng
  * Copyright 2006-2018, Jeremy Drake et al.
- * See COPYING file for license terms
+ * See COPYING.md for license terms
  */
 
 #include "tdconfig.h"
@@ -53,7 +53,7 @@ void do_version(int exitval)
 {
     std::cerr << PACKAGE_STRING "\n"
         "Copyright 2006-2018, Jeremy Drake et al.\n"
-        "See COPYING file in distribution for details\n\n";
+        "See COPYING.md in distribution for details\n\n";
     print_qualcomm_msg();
     std::exit(exitval);
 }

@@ -4,7 +4,7 @@
  *
  * Portions Copyright 2003-2006, PostgreSQL Global Development Group
  * Adapted for tivodecode-ng
- * See COPYING file for license terms
+ * See COPYING.md for license terms
  */
 
 #ifndef GETOPT_TD_HXX_

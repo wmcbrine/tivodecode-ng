@@ -2,7 +2,7 @@ tivodecode-ng version 0.4
 =========================
 
 Copyright 2006-2018, Jeremy Drake et al.
-See COPYING for license terms.
+See [COPYING.md] for license terms.
 
 tivodecode-ng ("ng" for "next generation") is a portable command-line
 tool for decrypting .TiVo video files into program streams or transport
@@ -70,3 +70,5 @@ called "~/.tivodecode_mak". On Windows, the file should be in your
 
 
 The file name specified for the tivo file may be -, which means stdin.
+
+[COPYING.md]: COPYING.md

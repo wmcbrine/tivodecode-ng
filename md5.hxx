@@ -1,7 +1,7 @@
 /*
  * Copyright 1995, 1996, 1997, and 1998 WIDE Project.
  * Adapted for tivodecode-ng
- * See COPYING file for license terms
+ * See COPYING.md for license terms
  */
 
 #ifndef MD5_HXX_
