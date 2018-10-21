@@ -204,23 +204,8 @@ inline void Turing::ROUND(int z, uint8_t *b)
  */
 int Turing::gen(uint8_t *buf)
 {
-    ROUND(0, buf);
-    ROUND(5, buf + 20);
-    ROUND(10, buf + 40);
-    ROUND(15, buf + 60);
-    ROUND(3, buf + 80);
-    ROUND(8, buf + 100);
-    ROUND(13, buf + 120);
-    ROUND(1, buf + 140);
-    ROUND(6, buf + 160);
-    ROUND(11, buf + 180);
-    ROUND(16, buf + 200);
-    ROUND(4, buf + 220);
-    ROUND(9, buf + 240);
-    ROUND(14, buf + 260);
-    ROUND(2, buf + 280);
-    ROUND(7, buf + 300);
-    ROUND(12, buf + 320);
+    for (int i = 0; i < 81; i += 5)
+        ROUND(i % 17, buf + (i << 2));
 
     return 17 * 20;
 }
