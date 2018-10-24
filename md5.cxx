@@ -46,26 +46,26 @@ static const uint8_t md5_paddat[MD5_BUFLEN] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-inline void ROUND1(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-                   uint32_t d, int k, int s, int i)
+void ROUND1(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+            uint32_t d, int k, int s, int i)
 {
     a = ROTL(a + ((b & c) | (~b & d)) + X[k] + T[i], s) + b;
 }
 
-inline void ROUND2(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-                   uint32_t d, int k, int s, int i)
+void ROUND2(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+            uint32_t d, int k, int s, int i)
 {
     a = ROTL(a + ((b & d) | (c & ~d)) + X[k] + T[i], s) + b;
 }
 
-inline void ROUND3(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-                   uint32_t d, int k, int s, int i)
+void ROUND3(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+            uint32_t d, int k, int s, int i)
 {
     a = ROTL(a + (b ^ c ^ d) + X[k] + T[i], s) + b;
 }
 
-inline void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-                   uint32_t d, int k, int s, int i)
+void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
+            uint32_t d, int k, int s, int i)
 {
     a = ROTL(a + (c ^ (b | ~d)) + X[k] + T[i], s) + b;
 }

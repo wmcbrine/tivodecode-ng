@@ -12,12 +12,12 @@
 #include "Turing.hxx"		/* interface definitions */
 #include "TuringBoxes.hxx"
 
-inline uint8_t BYTE(uint32_t x, int i)
+uint8_t BYTE(uint32_t x, int i)
 {
     return (x >> (24 - 8 * i)) & 0xFF;
 }
 
-inline void WORD2BYTE(uint32_t w, uint8_t *b)
+void WORD2BYTE(uint32_t w, uint8_t *b)
 {
     b[3] = BYTE(w, 3);
     b[2] = BYTE(w, 2);
@@ -49,8 +49,8 @@ static uint32_t fixedS(uint32_t w)
 /* two variants of the Pseudo-Hadamard Transform */
 
 /* Mix 5 words in place */
-inline void PHT(uint32_t &A, uint32_t &B, uint32_t &C,
-                uint32_t &D, uint32_t &E)
+void PHT(uint32_t &A, uint32_t &B, uint32_t &C,
+         uint32_t &D, uint32_t &E)
 {
     E += A + B + C + D;
     A += E;
@@ -141,7 +141,7 @@ void Turing::IV(const uint8_t iv[], const int ivlength)
 /* give correct offset for the current position of the register,
  * where logically R[0] is at position "zero".
  */
-inline int OFF(int zero, int i)
+int OFF(int zero, int i)
 {
     return (zero + i) % LFSRLEN;
 }
@@ -149,7 +149,7 @@ inline int OFF(int zero, int i)
 /* step the LFSR */
 /* After stepping, "zero" moves right one place
  */
-inline void Turing::STEP(int z)
+void Turing::STEP(int z)
 {
     R[OFF(z, 0)] = R[OFF(z, 15)] ^ R[OFF(z, 4)] ^
 	(R[OFF(z, 0)] << 8) ^ Multab[(R[OFF(z, 0)] >> 24) & 0xFF];
@@ -158,7 +158,7 @@ inline void Turing::STEP(int z)
 /*
  * Push a word through the keyed S-boxes.
  */
-inline uint32_t Turing::S(uint32_t w, int b)
+uint32_t Turing::S(uint32_t w, int b)
 {
     return Sb[0][BYTE(w, (0 + b) & 0x3)]
          ^ Sb[1][BYTE(w, (1 + b) & 0x3)]
@@ -167,7 +167,7 @@ inline uint32_t Turing::S(uint32_t w, int b)
 }
 
 /* a single round */
-inline void Turing::ROUND(int z, uint8_t *b)
+void Turing::ROUND(int z, uint8_t *b)
 {
     uint32_t A, B, C, D, E;
 
