@@ -133,7 +133,7 @@ int main(int argc, const char **argv)
     print_qualcomm_msg();
 
     if (false == header.read(hfh))
-        return(8);
+        return 8;
 
     header.dump();
 
@@ -146,7 +146,7 @@ int main(int argc, const char **argv)
         if (false == pChunks[i].read(hfh))
         {
             std::perror("chunk read fail");
-            return(8);
+            return 8;
         }
 
         if (TIVO_CHUNK_PLAINTEXT_XML == pChunks[i].type)
@@ -163,7 +163,7 @@ int main(int argc, const char **argv)
         else
         {
             std::perror("Unknown chunk type");
-            return(8);
+            return 8;
         }
 
         if (o_dump_metadata)
