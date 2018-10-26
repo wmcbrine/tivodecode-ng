@@ -19,17 +19,6 @@
 #include "bits.hxx"
 #include "sha1.hxx"
 
-/* blk() performs the initial expand. */
-/* I got the idea of expanding during the round function from SSLeay */
-
-uint32_t blk(uint32_t *block, int i)
-{
-    block[i & 15] = ROTL(block[(i + 13) & 15] ^ block[(i + 8) & 15] ^
-                         block[(i + 2) & 15] ^ block[i & 15], 1);
-
-    return block[i & 15];
-}
-
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
 static void transform(uint32_t state[5], const uint8_t buffer[64])
@@ -45,35 +34,29 @@ static void transform(uint32_t state[5], const uint8_t buffer[64])
     d = state[3];
     e = state[4];
 
-    for (i = 0; i < 16; i++)
+    for (i = 0; i < 80; i++)
     {
-        block[i] = GET32(&buffer[i << 2]);
+        if (i < 16)           // R0
+        {
+            block[i] = GET32(&buffer[i << 2]);
+            e += ((b & (c ^ d)) ^ d) + block[i] + 0x5A827999;
+        }
+        else
+        {
+            if (i < 20)       // R1
+                e += ((b & (c ^ d)) ^ d) + 0x5A827999;
+            else if (i < 40)  // R2
+                e += (b ^ c ^ d) + 0x6ED9EBA1;
+            else if (i < 60)  // R3
+                e += (((b | c) & d) | (b & c)) + 0x8F1BBCDC;
+            else              // R4
+                e += (b ^ c ^ d) + 0xCA62C1D6;
 
-        e += ((b & (c ^ d)) ^ d) + block[i] + 0x5A827999;
-        tmp = e + ROTL(a, 5); e = d; d = c; c = ROTL(b, 30); b = a; a = tmp;
-    }
+            block[i & 15] = ROTL(block[(i + 13) & 15] ^ block[(i + 8) & 15] ^
+                                 block[(i + 2) & 15] ^ block[i & 15], 1);
+            e += block[i & 15];
+        }
 
-    for ( ; i < 20; i++)
-    {
-        e += ((b & (c ^ d)) ^ d) + blk(block, i) + 0x5A827999;
-        tmp = e + ROTL(a, 5); e = d; d = c; c = ROTL(b, 30); b = a; a = tmp;
-    }
-
-    for ( ; i < 40; i++)
-    {
-        e += (b ^ c ^ d) + blk(block, i) + 0x6ED9EBA1;
-        tmp = e + ROTL(a, 5); e = d; d = c; c = ROTL(b, 30); b = a; a = tmp;
-    }
-
-    for ( ; i < 60; i++)
-    {
-        e += (((b | c) & d) | (b & c)) + blk(block, i) + 0x8F1BBCDC;
-        tmp = e + ROTL(a, 5); e = d; d = c; c = ROTL(b, 30); b = a; a = tmp;
-    }
-
-    for ( ; i < 80; i++)
-    {
-        e += (b ^ c ^ d) + blk(block, i) + 0xCA62C1D6;
         tmp = e + ROTL(a, 5); e = d; d = c; c = ROTL(b, 30); b = a; a = tmp;
     }
 
