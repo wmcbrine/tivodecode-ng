@@ -121,11 +121,8 @@ void SHA1::final(uint8_t digest[20])
     unsigned int i;
     uint8_t finalcount[8];
 
-    for (i = 0; i < 8; i++)
-    {
-        finalcount[i] = (uint8_t)((count[(i >= 4 ? 0 : 1)]
-                        >> ((3 - (i & 3)) * 8)) & 255);  /* Either-endian */
-    }
+    PUT32(count[1], finalcount);
+    PUT32(count[0], finalcount + 4);
 
     update((const uint8_t *)"\200", 1);
 
@@ -134,9 +131,6 @@ void SHA1::final(uint8_t digest[20])
 
     update(finalcount, 8);  /* Should cause a transform() */
 
-    for (i = 0; i < 20; i++)
-    {
-        digest[i] = (uint8_t)
-            ((state[i >> 2] >> ((3 - (i & 3)) * 8)) & 255);
-    }
+    for (i = 0; i < 5; i++)
+        PUT32(state[i], &digest[i << 2]);
 }

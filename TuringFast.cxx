@@ -12,19 +12,6 @@
 #include "Turing.hxx"		/* interface definitions */
 #include "TuringBoxes.hxx"
 
-uint8_t BYTE(uint32_t x, int i)
-{
-    return (x >> (24 - 8 * i)) & 0xFF;
-}
-
-void WORD2BYTE(uint32_t w, uint8_t *b)
-{
-    b[3] = BYTE(w, 3);
-    b[2] = BYTE(w, 2);
-    b[1] = BYTE(w, 1);
-    b[0] = BYTE(w, 0);
-}
-
 /*
  * This does a reversible transformation of a word, based on the S-boxes.
  * The reversibility isn't used, but it guarantees no loss of information,
@@ -188,11 +175,11 @@ void Turing::ROUND(int z, uint8_t *b)
             C += R[OFF(z + 4, 8)];
                 D += R[OFF(z + 4, 1)];
                     E += R[OFF(z + 4, 0)];
-    WORD2BYTE(A, b);
-        WORD2BYTE(B, b + 4);
-            WORD2BYTE(C, b + 8);
-                WORD2BYTE(D, b + 12);
-                    WORD2BYTE(E, b + 16);
+    PUT32(A, b);
+        PUT32(B, b + 4);
+            PUT32(C, b + 8);
+                PUT32(D, b + 12);
+                    PUT32(E, b + 16);
     STEP(z + 4);
 }
 
