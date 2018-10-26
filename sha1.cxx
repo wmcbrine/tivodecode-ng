@@ -21,7 +21,7 @@
 
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
-static void transform(uint32_t state[5], const uint8_t buffer[64])
+void SHA1::transform()
 {
     uint32_t a, b, c, d, e, tmp;
     uint32_t block[16];
@@ -98,12 +98,12 @@ void SHA1::update(const uint8_t *data, size_t len)
     {
         i = 64 - j;
         std::copy(data, data + i, buffer + j);
-        transform(state, buffer);
+        transform();
 
         for ( ; i + 63 < len; i += 64)
         {
             std::copy(data + i, data + i + 64, buffer);
-            transform(state, buffer);
+            transform();
         }
 
         j = 0;

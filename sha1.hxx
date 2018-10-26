@@ -17,6 +17,8 @@ class SHA1
         unsigned int count[2];
         uint8_t buffer[64];
 
+        void transform();
+
     public:
         void init();
         void update(const uint8_t *data, size_t len);
