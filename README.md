@@ -10,8 +10,7 @@ streams, depending on the source. It also will decrypt the metadata
 (title, description, etc.). It's based on tivodecode by Jeremy Drake,
 with enhancements by several contributors. tivodecode-ng adds support
 for transport streams, although that's a work in progress. (Note that
-support for program streams is as complete as ever, and this version is
-faster than classic tivodecode.)
+support for program streams is as complete as ever.)
 
 
 Building
