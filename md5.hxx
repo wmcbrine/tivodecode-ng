@@ -15,25 +15,17 @@ const size_t MD5_BUFLEN = 64;
 class MD5
 {
     private:
-        union
-        {
-            uint32_t t32[4];
-            uint8_t  t8[16];
-        } md5_s;
+        uint32_t md5_st[4];
 
-        union
-        {
-            struct {
-                uint32_t lsw;
-                uint32_t msw;
-            } t64;
-            uint8_t t8[8];
-        } md5_c;
+        struct {
+            uint32_t lsw;
+            uint32_t msw;
+        } md5_count;
 
         size_t md5_i;
         uint8_t md5_buf[MD5_BUFLEN];
 
-        void calc(uint8_t *);
+        void calc(const uint8_t *);
 
     public:
         void init();

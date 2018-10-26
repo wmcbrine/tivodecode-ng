@@ -72,13 +72,13 @@ void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
 
 void MD5::init()
 {
-    md5_c.t64.lsw = 0;
-    md5_c.t64.msw = 0;
+    md5_count.lsw = 0;
+    md5_count.msw = 0;
     md5_i = 0;
-    md5_s.t32[0] = 0x67452301;
-    md5_s.t32[1] = 0xefcdab89;
-    md5_s.t32[2] = 0x98badcfe;
-    md5_s.t32[3] = 0x10325476;
+    md5_st[0] = 0x67452301;
+    md5_st[1] = 0xefcdab89;
+    md5_st[2] = 0x98badcfe;
+    md5_st[3] = 0x10325476;
 }
 
 void MD5::loop(const std::string &blk)
@@ -87,9 +87,9 @@ void MD5::loop(const std::string &blk)
     const uint8_t *input = (const uint8_t *)blk.data();
     size_t len = blk.size();
 
-    if (md5_c.t64.lsw + len * 8 < md5_c.t64.lsw)
-        md5_c.t64.msw++;
-    md5_c.t64.lsw += len * 8;         /* byte to bit */
+    if (md5_count.lsw + len * 8 < md5_count.lsw)
+        md5_count.msw++;
+    md5_count.lsw += len * 8;         /* byte to bit */
     gap = MD5_BUFLEN - md5_i;
 
     if (len >= gap)
@@ -98,7 +98,7 @@ void MD5::loop(const std::string &blk)
         calc(md5_buf);
 
         for (i = gap; i + MD5_BUFLEN <= len; i += MD5_BUFLEN)
-            calc((uint8_t *) (input + i));
+            calc(input + i);
 
         md5_i = len - i;
         std::copy(input + i, input + i + md5_i, md5_buf);
@@ -128,18 +128,8 @@ void MD5::pad()
     }
 
     /* 8 byte word */
-#ifndef WORDS_BIGENDIAN
-    std::copy(md5_c.t8, md5_c.t8 + 8, md5_buf + 56);
-#else
-    md5_buf[56] = md5_c.t8[3];
-    md5_buf[57] = md5_c.t8[2];
-    md5_buf[58] = md5_c.t8[1];
-    md5_buf[59] = md5_c.t8[0];
-    md5_buf[60] = md5_c.t8[7];
-    md5_buf[61] = md5_c.t8[6];
-    md5_buf[62] = md5_c.t8[5];
-    md5_buf[63] = md5_c.t8[4];
-#endif
+    PUTL32(md5_count.lsw, md5_buf + 56);
+    PUTL32(md5_count.msw, md5_buf + 60);
 
     calc(md5_buf);
 }
@@ -147,63 +137,23 @@ void MD5::pad()
 void MD5::result(uint8_t *digest)
 {
     /* 4 byte words */
-#ifndef WORDS_BIGENDIAN
-    std::copy(md5_s.t8, md5_s.t8 + 16, digest);
-#else
-    digest[0] = md5_s.t8[3];
-    digest[1] = md5_s.t8[2];
-    digest[2] = md5_s.t8[1];
-    digest[3] = md5_s.t8[0];
-    digest[4] = md5_s.t8[7];
-    digest[5] = md5_s.t8[6];
-    digest[6] = md5_s.t8[5];
-    digest[7] = md5_s.t8[4];
-    digest[8] = md5_s.t8[11];
-    digest[9] = md5_s.t8[10];
-    digest[10] = md5_s.t8[9];
-    digest[11] = md5_s.t8[8];
-    digest[12] = md5_s.t8[15];
-    digest[13] = md5_s.t8[14];
-    digest[14] = md5_s.t8[13];
-    digest[15] = md5_s.t8[12];
-#endif
+    PUTL32(md5_st[0], digest);
+    PUTL32(md5_st[1], digest + 4);
+    PUTL32(md5_st[2], digest + 8);
+    PUTL32(md5_st[3], digest + 12);
 }
 
-#ifdef WORDS_BIGENDIAN
-static uint32_t X[16];
-#endif
-
-void MD5::calc(uint8_t *b64)
+void MD5::calc(const uint8_t *b64)
 {
-    uint32_t A = md5_s.t32[0];
-    uint32_t B = md5_s.t32[1];
-    uint32_t C = md5_s.t32[2];
-    uint32_t D = md5_s.t32[3];
+    uint32_t X[16];
 
-#ifndef WORDS_BIGENDIAN
-    uint32_t *X = (uint32_t *)b64;
-#else
-    /* 4 byte words */
-    /* what a brute force but fast! */
-    uint8_t *y = (uint8_t *)X;
+    uint32_t A = md5_st[0];
+    uint32_t B = md5_st[1];
+    uint32_t C = md5_st[2];
+    uint32_t D = md5_st[3];
 
-    y[0]  = b64[3];   y[1]  = b64[2];   y[2]  = b64[1];   y[3]  = b64[0];
-    y[4]  = b64[7];   y[5]  = b64[6];   y[6]  = b64[5];   y[7]  = b64[4];
-    y[8]  = b64[11];  y[9]  = b64[10];  y[10] = b64[9];   y[11] = b64[8];
-    y[12] = b64[15];  y[13] = b64[14];  y[14] = b64[13];  y[15] = b64[12];
-    y[16] = b64[19];  y[17] = b64[18];  y[18] = b64[17];  y[19] = b64[16];
-    y[20] = b64[23];  y[21] = b64[22];  y[22] = b64[21];  y[23] = b64[20];
-    y[24] = b64[27];  y[25] = b64[26];  y[26] = b64[25];  y[27] = b64[24];
-    y[28] = b64[31];  y[29] = b64[30];  y[30] = b64[29];  y[31] = b64[28];
-    y[32] = b64[35];  y[33] = b64[34];  y[34] = b64[33];  y[35] = b64[32];
-    y[36] = b64[39];  y[37] = b64[38];  y[38] = b64[37];  y[39] = b64[36];
-    y[40] = b64[43];  y[41] = b64[42];  y[42] = b64[41];  y[43] = b64[40];
-    y[44] = b64[47];  y[45] = b64[46];  y[46] = b64[45];  y[47] = b64[44];
-    y[48] = b64[51];  y[49] = b64[50];  y[50] = b64[49];  y[51] = b64[48];
-    y[52] = b64[55];  y[53] = b64[54];  y[54] = b64[53];  y[55] = b64[52];
-    y[56] = b64[59];  y[57] = b64[58];  y[58] = b64[57];  y[59] = b64[56];
-    y[60] = b64[63];  y[61] = b64[62];  y[62] = b64[61];  y[63] = b64[60];
-#endif
+    for (int i = 0; i < 16; i++)
+        X[i] = GETL32(&b64[i << 2]);
 
     ROUND1(X, A, B, C, D, 0, 7, 1);     ROUND1(X, D, A, B, C, 1, 12, 2);
     ROUND1(X, C, D, A, B, 2, 17, 3);    ROUND1(X, B, C, D, A, 3, 22, 4);
@@ -241,8 +191,8 @@ void MD5::calc(uint8_t *b64)
     ROUND4(X, A, B, C, D, 4, 6, 61);    ROUND4(X, D, A, B, C, 11, 10, 62);
     ROUND4(X, C, D, A, B, 2, 15, 63);   ROUND4(X, B, C, D, A, 9, 21, 64);
 
-    md5_s.t32[0] += A;
-    md5_s.t32[1] += B;
-    md5_s.t32[2] += C;
-    md5_s.t32[3] += D;
+    md5_st[0] += A;
+    md5_st[1] += B;
+    md5_st[2] += C;
+    md5_st[3] += D;
 }

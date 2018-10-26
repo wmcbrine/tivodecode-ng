@@ -30,6 +30,13 @@ inline uint16_t GET16(const uint8_t *pVal)
     return (pVal[0] << 8) | pVal[1];
 }
 
+// Convert little-endian byte sequences to native integers (either endian)
+
+inline uint32_t GETL32(const uint8_t *pVal)
+{
+    return (pVal[3] << 24) | (pVal[2] << 16) | (pVal[1] << 8) | pVal[0];
+}
+
 // The i-th least-significant byte of x
 
 inline uint8_t BYTE(uint32_t x, int i)
@@ -45,6 +52,16 @@ inline void PUT32(uint32_t w, uint8_t *b)
     b[1] = BYTE(w, 1);
     b[2] = BYTE(w, 2);
     b[3] = BYTE(w, 3);
+}
+
+// Convert native integers to little-endian byte sequences
+
+inline void PUTL32(uint32_t w, uint8_t *b)
+{
+    b[0] = BYTE(w, 3);
+    b[1] = BYTE(w, 2);
+    b[2] = BYTE(w, 1);
+    b[3] = BYTE(w, 0);
 }
 
 #endif /* BITS_HXX_ */
