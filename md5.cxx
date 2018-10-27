@@ -12,8 +12,7 @@
 #include "md5.hxx"
 
 /* Integer part of 4294967296 times abs(sin(i)), where i is in radians. */
-static const uint32_t T[65] = {
-    0,
+static const uint32_t T[64] = {
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,
     0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
     0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
@@ -33,6 +32,10 @@ static const uint32_t T[65] = {
     0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
     0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
     0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
+};
+
+static const int shifts[4][4] = {
+    {7, 12, 17, 22}, {5, 9, 14, 20}, {4, 11, 16, 23}, {6, 10, 15, 21}
 };
 
 static const uint8_t md5_paddat[MD5_BUFLEN] = {
@@ -122,40 +125,28 @@ void MD5::result(uint8_t *digest)
 void MD5::calc(const uint8_t *b64)
 {
     uint32_t X[16], A, B, C, D, tmp;
-    int i, j;
 
     A = md5_st[0];
     B = md5_st[1];
     C = md5_st[2];
     D = md5_st[3];
 
-    for (i = 0; i < 16; i++)                    // Round 1
+    for (int i = 0; i < 64; i++)
     {
-        X[i] = GETL32(&b64[i << 2]);
-        A = ROTL(A + ((B & C) | (~B & D)) + X[i] + T[i + 1],
-                 (i % 4) * 5 + 7) + B;
-        tmp = D; D = C; C = B; B = A; A = tmp;
-    }
+        if (i < 16)           // Round 1
+        {
+            X[i] = GETL32(&b64[i << 2]);
+            tmp = ((B & C) | (~B & D)) + X[i];
+        }
+        else if (i < 32)      // Round 2
+            tmp = ((B & D) | (C & ~D)) + X[(i * 5 + 1) % 16];
+        else if (i < 48)      // Round 3
+            tmp = (B ^ C ^ D) + X[(i * 3 + 5) % 16];
+        else                  // Round 4
+            tmp = (C ^ (B | ~D)) + X[(i * 7) % 16];
 
-    for (j = 1; i < 32; i++, j = (j + 5) % 16)  // Round 2
-    {
-        static const int r2[] = {5, 9, 14, 20};
-        A = ROTL(A + ((B & D) | (C & ~D)) + X[j] + T[i + 1], r2[i % 4]) + B;
-        tmp = D; D = C; C = B; B = A; A = tmp;
-    }
-
-    for (j = 5; i < 48; i++, j = (j + 3) % 16)  // Round 3
-    {
-        static const int r3[] = {4, 11, 16, 23};
-        A = ROTL(A + (B ^ C ^ D) + X[j] + T[i + 1], r3[i % 4]) + B;
-        tmp = D; D = C; C = B; B = A; A = tmp;
-    }
-
-    for (j = 0; i < 64; i++, j = (j + 7) % 16)  // Round 4
-    {
-        static const int r4[] = {6, 10, 15, 21};
-        A = ROTL(A + (C ^ (B | ~D)) + X[j] + T[i + 1], r4[i % 4]) + B;
-        tmp = D; D = C; C = B; B = A; A = tmp;
+        A = ROTL(A + tmp + T[i], shifts[i >> 4][i % 4]);
+        tmp = D; D = C; C = B; B += A; A = tmp;
     }
 
     md5_st[0] += A;
