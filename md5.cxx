@@ -46,30 +46,6 @@ static const uint8_t md5_paddat[MD5_BUFLEN] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
-void ROUND1(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-            uint32_t d, int k, int s, int i)
-{
-    a = ROTL(a + ((b & c) | (~b & d)) + X[k] + T[i], s) + b;
-}
-
-void ROUND2(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-            uint32_t d, int k, int s, int i)
-{
-    a = ROTL(a + ((b & d) | (c & ~d)) + X[k] + T[i], s) + b;
-}
-
-void ROUND3(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-            uint32_t d, int k, int s, int i)
-{
-    a = ROTL(a + (b ^ c ^ d) + X[k] + T[i], s) + b;
-}
-
-void ROUND4(uint32_t *X, uint32_t &a, uint32_t b, uint32_t c,
-            uint32_t d, int k, int s, int i)
-{
-    a = ROTL(a + (c ^ (b | ~d)) + X[k] + T[i], s) + b;
-}
-
 void MD5::init()
 {
     md5_count.lsw = 0;
@@ -145,51 +121,42 @@ void MD5::result(uint8_t *digest)
 
 void MD5::calc(const uint8_t *b64)
 {
-    uint32_t X[16], A, B, C, D;
+    uint32_t X[16], A, B, C, D, tmp;
+    int i, j;
 
     A = md5_st[0];
     B = md5_st[1];
     C = md5_st[2];
     D = md5_st[3];
 
-    for (int i = 0; i < 16; i++)
+    for (i = 0; i < 16; i++)                    // Round 1
+    {
         X[i] = GETL32(&b64[i << 2]);
+        A = ROTL(A + ((B & C) | (~B & D)) + X[i] + T[i + 1],
+                 (i % 4) * 5 + 7) + B;
+        tmp = D; D = C; C = B; B = A; A = tmp;
+    }
 
-    ROUND1(X, A, B, C, D, 0, 7, 1);     ROUND1(X, D, A, B, C, 1, 12, 2);
-    ROUND1(X, C, D, A, B, 2, 17, 3);    ROUND1(X, B, C, D, A, 3, 22, 4);
-    ROUND1(X, A, B, C, D, 4, 7, 5);     ROUND1(X, D, A, B, C, 5, 12, 6);
-    ROUND1(X, C, D, A, B, 6, 17, 7);    ROUND1(X, B, C, D, A, 7, 22, 8);
-    ROUND1(X, A, B, C, D, 8, 7, 9);     ROUND1(X, D, A, B, C, 9, 12, 10);
-    ROUND1(X, C, D, A, B, 10, 17, 11);  ROUND1(X, B, C, D, A, 11, 22, 12);
-    ROUND1(X, A, B, C, D, 12, 7, 13);   ROUND1(X, D, A, B, C, 13, 12, 14);
-    ROUND1(X, C, D, A, B, 14, 17, 15);  ROUND1(X, B, C, D, A, 15, 22, 16);
+    for (j = 1; i < 32; i++, j = (j + 5) % 16)  // Round 2
+    {
+        static const int r2[] = {5, 9, 14, 20};
+        A = ROTL(A + ((B & D) | (C & ~D)) + X[j] + T[i + 1], r2[i % 4]) + B;
+        tmp = D; D = C; C = B; B = A; A = tmp;
+    }
 
-    ROUND2(X, A, B, C, D, 1, 5, 17);    ROUND2(X, D, A, B, C, 6, 9, 18);
-    ROUND2(X, C, D, A, B, 11, 14, 19);  ROUND2(X, B, C, D, A, 0, 20, 20);
-    ROUND2(X, A, B, C, D, 5, 5, 21);    ROUND2(X, D, A, B, C, 10, 9, 22);
-    ROUND2(X, C, D, A, B, 15, 14, 23);  ROUND2(X, B, C, D, A, 4, 20, 24);
-    ROUND2(X, A, B, C, D, 9, 5, 25);    ROUND2(X, D, A, B, C, 14, 9, 26);
-    ROUND2(X, C, D, A, B, 3, 14, 27);   ROUND2(X, B, C, D, A, 8, 20, 28);
-    ROUND2(X, A, B, C, D, 13, 5, 29);   ROUND2(X, D, A, B, C, 2, 9, 30);
-    ROUND2(X, C, D, A, B, 7, 14, 31);   ROUND2(X, B, C, D, A, 12, 20, 32);
+    for (j = 5; i < 48; i++, j = (j + 3) % 16)  // Round 3
+    {
+        static const int r3[] = {4, 11, 16, 23};
+        A = ROTL(A + (B ^ C ^ D) + X[j] + T[i + 1], r3[i % 4]) + B;
+        tmp = D; D = C; C = B; B = A; A = tmp;
+    }
 
-    ROUND3(X, A, B, C, D, 5, 4, 33);    ROUND3(X, D, A, B, C, 8, 11, 34);
-    ROUND3(X, C, D, A, B, 11, 16, 35);  ROUND3(X, B, C, D, A, 14, 23, 36);
-    ROUND3(X, A, B, C, D, 1, 4, 37);    ROUND3(X, D, A, B, C, 4, 11, 38);
-    ROUND3(X, C, D, A, B, 7, 16, 39);   ROUND3(X, B, C, D, A, 10, 23, 40);
-    ROUND3(X, A, B, C, D, 13, 4, 41);   ROUND3(X, D, A, B, C, 0, 11, 42);
-    ROUND3(X, C, D, A, B, 3, 16, 43);   ROUND3(X, B, C, D, A, 6, 23, 44);
-    ROUND3(X, A, B, C, D, 9, 4, 45);    ROUND3(X, D, A, B, C, 12, 11, 46);
-    ROUND3(X, C, D, A, B, 15, 16, 47);  ROUND3(X, B, C, D, A, 2, 23, 48);
-
-    ROUND4(X, A, B, C, D, 0, 6, 49);    ROUND4(X, D, A, B, C, 7, 10, 50);
-    ROUND4(X, C, D, A, B, 14, 15, 51);  ROUND4(X, B, C, D, A, 5, 21, 52);
-    ROUND4(X, A, B, C, D, 12, 6, 53);   ROUND4(X, D, A, B, C, 3, 10, 54);
-    ROUND4(X, C, D, A, B, 10, 15, 55);  ROUND4(X, B, C, D, A, 1, 21, 56);
-    ROUND4(X, A, B, C, D, 8, 6, 57);    ROUND4(X, D, A, B, C, 15, 10, 58);
-    ROUND4(X, C, D, A, B, 6, 15, 59);   ROUND4(X, B, C, D, A, 13, 21, 60);
-    ROUND4(X, A, B, C, D, 4, 6, 61);    ROUND4(X, D, A, B, C, 11, 10, 62);
-    ROUND4(X, C, D, A, B, 2, 15, 63);   ROUND4(X, B, C, D, A, 9, 21, 64);
+    for (j = 0; i < 64; i++, j = (j + 7) % 16)  // Round 4
+    {
+        static const int r4[] = {6, 10, 15, 21};
+        A = ROTL(A + (C ^ (B | ~D)) + X[j] + T[i + 1], r4[i % 4]) + B;
+        tmp = D; D = C; C = B; B = A; A = tmp;
+    }
 
     md5_st[0] += A;
     md5_st[1] += B;
