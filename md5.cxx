@@ -145,12 +145,12 @@ void MD5::result(uint8_t *digest)
 
 void MD5::calc(const uint8_t *b64)
 {
-    uint32_t X[16];
+    uint32_t X[16], A, B, C, D;
 
-    uint32_t A = md5_st[0];
-    uint32_t B = md5_st[1];
-    uint32_t C = md5_st[2];
-    uint32_t D = md5_st[3];
+    A = md5_st[0];
+    B = md5_st[1];
+    C = md5_st[2];
+    D = md5_st[3];
 
     for (int i = 0; i < 16; i++)
         X[i] = GETL32(&b64[i << 2]);

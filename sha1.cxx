@@ -23,9 +23,7 @@
 
 void SHA1::transform()
 {
-    uint32_t a, b, c, d, e, tmp;
-    uint32_t block[16];
-    int i;
+    uint32_t block[16], a, b, c, d, e, tmp;
 
     /* Copy state[] to working vars */
     a = state[0];
@@ -34,7 +32,7 @@ void SHA1::transform()
     d = state[3];
     e = state[4];
 
-    for (i = 0; i < 80; i++)
+    for (int i = 0; i < 80; i++)
     {
         if (i < 16)           // R0
         {

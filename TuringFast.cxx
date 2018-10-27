@@ -125,21 +125,13 @@ void Turing::IV(const uint8_t iv[], const int ivlength)
     mixwords(R, LFSRLEN);
 }
 
-/* give correct offset for the current position of the register,
- * where logically R[0] is at position "zero".
- */
-int OFF(int zero, int i)
-{
-    return (zero + i) % LFSRLEN;
-}
-
 /* step the LFSR */
 /* After stepping, "zero" moves right one place
  */
 void Turing::STEP(int z)
 {
-    R[OFF(z, 0)] = R[OFF(z, 15)] ^ R[OFF(z, 4)] ^
-	(R[OFF(z, 0)] << 8) ^ Multab[(R[OFF(z, 0)] >> 24) & 0xFF];
+    R[z % 17] = R[(z + 15) % 17] ^ R[(z + 4) % 17] ^
+	(R[z % 17] << 8) ^ Multab[(R[z % 17] >> 24)];
 }
 
 /*
@@ -147,10 +139,10 @@ void Turing::STEP(int z)
  */
 uint32_t Turing::S(uint32_t w, int b)
 {
-    return Sb[0][BYTE(w, (0 + b) & 0x3)]
-         ^ Sb[1][BYTE(w, (1 + b) & 0x3)]
-         ^ Sb[2][BYTE(w, (2 + b) & 0x3)]
-         ^ Sb[3][BYTE(w, (3 + b) & 0x3)];
+    return Sb[0][BYTE(w, (0 + b) & 3)]
+         ^ Sb[1][BYTE(w, (1 + b) & 3)]
+         ^ Sb[2][BYTE(w, (2 + b) & 3)]
+         ^ Sb[3][BYTE(w, (3 + b) & 3)];
 }
 
 /* a single round */
@@ -159,22 +151,22 @@ void Turing::ROUND(int z, uint8_t *b)
     uint32_t A, B, C, D, E;
 
     STEP(z);
-    A = R[OFF(z + 1, 16)];
-        B = R[OFF(z + 1, 13)];
-            C = R[OFF(z + 1, 6)];
-                D = R[OFF(z + 1, 1)];
-                    E = R[OFF(z + 1, 0)];
+    A = R[z % 17];
+        B = R[(z + 14) % 17];
+            C = R[(z + 7) % 17];
+                D = R[(z + 2) % 17];
+                    E = R[(z + 1) % 17];
     PHT(A, B, C, D, E);
     A = S(A, 0); B = S(B, 1); C = S(C, 2); D = S(D, 3); E = S(E, 0);
     PHT(A, B, C, D, E);
     STEP(z + 1);
     STEP(z + 2);
     STEP(z + 3);
-    A += R[OFF(z + 4, 14)];
-        B += R[OFF(z + 4, 12)];
-            C += R[OFF(z + 4, 8)];
-                D += R[OFF(z + 4, 1)];
-                    E += R[OFF(z + 4, 0)];
+    A += R[(z + 1) % 17];
+        B += R[(z + 16) % 17];
+            C += R[(z + 12) % 17];
+                D += R[(z + 5) % 17];
+                    E += R[(z + 4) % 17];
     PUT32(A, b);
         PUT32(B, b + 4);
             PUT32(C, b + 8);
@@ -192,7 +184,7 @@ void Turing::ROUND(int z, uint8_t *b)
 int Turing::gen(uint8_t *buf)
 {
     for (int i = 0; i < 81; i += 5)
-        ROUND(i % 17, buf + (i << 2));
+        ROUND(i, buf + (i << 2));
 
     return 17 * 20;
 }
