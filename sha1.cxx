@@ -60,7 +60,7 @@ void SHA1::transform()
         tmp = e + ROTL(a, 5); e = d; d = c; c = ROTL(b, 30); b = a; a = tmp;
     }
 
-    /* Add the working vars back into context.state[] */
+    /* Add the working vars back into state[] */
     state[0] += a;
     state[1] += b;
     state[2] += c;
