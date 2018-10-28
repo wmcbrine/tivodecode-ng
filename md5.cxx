@@ -49,6 +49,11 @@ static const uint8_t md5_paddat[MD5_BUFLEN] = {
     0, 0, 0, 0, 0, 0, 0, 0
 };
 
+MD5::MD5()
+{
+    init();
+}
+
 void MD5::init()
 {
     md5_count.lsw = 0;
@@ -115,6 +120,8 @@ void MD5::pad()
 
 void MD5::result(uint8_t *digest)
 {
+    pad();
+
     /* 4 byte words */
     PUTL32(md5_st[0], digest);
     PUTL32(md5_st[1], digest + 4);

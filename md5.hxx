@@ -26,11 +26,12 @@ class MD5
         uint8_t md5_buf[MD5_BUFLEN];
 
         void calc(const uint8_t *);
+        void pad();
 
     public:
+        MD5();
         void init();
         void loop(const std::string &);
-        void pad();
         void result(uint8_t *);
 };
 

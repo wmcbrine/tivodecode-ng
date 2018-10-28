@@ -90,7 +90,6 @@ void TuringState::setup_key(uint8_t *buffer, size_t buffer_length,
 {
     SHA1 context;
 
-    context.init();
     context.update((const uint8_t *)mak.data(), mak.size());
     context.update(buffer, buffer_length);
     context.final(turingkey);
@@ -102,18 +101,14 @@ void TuringState::setup_metadata_key(uint8_t *buffer,
 {
     static const char lookup[] = "0123456789abcdef";
     MD5 md5;
-    int i;
     uint8_t md5result[16];
     std::string metakey = "";
 
-    md5.init();
     md5.loop("tivo:TiVo DVR:");
     md5.loop(mak);
-
-    md5.pad();
     md5.result(md5result);
 
-    for (i = 0; i < 16; ++i)
+    for (int i = 0; i < 16; ++i)
     {
         metakey += lookup[(md5result[i] >> 4) & 0xf];
         metakey += lookup[ md5result[i]       & 0xf];
@@ -139,7 +134,6 @@ void TuringState::prepare_frame_helper(uint8_t stream_id, int block_id)
     turingkey[18] = (block_id & 0x00FF00) >> 8;
     turingkey[19] = (block_id & 0x0000FF);
 
-    context.init();
     context.update(turingkey, 17);
     context.final(turkey);
 

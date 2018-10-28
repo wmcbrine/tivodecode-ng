@@ -20,6 +20,7 @@ class SHA1
         void transform();
 
     public:
+        SHA1();
         void init();
         void update(const uint8_t *data, size_t len);
         void final(uint8_t digest[20]);

@@ -19,6 +19,11 @@
 #include "bits.hxx"
 #include "sha1.hxx"
 
+SHA1::SHA1()
+{
+    init();
+}
+
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
 void SHA1::transform()
