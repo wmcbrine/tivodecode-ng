@@ -48,20 +48,20 @@ inline uint8_t BYTE(uint32_t x, int i)
 
 inline void PUT32(uint32_t w, uint8_t *b)
 {
-    b[0] = BYTE(w, 0);
-    b[1] = BYTE(w, 1);
-    b[2] = BYTE(w, 2);
-    b[3] = BYTE(w, 3);
+    b[0] = w >> 24;
+    b[1] = (w >> 16) & 0xFF;
+    b[2] = (w >> 8) & 0xFF;
+    b[3] = w & 0xFF;
 }
 
 // Convert native integers to little-endian byte sequences
 
 inline void PUTL32(uint32_t w, uint8_t *b)
 {
-    b[0] = BYTE(w, 3);
-    b[1] = BYTE(w, 2);
-    b[2] = BYTE(w, 1);
-    b[3] = BYTE(w, 0);
+    b[0] = w & 0xFF;
+    b[1] = (w >> 8) & 0xFF;
+    b[2] = (w >> 16) & 0xFF;
+    b[3] = w >> 24;
 }
 
 #endif /* BITS_HXX_ */

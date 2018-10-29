@@ -21,13 +21,13 @@ static uint32_t fixedS(uint32_t w)
 {
     uint32_t b;
 
-    b = Sbox[BYTE(w, 0)];
+    b = Sbox[w >> 24];
     w = ((w ^      Qbox[b])      & 0x00FFFFFF) | (b << 24);
-    b = Sbox[BYTE(w, 1)];
+    b = Sbox[(w >> 16) & 0xFF];
     w = ((w ^ ROTL(Qbox[b], 8))  & 0xFF00FFFF) | (b << 16);
-    b = Sbox[BYTE(w, 2)];
+    b = Sbox[(w >> 8) & 0xFF];
     w = ((w ^ ROTL(Qbox[b], 16)) & 0xFFFF00FF) | (b << 8);
-    b = Sbox[BYTE(w, 3)];
+    b = Sbox[w & 0xFF];
     w = ((w ^ ROTL(Qbox[b], 24)) & 0xFFFFFF00) | b;
 
     return w;
@@ -51,11 +51,12 @@ void mixwords(uint32_t *w, int n)
     uint32_t sum;
     int i;
 
-    for (sum = i = 0; i < n - 1; ++i)
+    n--;
+    for (sum = i = 0; i < n; ++i)
 	sum += w[i];
-    w[n - 1] += sum;
-    sum = w[n - 1];
-    for (i = 0; i < n - 1; ++i)
+    w[n] += sum;
+    sum = w[n];
+    for (i = 0; i < n; ++i)
 	w[i] += sum;
 }
 
