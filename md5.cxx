@@ -38,17 +38,6 @@ static const int shifts[4][4] = {
     {7, 12, 17, 22}, {5, 9, 14, 20}, {4, 11, 16, 23}, {6, 10, 15, 21}
 };
 
-static const uint8_t md5_paddat[MD5_BUFLEN] = {
-    0x80, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0
-};
-
 MD5::MD5()
 {
     init();
@@ -98,17 +87,18 @@ void MD5::pad()
 {
     size_t gap;
 
-    /* Don't count up padding. Keep md5_n. */
+    md5_buf[md5_i] = 0x80;
+
+    /* Don't count up padding. */
     gap = MD5_BUFLEN - md5_i;
     if (gap > 8)
-        std::copy(md5_paddat, md5_paddat + gap - 8, md5_buf + md5_i);
+        std::fill(md5_buf + md5_i + 1, md5_buf + MD5_BUFLEN - 8, 0);
     else
     {
         /* including gap == 8 */
-        std::copy(md5_paddat, md5_paddat + gap, md5_buf + md5_i);
+        std::fill(md5_buf + md5_i + 1, md5_buf + MD5_BUFLEN, 0);
         calc(md5_buf);
-        std::copy(md5_paddat + gap,
-                  md5_paddat + gap + MD5_BUFLEN - 8, md5_buf);
+        std::fill(md5_buf, md5_buf + MD5_BUFLEN - 8, 0);
     }
 
     /* 8 byte word */
