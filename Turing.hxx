@@ -26,11 +26,11 @@ class Turing
 
         void STEP(int z);
         uint32_t S(uint32_t w, int b);
-        void ROUND(int z, uint8_t *b);
+        void ROUND(int z, uint8_t *buf);
 
     public:
-        void key(const uint8_t key[], const int keylength);
-        void IV(const uint8_t iv[], const int ivlength);
+        void key(const uint8_t *key, int len);
+        void IV(const uint8_t *iv, int len);
         int  gen(uint8_t *buf);  /* returns number of bytes of mask generated */
 };
 

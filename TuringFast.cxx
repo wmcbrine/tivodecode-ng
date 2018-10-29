@@ -36,8 +36,7 @@ static uint32_t fixedS(uint32_t w)
 /* two variants of the Pseudo-Hadamard Transform */
 
 /* Mix 5 words in place */
-void PHT(uint32_t &A, uint32_t &B, uint32_t &C,
-         uint32_t &D, uint32_t &E)
+void PHT(uint32_t &A, uint32_t &B, uint32_t &C, uint32_t &D, uint32_t &E)
 {
     E += A + B + C + D;
     A += E;
@@ -47,7 +46,7 @@ void PHT(uint32_t &A, uint32_t &B, uint32_t &C,
 }
 
 /* General word-wide n-PHT */
-void mixwords(uint32_t w[], int n)
+void mixwords(uint32_t *w, int n)
 {
     uint32_t sum;
     int i;
@@ -65,15 +64,15 @@ void mixwords(uint32_t w[], int n)
  * Table version; gathers words, mixes them, saves them.
  * Then compiles lookup tables for the keyed S-boxes.
  */
-void Turing::key(const uint8_t key[], const int keylength)
+void Turing::key(const uint8_t *key, int len)
 {
     int i, j, k, l;
     uint32_t w;
 
-    if ((keylength & 0x03) != 0 || keylength > MAXKEY)
+    if ((len & 0x03) != 0 || len > MAXKEY)
 	std::abort();
     keylen = 0;
-    for (i = 0; i < keylength; i += 4)
+    for (i = 0; i < len; i += 4)
 	K[keylen++] = fixedS(GET32(&key[i]));
     mixwords(K, keylen);
 
@@ -103,21 +102,21 @@ void Turing::key(const uint8_t key[], const int keylength)
  * to avoid any "chosen-IV" interactions with the keyed S-boxes, not that I
  * can think of any.
  */
-void Turing::IV(const uint8_t iv[], const int ivlength)
+void Turing::IV(const uint8_t *iv, int len)
 {
     int i, j;
 
     /* check args */
-    if ((ivlength & 0x03) != 0 || (ivlength + 4 * keylen) > MAXKIV)
+    if ((len & 0x03) != 0 || (len + 4 * keylen) > MAXKIV)
 	std::abort();
     /* first copy in the IV, mixing as we go */
-    for (i = j = 0; j < ivlength; j += 4)
+    for (i = j = 0; j < len; j += 4)
 	R[i++] = fixedS(GET32(&iv[j]));
     /* now continue with the premixed key */
     for (j = 0 /* i continues */; j < keylen; ++j)
 	R[i++] = K[j];
     /* now the length-dependent word */
-    R[i++] = (keylen << 4) | (ivlength >> 2) | 0x01020300UL;
+    R[i++] = (keylen << 4) | (len >> 2) | 0x01020300UL;
     /* ... and fill the rest of the register */
     for (j = 0 /* i continues */; i < LFSRLEN; ++i, ++j)
 	R[i] = S(R[j] + R[i - 1], 0);
@@ -146,7 +145,7 @@ uint32_t Turing::S(uint32_t w, int b)
 }
 
 /* a single round */
-void Turing::ROUND(int z, uint8_t *b)
+void Turing::ROUND(int z, uint8_t *buf)
 {
     uint32_t A, B, C, D, E;
 
@@ -167,11 +166,11 @@ void Turing::ROUND(int z, uint8_t *b)
             C += R[(z + 12) % 17];
                 D += R[(z + 5) % 17];
                     E += R[(z + 4) % 17];
-    PUT32(A, b);
-        PUT32(B, b + 4);
-            PUT32(C, b + 8);
-                PUT32(D, b + 12);
-                    PUT32(E, b + 16);
+    PUT32(A, buf);
+        PUT32(B, buf + 4);
+            PUT32(C, buf + 8);
+                PUT32(D, buf + 12);
+                    PUT32(E, buf + 16);
     STEP(z + 4);
 }
 
