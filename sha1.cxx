@@ -26,7 +26,7 @@ SHA1::SHA1()
 
 /* Hash a single 512-bit block. This is the core of the algorithm. */
 
-void SHA1::transform()
+void SHA1::transform(const uint8_t *buffer)
 {
     uint32_t block[16], a, b, c, d, e, tmp;
 
@@ -81,59 +81,62 @@ void SHA1::init()
     state[2] = 0x98BADCFE;
     state[3] = 0x10325476;
     state[4] = 0xC3D2E1F0;
-    count[0] = count[1] = 0;
+    count.lsw = count.msw = 0;
+    index = 0;
 }
 
 /* Run your data through this. */
 
 void SHA1::update(const uint8_t *data, size_t len)
 {
-    unsigned int i, j;
+    size_t gap, i;
 
-    j = (count[0] >> 3) & 63;
+    if (count.lsw + len * 8 < count.lsw)
+        count.msw++;
+    count.lsw += len * 8;
+    gap = 64 - index;
 
-    if ((count[0] += (unsigned int)len << 3) < (len << 3))
-        count[1]++;
-
-    count[1] += (unsigned int)(len >> 29);
-
-    if ((j + len) > 63)
+    if (len >= gap)
     {
-        i = 64 - j;
-        std::copy(data, data + i, buffer + j);
-        transform();
+        std::copy(data, data + gap, buffer + index);
+        transform(buffer);
 
-        for ( ; i + 63 < len; i += 64)
-        {
-            std::copy(data + i, data + i + 64, buffer);
-            transform();
-        }
+        for (i = gap; i + 64 <= len; i += 64)
+            transform(data + i);
 
-        j = 0;
+        index = len - i;
+        std::copy(data + i, data + i + 64, buffer);
     }
     else
-        i = 0;
-
-    std::copy(data + i, data + len, buffer + j);
+    {
+        std::copy(data, data + len, buffer + index);
+        index += len;
+    }
 }
 
 /* Add padding and return the message digest. */
 
-void SHA1::final(uint8_t digest[20])
+void SHA1::final(uint8_t *digest)
 {
-    unsigned int i;
-    uint8_t finalcount[8];
+    size_t gap;
 
-    PUT32(count[1], finalcount);
-    PUT32(count[0], finalcount + 4);
+    buffer[index] = 0x80;
 
-    update((const uint8_t *)"\200", 1);
+    gap = 64 - index;
+    if (gap > 8)
+        std::fill(buffer + index + 1, buffer + 56, 0);
+    else
+    {
+        std::fill(buffer + index + 1, buffer + 64, 0);
+        transform(buffer);
+        std::fill(buffer, buffer + 56, 0);
+    }
 
-    while ((count[0] & 504) != 448)
-        update((const uint8_t *)"\0", 1);
+    PUT32(count.msw, buffer + 56);
+    PUT32(count.lsw, buffer + 60);
 
-    update(finalcount, 8);  /* Should cause a transform() */
+    transform(buffer);
 
-    for (i = 0; i < 5; i++)
+    for (int i = 0; i < 5; i++)
         PUT32(state[i], &digest[i << 2]);
 }

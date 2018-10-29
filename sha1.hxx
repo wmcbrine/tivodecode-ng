@@ -14,16 +14,22 @@ class SHA1
 {
     private:
         uint32_t state[5];
-        unsigned int count[2];
+
+        struct {
+            uint32_t lsw;
+            uint32_t msw;
+        } count;
+
+        size_t index;
         uint8_t buffer[64];
 
-        void transform();
+        void transform(const uint8_t *);
 
     public:
         SHA1();
         void init();
-        void update(const uint8_t *data, size_t len);
-        void final(uint8_t digest[20]);
+        void update(const uint8_t *, size_t);
+        void final(uint8_t *);
 };
 
 #endif /* SHA1_HXX_ */
