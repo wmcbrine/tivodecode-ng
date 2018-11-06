@@ -11,13 +11,13 @@
 #define PACKAGE_NAME "tivodecode-ng"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "tivodecode-ng 0.4"
+#define PACKAGE_STRING "tivodecode-ng 0.5"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "tivodecode-ng"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "0.4"
+#define PACKAGE_VERSION "0.5"
 
 /* Version number of package */
-#define VERSION "0.4"
+#define VERSION "0.5"

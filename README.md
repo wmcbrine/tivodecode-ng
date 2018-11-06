@@ -1,4 +1,4 @@
-tivodecode-ng version 0.4
+tivodecode-ng version 0.5
 =========================
 
 Copyright 2006-2018, Jeremy Drake et al.

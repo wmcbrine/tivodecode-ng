@@ -1,4 +1,4 @@
-AC_INIT(tivodecode-ng, 0.4, wmcbrine@gmail.com)
+AC_INIT(tivodecode-ng, 0.5, wmcbrine@gmail.com)
 AC_LANG(C++)
 AC_CONFIG_SRCDIR(tivodecode.cxx)
 AM_INIT_AUTOMAKE

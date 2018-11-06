@@ -1,3 +1,26 @@
+tivodecode-ng 0.5
+-----------------
+
+The focus of this release has been to simplify and clarify the code,
+while maintaining the same output -- compatibiity-breaking changes will
+come from here on. For example, all the endian-specific code has been
+replaced with endian-neutral... although I no longer have any current
+big-endian systems to test on. I used modern C++ where it helped with
+this goal, but that does mean some older compilers will no longer work.
+Version 0.5 has been successfully built with recent versions of g++,
+clang and MSVC, in 32 bits and 64, on Mac, Linux and Windows.
+
+As a result of these changes, 0.5 has unfortunately turned out to be
+just a little bit slower than 0.4 (at least the macOS build), although
+it's still faster than "classic" 0.2pre4 tivodecode.
+
+This version no longer builds a library (which AFAIK, no one ever used),
+just the two executables, tivodecode and tdcat. I'm open to restoring it
+if there's interest. And some of the targets in the configure-built
+makefile, such as "make dist", need tweaking to be usable.
+
+See the git log for further details.
+
 tivodecode-ng 0.4
 -----------------
 
